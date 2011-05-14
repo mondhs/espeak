@@ -472,6 +472,7 @@
             aire         'e@
             aise (_      'eIz
         _c) ais (l       aS  // 'caislin'
+        @l) ais (_       eI
 
 .group al
          _) al (@        a#l
@@ -849,6 +850,7 @@
         &d) ar (d_       3
         gg) ar (d_       3
         &h) ar (d_       3
+       &ch) ar (d        3
         &k) ar (d_       3
        &st) ar (d_       3
         &w) ar (d_       3
@@ -860,6 +862,7 @@
        sep) ar (at       3r
          w) are          e@
          k) ar (y        ar
+        _m) ar (y        e@
          c) arbo (h      ,A@boU
          _) arch (@P4    ,A@tS             // prefix
          _) archai       A@k'eII
@@ -909,6 +912,7 @@
          v) ar (iA       e@r
          @) ar (ity      ar
             ar (iu+      'e@r
+        _p) arlia        A:rl@
             arom (at     a#roUm
             arre (_      A@
             arred (_     A@d
@@ -917,9 +921,9 @@
          p) ar (ticu     3
         qu) ar (t        O@
             ar (til      %A@
-         &) ary (_       @r%I
-?3     ion) ary (_       Er%I
-        XC) ary (_       e@r%I
+         &) ary (_       @r%i
+?3     ion) ary (_       Er%i
+        XC) ary (_       e@r%i
          w) ar           O@
         wh) ar           O@
          w) ar (r        0
@@ -1519,6 +1523,7 @@
             dg (y        dZ
          _) dir (_       daI@
         we) dne (sd      n
+            dt (_        t
 ?3       &) du (CA       dZu:
             du (al_      dZu:
             du (cat      dZu:
@@ -1977,6 +1982,7 @@
          l) ei (s        E
         th) ei (sC       i:I
         _s) eis (m       aIz
+            ei (ster     aI
          f) ei (t_       I
          f) ei (te       I   // for 'add e' to 'forfeit' etc.
          h) ei (t_       aI
@@ -2069,6 +2075,7 @@
             en (core     0n
          &) ency (_      @ns%i
             ency (cli    %EnsI
+         k) en (d_       En
             en (dA_      'En
          _) en (d        En
          _) en (da       %En
@@ -2109,7 +2116,7 @@
             en (sig      En
             ensk (_      'Ensk
             enshrine     %EnSraIn
-         m) entary (_    'Ent@r%I
+         m) entary (_    'Ent@r%i
             en (ter      En
             en (tert     ,En
             enthra (l    %EnTrO:
@@ -2194,6 +2201,8 @@
          &) er           3
        @@@) er (_S2de    3         // suffix
         %C) er (_S3      3
+        er) er (_S2      3
+        er) ers (_S3     3z
         ll) er (_S2      3
          &) er (_        3
 ?8       &) er (_        a#  // (temporary because [3] -> [a#] is only for word-final
@@ -2768,7 +2777,7 @@
         _f) iance        I'0nseI
         ef) ia (nce      'aI@
          l) ia (nce      'aI@
-       ill) ia (nce      I2@
+        &l) ia (nce      I2@
          f) ia (nt       'aI@
         pl) ia (nt       'aI@
        ill) ia (nt       I2@
@@ -3393,6 +3402,8 @@
         &p) ly (_S2      l%I
          p) ly (_        laI
          _) ly (d        lI
+         @) lEss (_S4i   l@s
+         @) lEssly (_S6i   l@sl%I
 
 .group le
          &) le (_        l
@@ -3451,6 +3462,8 @@
          _) mc           m@k
          _) mc (_k       m@
          _) mc (k        m@
+         _) mc (_g       m@
+         _) mc (g        m@
          _) mc (A        mak
          _) mc (-A       mak
             mn (_        m
@@ -3490,7 +3503,7 @@
             mis (ci      mIs
             mis (dem     mIs
             mis (er      maIz
-            miserab      mIz@r@b
+            miserab      mIz@-r@b
             mis (fi      mIs
             mis (hap     mIs
          _) mis (in      m,Is
@@ -3879,6 +3892,7 @@
 .group on
         @@) on (_        @n
 ?8       @) on (_++      0n
+        %C) on (_        @n
         &b) on (_        @n
         &c) on (_        @n
         Cd) on (_        @n
@@ -3890,6 +3904,7 @@
         il) on (_        0n
         yl) on (_        0n
         &m) on (_        @n
+         p) on (_+       0n
         ar) on (_        @n
         dr) on (_        @n
         or) on (_        0n
@@ -4759,6 +4774,7 @@
          a) sin (_       s@n
         ai) sin (_       z@n
          u) sin (_       z@n
+         _) size (C@     saIz
          _) soma (li     s@mA:
        pri) s (o         z
          @) some (_S4    sVm
@@ -5264,7 +5280,7 @@
             wh           w
             wr           r
          C) we (_        =wI
-         _) were         we@_|
+         _) were (P4     w'e@_|
          C) west         w'Est
             we (w        wi:
             where        we@

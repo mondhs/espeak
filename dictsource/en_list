@@ -706,6 +706,7 @@ bonjour          bO:nZ'U@
 boogie           b'u:gI
 bosom            bUz@m
 bosun            boUs@n
+boutique         bu:t'i:k
 bourgeois        bU@ZwA:
 bourgeoise       bU@ZwA:z
 bourgeoisie      bU@ZwA:z'i:
@@ -795,6 +796,7 @@ charit           tSarIt        // charitable
 chateau          SatoU
 chemise          SEm'i:z
 chic             Si:k
+chiffron         SIfr0n
 chimera          kaIm'i@r@
 chimpanzee       $3
 chisel           tSIz@L
@@ -897,6 +899,7 @@ coop             ku:p
 cooper           ku:p3
 coordinate       koU'O:dI2neIt   $verb
 copier           k0pi@3
+copilot          koUpaIl@t
 coral            k0r@L
 coronet          k0r@nEt
 corollary        $2
@@ -978,6 +981,7 @@ devotee          dEvoUt'i:
 di               d,I
 diabetes         daI@b'i:ti:z 
 diameter         daI'amI2t3
+diaper           daIp3
 diaspora         daI'asp@r@
 diehard          daIhA@d
 dielectric       daI@l'EktrIk
@@ -1261,6 +1265,7 @@ hindus           hIndu:z
 hiya             haIa#
 hmmm             h'@m
 hmpf             h'@mpf
+hogtie           h0gtaI
 holme            hoUm
 holster          hoUlst3
 homeowner        hoUmoUn3
@@ -1493,6 +1498,7 @@ melon            mEl@n
 menus            mEnju:z
 memo             mEmoU
 menagerie        m@n'adZj@rI
+meow             mi'aU
 mercedes         m3:s'eIdi:z
 mercenary        m3:s@n@rI
 merest           mi@r@st
@@ -2081,6 +2087,7 @@ squirrel         skwIr@L
 standby          standbaI
 stagnate                       $2
 stampede          $2
+starry           stA:ri
 stiletto         stI2lEtoU
 strychnine       str'Ikni:n
 sterile          stEraIl
@@ -2299,10 +2306,9 @@ watershed        wO:t3SEd
 watson           w0t|s@n
 waxy             waksI
 webpage          wEbpeIdZ
-weekend                        $2
 wehrmacht        ve@maxt
 website          wEbsaIt
-weekend          wi:k'End
+weekend          	$2
 wheelbarrow      w'i:l_b,aroU
 whew             fju:
 whichever                      $2
@@ -2764,9 +2770,11 @@ Loinnir		lVni@
 Lois		loUIs
 Louis		lu:I
 Louise		lu:w'i:z
+Luis		lu:Is
 Madeline	mad@lI2n
 Maeve		meIv
 Mahmoud		maxm'u:d
+Makenna		m@kEn@
 Malcolm		malk@m
 Maria		ma#ri:@
 Marie		ma#ri:
@@ -2776,6 +2784,7 @@ Matilda		ma#tIld@
 Matthew		maTju:
 Maurice		m0rIs
 Mavis		meIvIs
+Megan		mEg@n
 Melissa		$2
 Michael		maIk@L
 Michele		mI2SEl
@@ -2843,6 +2852,7 @@ Therese		t@ri:z
 Thomas		t0m@s
 Tina		ti:n@
 Tracy		treIsi
+Triani		tri:'ani
 Trina		tri:n@
 Tricia		trIS@
 Vanessa		va#nEs@
@@ -2872,6 +2882,7 @@ Prentice	prEntIs
 Reid		ri:d
 Reuter		rOIt3
 Sanchez		santSEz
+Tzu		tsu:
 Ubuntu		u:b'u:ntu:
 Wii		wi::
 Yaesu		jeIsu:
