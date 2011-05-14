@@ -358,6 +358,7 @@ eur	jU@	$only
 hmm	h@m
 (http ://)   eItSti:ti:'pi:_
 ibm	$abbrev
+id	$abbrev
 ie	aIi:_!   $pause $only
 i.e	aIi:_!   $pause
 irc	$abbrev
@@ -365,7 +366,7 @@ irc	$abbrev
 lbs	paUndz
 LBS	$abbrev
 ltd	lImI2tI2d
-mc	m@k  $combine   // combine with the following word
+//mc	m@k  $combine   // combine with the following word
 mya	$abbrev
 nato	neItoU
 ny	$abbrev
@@ -755,6 +756,7 @@ canoe            k@nu:
 canoes           k@nu:z
 canton           kant0n
 canvas           kanv@s
+capita           kapIt@
 capitol          kapIt@L
 caprice          ka#pr'i:s
 caramel          kar@mEl
@@ -774,6 +776,8 @@ caviar           kavIA@
 caviare          kavIA@
 cavort           ka#v'O@t
 cedar            si:d3
+celidh           keIli
+ceilidh          keIli
 celebre          sEl'Ebr@
 censure          sEnS3
 ceres            si@ri:z
@@ -995,6 +999,7 @@ disease          dIz'i:z
 dishes           dISI2z
 dismal           dIzm@l
 disparate        dIsp@r@t
+disreputable      $2
 distributor       $2
 distro           dIstroU
 disuse           dIs'ju:z
@@ -1376,7 +1381,7 @@ kiwi             ki:wi:
 knavish          neIvIS
 koala            koU'A:l@
 koan             koUA:n
-kopje            k0pI 
+kopje            k0pI
 kosher           koUS3
 
 la               ,la           $only
@@ -1394,7 +1399,7 @@ lasso            las'u:
 latte            lateI
 lawyer           lOI3
 lava             lA:v@
-le               l@            $only
+le               l@_|            $only
 lead             li:d
 leafy            li:fI
 leant            lEnt
@@ -1507,6 +1512,7 @@ mildew           mIldju:
 mileage          maIlI2dZ
 milestone        maIlstoUn
 militia          m@lIS@
+million          mIli@n
 minibus          mInIbVs
 mining           maInI2N        // not mini
 minuet           mInju:'Et
@@ -1860,6 +1866,7 @@ reciprocal       rI2sIpr@k@L
 recital          rI2saIt@L
 recommend        r,Ek@mEnd
 recommendation   rEk@mEnd'eIS@n
+reconnaissance   rI2k0nIs@ns
 record           rEkO@d        $onlys
 ?3 record        rEk3d        $onlys
 record                         $verb
@@ -2244,12 +2251,11 @@ uptight           $2
 urine            jU@rIn
 usable           ju:z@b@L
 usage            ju:sI2dZ
-use              ju:s          $onlys
+use              ju:s
 use              ju:z          $verb
 useage           ju:sI2dZ
 using            ju:zI2N
 useful           ju:sf@L
-useless          ju:sl@s
 utensil          ju:t'Ens@L
 
 valentine        val@ntaIn
@@ -2263,7 +2269,6 @@ vaseline         vas@li:n
 veg              vEdZ
 vegetable        vEdZI2t@b@L
 vehicle          vi@k@L
-vegan            vi:g@n
 veggy            vEdZI
 vengeance        vEndZ@ns
 venus            vi:n@s
@@ -2616,6 +2621,7 @@ Aguilera	agi:l'e@r@
 Ahab		eIhab
 Ahmed		axmEd
 Alan		al@n
+Alana		a#lan@
 Alec		alIk
 Alex		alIks
 Alfie		alfi
@@ -2631,6 +2637,7 @@ Anita		a#ni:t@
 Anthony		ant@ni
 Anton		ant0n
 Aoife		i:f@
+Aoiffe		i:f@
 Archibald	A@tSIbO:ld
 Archie		A@tSi
 Ares		e@ri:z
@@ -2643,7 +2650,9 @@ Betsy		bEtsi
 Bjorn		bjO@n
 Bjørn		bj3:n
 Boris		b0rIs
+Brianna		brI'an@
 Brien		braI@n
+Caiseal		kaS@L
 Candace		kandIs
 Carol		kar@l
 Calliope	ka#laI@pi
@@ -2651,6 +2660,7 @@ Cassandra	k@sandr@
 Cassey		keIsi
 Catherine	kaTrI2n
 Cecile		sEsi:l
+Circe		s3:si
 Charlotte	SA@l@t
 Cher		Se@
 Cheri		Se@r'i:
@@ -2660,8 +2670,10 @@ Chloe		kloUi
 Chris		krIs
 Cleo		kli:oU
 Cloe		kloUi
+Colleen		$2
 Connie		k0ni
 Connor		k0n3
+Conrad		$1
 Daphne		dafni
 Darryl		dar@L
 Davie		deIvi
@@ -2676,20 +2688,27 @@ Donaghy		d0n'hi:
 Doris		d0rIs
 Dorothy		d0r@Ti
 Dougall		du:g@L
+Draco		dreIkoU
+Duana		dU@n@
 Duncan		dVnk@n
 Dvina		d@vi:n@
 Dylan		dIl@n
 Edith		i:dIT
 Elise		I2li:z
+Elisabeth	I2lIz@b@T
 Elizabeth	I2lIz@b@T
+Eliza		Il'aIz@
 Emily		EmI2li
 Emma		Em@
 Emmy		Emi
+Einín		Eni:n
 Etheridge	ET@-rIdZ
 Etienne		EtI'En
 Euler		OIl3
 Eva		i:v@
 Evan		Ev@n
+Fainne		fan;@
+Fírinne		fi:rIn;@
 Gary		gari
 Geraint		gEraInt
 Gibbs		gIbz
@@ -2702,17 +2721,19 @@ Graham		greI@m
 Hadrian		heIdri:@n
 Harriet		hari@t
 Heidi		haIdi
+Hecate		hEk@teI
+Hekate		hEk@teI	
 Huw		hju:
 Iain		i:@n
 Ian		i:@n
 Igor		i:go@
 Imogen		Im@dZ@n
+Imogene		Im@dZ@n
 Irene		aIri:n
 Isaac		aIs@k
 Isabel		Iz@bEl
 Isla		aIl@
 Isiah		aIz'aI@
-Ivan		aIv@n
 Jacob		dZeIk@b
 Jacques		Zak
 Jamie		dZeImi
@@ -2726,16 +2747,20 @@ Karen		kar@n
 Karene		ka#ri:n
 Katherine	kaTrI2n
 Katie		keIti
+Keighli		keIli
 Kieran		ki@r@n
 Laurence	l0r@ns
 Lawrence	l0r@ns
+Leann		li:'an
 Leanne		li:'an
+(Le ann)	li:'an
 Lenore		lEn'o@
 Leroy		li:rOI
 Liam		li:@m
 Lindsay		lInzi
 Llewellyn	l#@w'ElIn
 Llywelyn	l#@w'ElIn
+Loinnir		lVni@
 Lois		loUIs
 Louis		lu:I
 Louise		lu:w'i:z
@@ -2789,13 +2814,14 @@ Reynold		rEn@Ld
 Rhys		ri:s
 Rihanna		rI'A:n@
 Roderick	r0drIk
+Roni		r0ni
 Rosario		roUz'A@rIoU
 Russell		rVs@L
 Sabina		sa#bi:n@
 Sabine		sa#bi:n
 Samantha	s@manT@
 (Santa claus)	s'ant@||kl'O:z
-Saoirse		se@S@
+Saoirse		si@S@
 Sarah		se@r@
 Seamus		SeIm@s
 Sean		SO:n
@@ -2803,6 +2829,7 @@ Sebastian	$2
 Sheila		Si:l@
 Sinead		SI2neId
 Siobhan		S@vO:n
+Siobhán		S@vO:n
 Sonia		s0nj@
 Sophie		soUfi
 Stephen		sti:v@n
@@ -2837,6 +2864,7 @@ Dolce		d0ltSeI
 Dvorak		d@-vo@Zak
 Gibson		gIbs@n
 Hades		heIdi:z
+Mackenna	m@kEn@
 Niro		ni@roU
 Patel		pa#tEl
 Primavera	pri:m@v'e@r@
@@ -2845,6 +2873,7 @@ Reid		ri:d
 Reuter		rOIt3
 Sanchez		santSEz
 Ubuntu		u:b'u:ntu:
+Wii		wi::
 Yaesu		jeIsu:
 zhivago		ZI2vA:goU
 
