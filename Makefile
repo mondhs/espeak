@@ -46,11 +46,11 @@ espeak-data: espeakedit espeak-data-dir
 
 ##### dictionaries:
 
-en: all dictsource/en_rules dictsource/en_list
+en: dictsource/en_rules dictsource/en_list
 	rm -f dictsource/en_extra
+	make all
+	../cainteoir-engine/tests/dictionary.py ../cainteoir-english/data/reece --exception-dictionary > dictsource/en_extra
 	make espeak-data
-	../cainteoir-engine/tests/dictionary.py --exception-dictionary > dictsource/en_extra
-	make espeak-data
-	../cainteoir-engine/tests/dictionary.py | grep -F fail
+	../cainteoir-engine/tests/dictionary.py ../cainteoir-english/data/reece | grep -F fail
 	wc -l dictsource/en_extra
 
