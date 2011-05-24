@@ -163,7 +163,7 @@ endphoneme
 
 phoneme @L
   vowel  starttype #@  endtype l
-  ipa əl
+  ipa l̩
   unstressed
   length 160
   CALL vowelstart_l
