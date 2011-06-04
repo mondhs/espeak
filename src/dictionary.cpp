@@ -3168,7 +3168,7 @@ static const char *LookupDict2(Translator *tr, const char *word, const char *wor
 		}
 		if(dictionary_flags2 & FLAG_NOUN)
 		{
-			if(!tr->expect_noun)
+			if((!tr->expect_noun) || (end_flags & SUFX_V))
 			{
 				/* don't use the 'noun' pronunciation unless we are
 					expecting a noun */
