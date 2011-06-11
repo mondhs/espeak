@@ -3,6 +3,8 @@ language en-uk  2
 language en 2
 gender male
 
+replace 00  I#  @
+
 replace 03 I i
 replace 03 I2 i
 
