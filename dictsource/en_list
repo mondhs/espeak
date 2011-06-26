@@ -926,6 +926,7 @@ corollary        $2
 corporal         kO@pr@L
 corporate        kO@p@r@t
 corps            kO@           $only
+cosmos           k0zm0s
 countered        kaUnt3d
 coupon           ku:p0n
 couscous         ku:sku:s
@@ -1086,6 +1087,7 @@ enroute          0nr'u:t
 ensemble         0ns'0mb@L
 entente          0nt'0nt
 entourage        0ntu:rA:Z
+entrail           $1
 entrance          $1       $onlys
 entrance         Entr'aans     $verb
 entree           0ntreI
@@ -1459,6 +1461,7 @@ lethal           li:T@L
 liaison          li:'eIz0n
 libre            li:br@
 lichen           laIk@n
+lien             li:@n
 lier             laI3         // outlier
 ligate           li:geIt
 lilac            laIl@k
@@ -1802,7 +1805,7 @@ plumber          plVm3
 plus             plVs
 poly             p0lI
 politer          p@l'aIt3
-politic          p0l@tIk
+politic          p0l@tIk   $onlys
 poll             poUl
 polls            poUlz
 polyamide        p0lI'eImaId
@@ -2138,6 +2141,7 @@ sooth            su:D
 soundbite        saUndbaIt
 souvenir         su:v@n'i@3
 sorbet           sO@beI
+soyabean         sOI@bi:n
 spaghetti        spag'Eti
 spasm            spas@m
 specific         sp@sIfIk
@@ -2505,6 +2509,7 @@ Antilles	ant'Ili:z
 Apennine	ap@naIn
 Armageddon	A@ma#g'Ed@n
 Arkansas	A@k@nsO:
+Atlantis	atl'antIs
 Athens		aTI2nz
 Bahrain		$2
 Bangledesh	baNgl@d'ES
@@ -2557,6 +2562,7 @@ Egyptian	IdZ'IpS@n
 Eire		e@r@
 Elysee		eIl'i:zeI
 Erie		i@ri
+Euphrates	ju:fr'eIti:z
 Eyjafjalla	eIja#fjatla#
 Geneva		dZ@ni:v@
 Gdansk		g@-dansk
@@ -2597,7 +2603,7 @@ Leone		li:'oUn
 Lesotho		l@s'u:tu:
 Liberia		laIb'i@ri:@
 Lima		li:ma#
-Louisiana	lu:i:zi:'an@
+Louisiana	lu:,i:zi:'an@
 Luxembourg	lVks@mb3:g
 Lvov		l@-v0v
 ?5 Luxembourg	lVks@mbVRg
@@ -2672,11 +2678,13 @@ Savannah	$2
 Savoy		sa#vOI
 Seattle		si:'at@L
 Seoul		soUl
+Seville		s@vIl
 Seychelle	seIS'El
 Shanghai	$2
 Shiloh		SaIloU
 Sicily		sIsI2li
 Slovak		sloUvak
+Soweto		s@wEtoU
 Sri		sr,i:   // Sri Lanka(n)
 Sudan		su:d'an
 Suez		su:I2z
@@ -2828,7 +2836,6 @@ Fírinne		fi:rIn;@
 Gary		gari
 Geraint		gEraInt
 Gibbs		gIbz
-Giles		gaIlz
 Gillian		dZIli:@n
 Gladys		gladIs
 Glynn		glIn
@@ -3048,7 +3055,7 @@ zhivago		ZI2vA:goU
 (no longer)      n,oU||l'0Ng3
 (no more)        n'oU,mo@
 
-so               ,soU         $strend2 $verbf
+so               ,soU         $strend2
 (so far)         s'oU||f,A@   $strend2
 (so many)        s,oU||m'Eni
 (so much)        s'oU||m,VtS

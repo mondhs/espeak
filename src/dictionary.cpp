@@ -478,6 +478,7 @@ void DecodePhonemes(const char *inptr, char *outptr)
 	PHONEME_TAB *ph;
 	static const char *stress_chars = "==,,'*  ";
 
+sprintf(outptr,"* ");
 	while((phcode = *inptr++) > 0)
 	{
 		if(phcode == 255)
@@ -2464,9 +2465,9 @@ int TranslateRules(Translator *tr, char *p_start, char *phonemes, int ph_size, c
 	if((option_phonemes == 2) && ((word_flags & FLAG_NO_TRACE)==0))
 	{
 		char wordbuf[120];
-		int  ix;
+		unsigned int  ix;
 
-		for(ix=0; ((c = p_start[ix]) != ' ') && (c != 0); ix++)
+		for(ix=0; ((c = p_start[ix]) != ' ') && (c != 0) && (ix < (sizeof(wordbuf)-1)); ix++)
 		{
 			wordbuf[ix] = c;
 		}

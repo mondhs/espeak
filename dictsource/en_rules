@@ -371,7 +371,7 @@
       torn) ad           eId
         _r) ad (A        eId
         _r) adio (@P5    r,eIdI%oU
-         r) adi (oL10    eIdI
+         r) adi (oL10+   eIdI
          b) ad (os_      eId
             ad (iA       eId
          s) ad (is       eId
@@ -1045,7 +1045,7 @@
  _it_separ) ate (_       @t
        par) ates (_      eIt|s
          @) ated (++_    eItId
-        _s) atel (l      at@
+        _s) ate (ll      at@
          @) ati (_       'A:tI
             at (im_      'eIt
          @) ating (++_   eItIN
@@ -1179,7 +1179,7 @@
          _) balli (@     b,alI2
             balli (st    ba#l'I
          _) ba (mb@      b%a
-         _) battle (P6   b'at@L
+         _) battle (@P6  b'at@L
          _) bayou        baIu:
          _) book (@@P4   b'Uk
          _) bo (som      bU
@@ -1244,10 +1244,8 @@
             bi (g+       bI
             bigh (t      baI
             bi (ker      baI
-            bi (lb       bI
-            bi (lg       bI
+         _) bi (lC       bI
             bi (lio      bI
-            bi (lk       bI
             bi (nary     baI
             bi (nd       baI
          _) bi (ng       bI
@@ -2563,7 +2561,7 @@
             g (i         dZ
             gi (_        g%I
          a) gi (_        gaI
-         _) g (il        g
+         _) g (ilK       g
             g (ilC       g
          l) ging         dZI2N
             g (y         dZ
@@ -2629,7 +2627,7 @@
          _) homoeo       hoUmi:oU
          &) hood (_S4    hUd
          &) hoods (_S5   hUdz
-         _) h (our
+            hour         aU@
          _) h (onor
          _) h (onou
             hone (st     0nI
@@ -2748,13 +2746,13 @@
             ii (_        IaI
          f) i (j         i:
          h) i (j         aI
-         b) il (_        @L
+        @b) il (_        @L
         Cc) il (_        @L
-         p) il (_        @L
-         r) il (_        @L
-         s) il (_        @L
+        @p) il (_        @L
+        @r) il (_        @L
+        @s) il (_        @L
         nt) il (_        @L
-         v) il (_        @L
+        @v) il (_        @L
          @) ila (_       'Il@
         _C) i (lage      aI
         _d) i (lat       %aI
@@ -3787,7 +3785,7 @@
             o (genous    '0
             o (geny      '0
          r) o (ger       0
-         l) o (gies      @
+         l) ogism        =@dZIz@m
          @) ographer     '0gr@f3
          _) og (re       oUg
          r) ogue         oUg
@@ -3990,6 +3988,7 @@
         dr) on (_        @n
         or) on (_        0n
         cr) on (_        0n
+         x) on (_+       0n
       phot) on           @n
       pers) on           @n
       pers) on (i        '0n
@@ -4865,6 +4864,8 @@
         ai) sin (_       z@n
          u) sin (_       z@n
          _) size (C@     saIz
+         a) s (m         z
+         o) s (m         z
          _) soma (li     s@mA:
        pri) s (o         z
          @) some (_S4    sVm
@@ -4875,7 +4876,7 @@
 ?8          ssion (_     =SVn
         1_) st (_
          _) st (_        s@nt
-         _) state        steIt
+         _) state (@     steIt
             stein        staIn
         ti) ssue         Su:
          _) s (u         s
@@ -5011,6 +5012,7 @@
          _) tri (vi      trI
          _) tri (xA       trI
             tsch         tS
+            tse (_       tsi
          _) tsk          t'@sk
          _) tsu          tsu:
          _) two          tu:
@@ -5023,6 +5025,7 @@
          @) tur (_       tS3
             ture (_      tS3
             tz           ts
+            tze (_       tsi
 
 .group th
             th           T
@@ -5274,6 +5277,7 @@
          _) un (dula     Vn
          _) un (enP2     ,Vn
          _) un (exP2     ,Vn
+         _) un (gu       Vn
          _) un (imP2     ,Vn
          _) uni          ju:nI
          _) un (id       ,Vn
