@@ -530,7 +530,6 @@ voice_t *LoadVoice(const char *vname, int control)
 	int  n;
 	int  value;
 	int  value2;
-	int  error = 0;
 	int  langix = 0;
 	int  tone_only = control & 2;
 	int  language_set = 0;
@@ -984,8 +983,8 @@ voice_t *LoadVoice(const char *vname, int control)
 		}
 		voice->phoneme_tab_ix = ix;
 		new_translator->phoneme_tab_ix = ix;
-		error = LoadDictionary(new_translator, new_dictionary, control & 4);
-		if(error != 0 || dictionary_name[0]==0)
+		LoadDictionary(new_translator, new_dictionary, control & 4);
+		if(dictionary_name[0]==0)
 			return(NULL);   // no dictionary loaded
 
 		new_translator->dict_condition = conditional_rules;
