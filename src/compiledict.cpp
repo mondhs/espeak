@@ -390,13 +390,14 @@ static int compile_line(char *linebuf, char *dict_line, int *hash)
 	int all_upper_case;
 	
 	char *mnemptr;
-	char *comment;
+#ifdef OPT_FORMAT
+	char *comment = NULL;
+#endif
 	unsigned char flag_codes[100];
 	char encoded_ph[200];
 	unsigned char bad_phoneme[4];
 static char nullstring[] = {0};
 
-	comment = NULL;
 	text_not_phonemes = 0;
 	phonetic = word = nullstring;
 
@@ -497,7 +498,9 @@ step=1;  // TEST
 		if((c == '/') && (p[1] == '/') && (multiple_words==0))
 		{
 			c = '\n';   /* "//" treat comment as end of line */
+#ifdef OPT_FORMAT
 			comment = p;
+#endif
 		}
 	
 		switch(step)
@@ -1160,7 +1163,6 @@ static char *compile_rule(char *input)
 	int start;
 	int state=2;
 	int finish=0;
-	int pre_bracket=0;
 	char buf[80];
 	char output[150];
 	unsigned char bad_phoneme[4];
@@ -1183,7 +1185,6 @@ static char *compile_rule(char *input)
 		case ')':		// end of prefix section
 			*p = 0;
 			state = 1;
-			pre_bracket = 1;
 			copy_rule_string(buf,state);
 			p = buf;
 			break;

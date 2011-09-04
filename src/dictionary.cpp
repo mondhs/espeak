@@ -832,7 +832,6 @@ int Unpronouncable(Translator *tr, char *word, int posn)
 	int  vowel_posn=9;
 	int  index;
 	int  count;
-	int  apostrophe=0;
 
 	utf8_in(&c,word);
 	if((tr->letter_bits_offset > 0) && (c < 0x241))
@@ -869,7 +868,7 @@ int Unpronouncable(Translator *tr, char *word, int posn)
 		}
 
 		if(c == '\'')
-			apostrophe = 1;
+			;
 		else
 		if(!iswalpha(c))
 			return(0);
@@ -1123,7 +1122,6 @@ void SetWordStress(Translator *tr, char *output, unsigned int *dictionary_flags,
 	int final_ph2;
 	int mnem;
 	int mnem2;
-	int post_tonic;
 	int opt_length;
 	int done;
 	int stressflags;
@@ -1387,7 +1385,6 @@ void SetWordStress(Translator *tr, char *output, unsigned int *dictionary_flags,
 		{
 			int wt;
 			int max_weight = -1;
-			int prev_stressed;
 
 			// find the heaviest syllable, excluding the final syllable
 			for(ix = 1; ix < (vowel_count-1); ix++)
@@ -1397,7 +1394,6 @@ void SetWordStress(Translator *tr, char *output, unsigned int *dictionary_flags,
 					if((wt = syllable_weight[ix]) >= max_weight)
 					{
 						max_weight = wt;
-						prev_stressed = stressed_syllable;
 						stressed_syllable = ix;
 					}
 				}
@@ -1588,7 +1584,6 @@ void SetWordStress(Translator *tr, char *output, unsigned int *dictionary_flags,
 	}
 
 	p = phonetic;
-	post_tonic = 0;
 	while(((phcode = *p++) != 0) && (output < max_output))
 	{
 		if((ph = phoneme_tab[phcode]) == NULL)
@@ -1608,9 +1603,6 @@ void SetWordStress(Translator *tr, char *output, unsigned int *dictionary_flags,
 
 			v_stress = vowel_stress[v];
 			tr->prev_last_stress = v_stress;
-
-			if(vowel_stress[v-1] >= max_stress)
-				post_tonic = 1;
 
 			if(v_stress <= 1)
 			{
@@ -2425,9 +2417,8 @@ int TranslateRules(Translator *tr, char *p_start, char *phonemes, int ph_size, c
    Append the result to 'phonemes' and any standard prefix/suffix in 'end_phonemes' */
 
 	unsigned char  c, c2;
-	unsigned int  c12, c123;
+	unsigned int  c12;
 	int wc=0;
-	int wc_prev;
 	int wc_bytes;
 	char *p2;           /* copy of p for use in double letter chain match */
 	int  found;
@@ -2487,7 +2478,6 @@ int TranslateRules(Translator *tr, char *p_start, char *phonemes, int ph_size, c
 	
 	while(((c = *p) != ' ') && (c != 0))
 	{
-		wc_prev = wc;
 		wc_bytes = utf8_in(&wc,p);
 		if(IsAlpha(wc))
 			any_alpha++;
@@ -2530,7 +2520,6 @@ int TranslateRules(Translator *tr, char *p_start, char *phonemes, int ph_size, c
 				/* there are some 2 byte chains for this initial letter */
 				c2 = p[1];
 				c12 = c + (c2 << 8);   /* 2 characters */
-				c123 = c12 + (p[2] << 16);
 	
 				g1 = tr->groups2_start[c];
 				for(g=g1; g < (g1+n); g++)
@@ -3203,13 +3192,10 @@ static const char *LookupDict2(Translator *tr, const char *word, const char *wor
 		
 		if(option_phonemes == 2)
 		{
-			unsigned int flags1 = 0;
 			char ph_decoded[N_WORD_PHONEMES];
 			int textmode;
 
 			DecodePhonemes(phonetic,ph_decoded);
-			if(flags != NULL)
-				flags1 = flags[0];
 
 			if((dictionary_flags & FLAG_TEXTMODE) == 0)
 				textmode = 0;

@@ -506,7 +506,6 @@ void LookupLetter(Translator *tr, unsigned int letter, int next_byte, char *ph_b
 	static char single_letter[10] = {0,0};
 	unsigned int dict_flags[2];
 	char ph_buf3[40];
-	char *ptr;
 
 	ph_buf1[0] = 0;
 	len = utf8_out(letter,&single_letter[2]);
@@ -552,7 +551,6 @@ void LookupLetter(Translator *tr, unsigned int letter, int next_byte, char *ph_b
 
 	// if the $accent flag is set for this letter, use the accents table (below)
 	dict_flags[1] = 0;
-	ptr = &single_letter[1];
 	
 	if(Lookup(tr, &single_letter[1], ph_buf3) == 0)
 	{
@@ -1581,12 +1579,10 @@ static int TranslateNumber_1(Translator *tr, char *word, char *ph_out, unsigned 
 	int thousands_inc = 0;
 	int prev_thousands = 0;
 	int ordinal = 0;
-	int dot_ordinal;
 	int this_value;
 	int decimal_count;
 	int max_decimal_count;
 	int decimal_mode;
-	int hyphen;
 	int suffix_ix;
 	int skipwords = 0;
 	char *p;
@@ -1636,8 +1632,7 @@ static int TranslateNumber_1(Translator *tr, char *word, char *ph_out, unsigned 
 	if(prev_thousands || (word[0] != '0'))
 	{
 		// don't check for ordinal if the number has a leading zero
-		if((ordinal = CheckDotOrdinal(tr, word, &word[ix], wtab, 0)) != 0)
-			dot_ordinal = 1;
+		ordinal = CheckDotOrdinal(tr, word, &word[ix], wtab, 0);
 	}
 
 	if((word[ix] == '.') && !isdigit(word[ix+1]) && !isdigit(word[ix+2]) && !(wtab[1].flags & FLAG_NOSPACE))
@@ -1651,12 +1646,10 @@ static int TranslateNumber_1(Translator *tr, char *word, char *ph_out, unsigned 
 // NOTE lang=hu, allow both dot and ordinal suffix, eg. "december 21.-én"
 		// look for an ordinal number suffix after the number
 		ix++;
-		hyphen = 0;
 		p = suffix;
 		if(wtab[0].flags & FLAG_HYPHEN_AFTER)
 		{
 			*p++ = '-';
-			hyphen = 1;
 			ix++;
 		}
 		while((word[ix] != 0) && (word[ix] != ' ') && (ix < (int)(sizeof(suffix)-1)))
@@ -1815,7 +1808,6 @@ static int TranslateNumber_1(Translator *tr, char *word, char *ph_out, unsigned 
 			}
 		}
 
-//		if((buf_digit_lookup[0] == 0) && (*p != '0') && (dot_ordinal==0))
 		if((buf_digit_lookup[0] == 0) && (*p != '0'))
 		{
 			// not found, lookup only the last digit (?? but not if dot-ordinal has been found)
