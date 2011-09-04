@@ -703,12 +703,10 @@ char item_string[N_ITEM_STRING];
 
 static int ref_sorter(char **a, char **b)
 {//======================================
-	int ix;
-
 	REF_HASH_TAB *p1 = (REF_HASH_TAB *)(*a);
 	REF_HASH_TAB *p2 = (REF_HASH_TAB *)(*b);
 
-	ix = strcoll(p1->string,p2->string);
+	int ix = strcoll(p1->string,p2->string);
 	if(ix != 0)
 		return ix;
 
@@ -724,23 +722,15 @@ static int ref_sorter(char **a, char **b)
 static void CompileReport(void)
 {//============================
 	int ix;
-	int hash;
-	int n;
-	REF_HASH_TAB *p;
-	REF_HASH_TAB **list;
-	FILE *f_report;
-	const char *data_path;
-	int prev_table;
-	int prev_mnemonic;
 	char fname[sizeof(path_source)+20];
 
 	// make a list of all the references and sort it
-	list = (REF_HASH_TAB **)malloc((count_references)* sizeof(REF_HASH_TAB *));
+	REF_HASH_TAB **list = (REF_HASH_TAB **)malloc((count_references)* sizeof(REF_HASH_TAB *));
 	if(list == NULL)
 		return;
 
 	sprintf(fname,"%scompile_report",path_source);
-	f_report = fopen(fname,"w");
+	FILE *f_report = fopen(fname,"w");
 	if(f_report == NULL)
 	{
 		free(list);
@@ -757,21 +747,21 @@ static void CompileReport(void)
 
 	fprintf(f_report,"Data file      Used by\n");
 	ix = 0;
-	for(hash=0; (hash < 256) && (ix < count_references); hash++)
+	for(int hash=0; (hash < 256) && (ix < count_references); hash++)
 	{
-		p = ref_hash_tab[hash];
+		REF_HASH_TAB *p = ref_hash_tab[hash];
 		while(p != NULL)
 		{
 			list[ix++] = p;
 			p = (REF_HASH_TAB *)(p->link);
 		}
 	}
-	n = ix;
+	int n = ix;
 	qsort((void *)list,n,sizeof(REF_HASH_TAB *),(int (*)(const void *,const void *))ref_sorter);
 	
-	data_path = "";
-	prev_mnemonic = 0;
-	prev_table = 0;
+	const char *data_path = "";
+	int prev_mnemonic = 0;
+	int prev_table = 0;
 	for(ix=0; ix<n; ix++)
 	{
 		int j = 0;
@@ -833,16 +823,15 @@ int strcasecmp(const char *s1, const char *s2)
 static int ph_sorter(char **a, char **b)
 {//======================================
 	int ix;
-	int t1, t2;
 	char mnem1[6];
 
 	PHONEME_TAB *p1 = (PHONEME_TAB *)(*a);
 	PHONEME_TAB *p2 = (PHONEME_TAB *)(*b);
 
-	t1 = p1->type;
+	int t1 = p1->type;
 	if(t1 > phVOWEL) t1 = phVOWEL+1;
 
-	t2 = p2->type;
+	int t2 = p2->type;
 	if(t2 > phVOWEL) t2 = phVOWEL+1;
 
 	if((ix = t1 - t2) != 0)
@@ -856,21 +845,18 @@ static int ph_sorter(char **a, char **b)
 
 static void PrintPhonemesUsed(FILE *f, const char *dsource, const char *dictname)
 {//==============================================================================
-	int ix;
-	PHONEME_TAB *ph;
 	PHONEME_TAB *ph_tab[N_PHONEME_TAB];
 	int count = 0;
 	int n_ph = 0;
 	int section = 0;
-	time_t mod_time;
 	char fname[sizeof(path_home)+45];
 	struct stat statbuf;
 	char time_string[20];
 	const char *files[] = {"rules","list","listx"};
 
 	// find the date-stamp of the dictionary source files
-	mod_time = 0;
-	for(ix=0; ix<3; ix++)
+	time_t mod_time = 0;
+	for(int ix=0; ix<3; ix++)
 	{
 		sprintf(fname,"%s%s_%s",dsource, dictname, files[ix]);
 		if(stat(fname,&statbuf) == 0)
@@ -891,7 +877,7 @@ static void PrintPhonemesUsed(FILE *f, const char *dsource, const char *dictname
 	}
 	fflush(f);
 
-	for(ix=0; (ix<N_PHONEME_TAB) && (phoneme_tab[ix] != NULL); ix++)
+	for(int ix=0; (ix<N_PHONEME_TAB) && (phoneme_tab[ix] != NULL); ix++)
 	{
 		if(phoneme_tab_flags[ix] & 2)
 		{
@@ -901,9 +887,9 @@ static void PrintPhonemesUsed(FILE *f, const char *dsource, const char *dictname
 
 	qsort((void *)ph_tab,n_ph,sizeof(PHONEME_TAB *),(int (*)(const void *,const void *))ph_sorter);
 
-	for(ix=0; ix<n_ph; ix++)
+	for(int ix=0; ix<n_ph; ix++)
 	{
-		ph = ph_tab[ix];
+		PHONEME_TAB *ph = ph_tab[ix];
 
 		if(ph->type > 1)
 		{
@@ -935,8 +921,6 @@ static wxString CompileAllDictionaries()
 	int errors = 0;
 	int dict_count = 0;
 	FILE *f_in;
-	FILE *log;
-	FILE *f_phused;
 	char dictname[80];
 	char fname_log[sizeof(path_dsource)+20];
 	char save_voice_name[80];
@@ -971,9 +955,9 @@ static wxString CompileAllDictionaries()
 	strcpy(save_voice_name,voice_name2);
 
 	sprintf(fname_log,"%s%s",path_dsource,"dict_log");
-	log = fopen(fname_log,"w");
+	FILE *log = fopen(fname_log,"w");
 	sprintf(fname_log,"%s%s",path_dsource,"dict_phonemes");
-	f_phused = fopen(fname_log,"w");
+	FILE *f_phused = fopen(fname_log,"w");
 
 	if(f_phused)
 	{
@@ -1100,16 +1084,11 @@ static FILE *fopen_log(FILE *f_log, const char *fname,const char *access)
 static unsigned int StringToWord(const char *string)
 {//=================================================
 // Pack 4 characters into a word
-	int  ix;
-	unsigned char c;
-	unsigned int word;
-
-	word = 0;
-	for(ix=0; ix<4; ix++)
+	unsigned int word = 0;
+	for(int ix=0; ix<4; ix++)
 	{
 		if(string[ix]==0) break;
-		c = string[ix];
-		word |= (c << (ix*8));
+		word |= (string[ix] << (ix*8));
 	}
 	return(word);
 }
@@ -1156,14 +1135,10 @@ static void ReservePhCodes()
 {//=========================
 // Reserve phoneme codes which have fixed numbers so that they can be
 // referred to from the program code.
-	unsigned int word;
-	MNEM_TAB *p;
-
-	p = reserved_phonemes;
+	MNEM_TAB *p = reserved_phonemes;
 	while(p->mnem != NULL)
 	{
-		word = StringToWord(p->mnem);
-		phoneme_tab2[p->value].mnemonic = word;
+		phoneme_tab2[p->value].mnemonic = StringToWord(p->mnem);
 		phoneme_tab2[p->value].code = p->value;
 		if(n_phcodes <= p->value)
 			n_phcodes = p->value+1;
@@ -1178,29 +1153,24 @@ static int LookupPhoneme(const char *string, int control)
 // control = 1   declare phoneme if not found
 // control = 2   start looking after control & stress phonemes
 
-	int  ix;
-	int  start;
-	int  use;
-	unsigned int word;
-
 	if(strcmp(string,"NULL")==0)
 		return(1);
 
-	ix = strlen(string);
+	int ix = strlen(string);
 	if((ix==0) || (ix> 4))
 	{
 		error("Bad phoneme name '%s'",string);
 	}
-	word = StringToWord(string);
+	unsigned int word = StringToWord(string);
 
 	// don't use phoneme number 0, reserved for string terminator
-	start = 1;
+	int start = 1;
 	
 	if(control==2)
 		start = 8;   // don't look for control and stress phonemes (allows these characters to be
 		             // used for other purposes)
 
-	use = 0;
+	int use = 0;
 	for(ix=start; ix<n_phcodes; ix++)
 	{
 		if(phoneme_tab2[ix].mnemonic == word)
@@ -1232,8 +1202,7 @@ static int LookupPhoneme(const char *string, int control)
 
 static unsigned int get_char()
 {//===========================
-	unsigned int c;
-	c = fgetc(f_in);
+	unsigned int c = fgetc(f_in);
 	if(c == '\n')
 		linenum++;
 	return(c);
@@ -1258,13 +1227,8 @@ int CheckNextChar()
 
 static int NextItem(int type)
 {//==========================
-	int  acc;
 	unsigned char  c=0;
 	unsigned char c2;
-	int  ix;
-	int  sign;
-	char *p;
-	keywtab_t *pk;
 	
 	item_type = -1;
 
@@ -1301,7 +1265,7 @@ static int NextItem(int type)
 		return(-1);
 	}
 
-	ix = 0;
+	int ix = 0;
 	while(!feof(f_in) && !isspace(c) && (c != '(') && (c != ')') && (c != ','))
 	{
 		if(c == '\\')
@@ -1337,9 +1301,9 @@ static int NextItem(int type)
 
 	if((type == tNUMBER) || (type == tSIGNEDNUMBER))
 	{
-		acc = 0;
-		sign = 1;
-		p = item_string;
+		int acc = 0;
+		int sign = 1;
+		char *p = item_string;
 
 		if((*p == '-') && (type == tSIGNEDNUMBER))
 		{
@@ -1365,7 +1329,7 @@ static int NextItem(int type)
 
 	if((type >= tKEYWORD) && (type <= tINTONATION))
 	{
-		pk = keyword_tabs[type-tKEYWORD];
+		keywtab_t *pk = keyword_tabs[type-tKEYWORD];
 		while(pk->mnem != NULL)
 		{
 			if(strcmp(item_string,pk->mnem)==0)
@@ -1393,8 +1357,6 @@ static int NextItemBrackets(int type, int control)
 // control: bit 0  0= need (
 //          bit 1  1= allow comma
 
-	int value;
-
 	if((control & 1) == 0)
 	{
 		if(!NextItem(tOPENBRACKET))
@@ -1403,7 +1365,7 @@ static int NextItemBrackets(int type, int control)
 		}
 	}
 
-	value = NextItem(type);
+	int value = NextItem(type);
 	if((control & 2) && (item_terminator == ','))
 		return(value);
 
@@ -1444,7 +1406,6 @@ static int Range(int value, int divide, int min, int max)
 int CompileVowelTransition(int which)
 {//==================================
 // Compile a vowel transition
-	int key;
 	int len=0;
 	int rms=0;
 	int f1=0;
@@ -1455,10 +1416,7 @@ int CompileVowelTransition(int which)
 	int f3_amp=0;
 	int flags=0;
 	int vcolour=0;
-	int x;
 	int instn = i_VOWELIN;
-	int word1;
-	int word2;
 
 	if(which==1)
 	{
@@ -1482,7 +1440,7 @@ int CompileVowelTransition(int which)
 
 	for(;;)
 	{
-		key = NextItem(tKEYWORD);
+		int key = NextItem(tKEYWORD);
 		if(item_type != tTRANSITION)
 		{
 			UngetItem();
@@ -1508,7 +1466,7 @@ int CompileVowelTransition(int which)
 			f2_max = Range(NextItem(tSIGNEDNUMBER), 50, -15, 15) & 0x1f;
 			if(f2_min > f2_max)
 			{
-				x = f2_min;
+				int x = f2_min;
 				f2_min = f2_max;
 				f2_max = x;
 			}
@@ -1545,8 +1503,8 @@ int CompileVowelTransition(int which)
 			break;
 		}
 	}
-	word1 = len + (rms << 6) + (flags << 12);
-	word2 =  f2 + (f2_min << 6) + (f2_max << 11) + (f3_adj << 16) + (f3_amp << 21) + (f1 << 26) + (vcolour << 29);
+	int word1 = len + (rms << 6) + (flags << 12);
+	int word2 =  f2 + (f2_min << 6) + (f2_max << 11) + (f3_adj << 16) + (f3_amp << 21) + (f1 << 26) + (vcolour << 29);
 	prog_out[0] = instn + ((word1 >> 16) & 0xff);
 	prog_out[1] = word1;
 	prog_out[2] = word2 >> 16;
@@ -1560,28 +1518,16 @@ int CompileVowelTransition(int which)
 
 int LoadSpect(const char *path, int control)
 {//=========================================
-	SpectSeq *spectseq;
-	int peak;
-	int displ;
-	int frame;
-	int n_frames;
-	int ix;
-	int x, x2;
-	int rms;
-	float total;
-	float pkheight;
 	int marker1_set=0;
 	int frame_vowelbreak=0;
 	int klatt_flag=0;
-	SpectFrame *fr;
-	frame_t *fr_out;
 	wxString path_sep = _T("/");
 
 	SPECT_SEQ seq_out;
 	SPECT_SEQK seqk_out;
 
 	// create SpectSeq and import data
-	spectseq = new SpectSeq;
+	SpectSeq *spectseq = new SpectSeq;
 	if(spectseq == NULL)
 	{
 		Error("Failed to create SpectSeq");
@@ -1599,27 +1545,27 @@ int LoadSpect(const char *path, int control)
 	spectseq->Load(stream);
 
 	// do we need additional klatt data ?
-	for(frame=0; frame < spectseq->numframes; frame++)
+	for(int frame=0; frame < spectseq->numframes; frame++)
 	{
-		for(ix=5; ix<N_KLATTP2; ix++)
+		for(int ix=5; ix<N_KLATTP2; ix++)
 		{
 			if(spectseq->frames[frame]->klatt_param[ix] != 0)
 				klatt_flag = FRFLAG_KLATT;
 		}
 	}
 
-	displ = ftell(f_phdata);
+	int displ = ftell(f_phdata);
 
 	seq_out.n_frames=0;
 	seq_out.sqflags=0;
 	seq_out.length_total=0;
 
-	total = 0;	
-	for(frame=0; frame < spectseq->numframes; frame++)
+	float total = 0;	
+	for(int frame=0; frame < spectseq->numframes; frame++)
 	{
 
 #ifdef deleted
-for(ix=0; ix<8; ix++)
+for(int ix=0; ix<8; ix++)
 {
 	// find which files have certain markers set
 	if(spectseq->frames[frame]->markers & (1<<ix))
@@ -1659,25 +1605,26 @@ for(ix=0; ix<8; ix++)
 		spectseq->frames[frame_vowelbreak]->markers |= FRFLAG_VOWEL_CENTRE;
 	}
 
-	n_frames = 0;
-	for(frame=0; frame < spectseq->numframes; frame++)
+	int n_frames = 0;
+	for(int frame=0; frame < spectseq->numframes; frame++)
 	{
-		fr = spectseq->frames[frame];
-		
+		SpectFrame *fr = spectseq->frames[frame];
+
 		if(fr->keyframe)
 		{
+			frame_t *fr_out;
 			if(klatt_flag)
 				fr_out = &seqk_out.frame[n_frames];
 			else
 				fr_out = (frame_t *)&seq_out.frame[n_frames];
 
-			x = int(fr->length + 0.5);  // round to nearest mS
+			int x = int(fr->length + 0.5);  // round to nearest mS
 			if(x > 255) x = 255;
 			fr_out->length = x;
 
 			fr_out->frflags = fr->markers | klatt_flag;
 
-			rms = int(fr->GetRms(spectseq->amplitude));
+			int rms = int(fr->GetRms(spectseq->amplitude));
 			if(rms > 255) rms = 255;
 			fr_out->rms = rms;
 
@@ -1686,25 +1633,25 @@ for(ix=0; ix<8; ix++)
 
 			// write: peak data
 			count_frames++;
-			for(peak=0; peak < 8; peak++)
+			for(int peak=0; peak < 8; peak++)
 			{
 				if(peak < 7)
 					fr_out->ffreq[peak] = fr->peaks[peak].pkfreq;
 
-				pkheight = spectseq->amplitude * fr->amp_adjust * fr->peaks[peak].pkheight;
+				float pkheight = spectseq->amplitude * fr->amp_adjust * fr->peaks[peak].pkheight;
 				pkheight = pkheight/640000;
 				if(pkheight > 255) pkheight = 255;
 				fr_out->fheight[peak] = int(pkheight);
 
 				if(peak < 6)
 				{
-					x =  fr->peaks[peak].pkwidth/4;
+					int x =  fr->peaks[peak].pkwidth/4;
 					if(x > 255) x = 255;
 					fr_out->fwidth[peak] = x;
 
 					if(peak < 3)
 					{
-						x2 =  fr->peaks[peak].pkright/4;
+						int x2 =  fr->peaks[peak].pkright/4;
 						if(x2 > 255) x2 = 255;
 						fr_out->fright[peak] = x2;
 					}
@@ -1712,13 +1659,13 @@ for(ix=0; ix<8; ix++)
 
 				if(peak < 4)
 				{
-					x = fr->peaks[peak].klt_bw / 2;
+					int x = fr->peaks[peak].klt_bw / 2;
 					if(x > 255) x = 255;
 					fr_out->bw[peak] = x;
 				}
 			}
 
-			for(ix=0; ix<5; ix++)
+			for(int ix=0; ix<5; ix++)
 			{
 				fr_out->klattp[ix] = fr->klatt_param[ix];
 
@@ -1728,16 +1675,17 @@ for(ix=0; ix<8; ix++)
 			if(klatt_flag)
 			{
 				// additional klatt parameters
+				int ix;
 				for(ix=0; ix<5; ix++)
 				{
 					fr_out->klattp2[ix] = fr->klatt_param[ix+5];
 				}
 
-				for(peak=0; peak<7; peak++)
+				for(int peak=0; peak<7; peak++)
 				{
 					fr_out->klatt_ap[ix] = fr->peaks[peak].klt_ap;
 
-					x = fr->peaks[peak].klt_bp / 2;
+					int x = fr->peaks[peak].klt_bp / 2;
 					if(x > 255) x = 255;
 					fr_out->klatt_bp[ix] = x;
 				}
@@ -1761,13 +1709,13 @@ for(ix=0; ix<8; ix++)
 		seqk_out.sqflags = seq_out.sqflags;
 		seqk_out.length_total = seq_out.length_total;
 
-		ix = (char *)(&seqk_out.frame[seqk_out.n_frames]) - (char *)(&seqk_out);
+		int ix = (char *)(&seqk_out.frame[seqk_out.n_frames]) - (char *)(&seqk_out);
 		ix = (ix+3) & 0xfffc;   // round up to multiple of 4 bytes
 		fwrite(&seqk_out,ix,1,f_phdata);
 	}
 	else
 	{
-		ix = (char *)(&seq_out.frame[seq_out.n_frames]) - (char *)(&seq_out);
+		int ix = (char *)(&seq_out.frame[seq_out.n_frames]) - (char *)(&seq_out);
 		ix = (ix+3) & 0xfffc;   // round up to multiple of 4 bytes
 		fwrite(&seq_out,ix,1,f_phdata);
 	}
@@ -1780,23 +1728,13 @@ for(ix=0; ix<8; ix++)
 
 static int LoadWavefile(FILE *f, const char *fname)
 {//================================================
-	int displ;
-	unsigned char c1;
-	unsigned char c3;
-	int c2;
-	int sample;
-	int sample2;
-	float x;
 	int max = 0;
-	int length;
-	int sr1, sr2;
 	int resample_wav = 0;
 	char fname_temp[100];
-	int scale_factor=0;
 
 	fseek(f,24,SEEK_SET);
-	sr1 = Read4Bytes(f);
-	sr2 = Read4Bytes(f);
+	int sr1 = Read4Bytes(f);
+	int sr2 = Read4Bytes(f);
 	fseek(f,40,SEEK_SET);	
 
 	if((sr1 != samplerate_native) || (sr2 != sr1*2))
@@ -1839,21 +1777,21 @@ static int LoadWavefile(FILE *f, const char *fname)
 #endif
 	}
 
-	displ = ftell(f_phdata);
+	int displ = ftell(f_phdata);
 
 	// data contains:  4 bytes of length (n_samples * 2), followed by 2-byte samples (lsb byte first)
-	length = Read4Bytes(f);
+	int length = Read4Bytes(f);
 
 	while(!feof(f))
 	{
-		c1 = fgetc(f);
-		c3 = fgetc(f);
+		unsigned char c1 = fgetc(f);
+		unsigned char c3 = fgetc(f);
 		if(feof(f)) break;
 
-		c2 = c3 << 24;
+		int c2 = c3 << 24;
 		c2 = c2 >> 16;  // sign extend
 
-		sample = (c1 & 0xff) + c2;
+		int sample = (c1 & 0xff) + c2;
 
 		if(sample > max)
 			max = sample;
@@ -1863,7 +1801,7 @@ static int LoadWavefile(FILE *f, const char *fname)
 
 	}
 
-	scale_factor = (max / 127) + 1;
+	int scale_factor = (max / 127) + 1;
 
 //fprintf(f_errors," sample len=%d max=%4x shift=%d\n",length,max,scale_factor);
 
@@ -1879,12 +1817,12 @@ static int LoadWavefile(FILE *f, const char *fname)
 
 	while(!feof(f))
 	{
-		c1 = fgetc(f);
-		c3 = fgetc(f);
-		c2 = c3 << 24;
+		unsigned char c1 = fgetc(f);
+		unsigned char c3 = fgetc(f);
+		int c2 = c3 << 24;
 		c2 = c2 >> 16;  // sign extend
 
-		sample = (c1 & 0xff) + c2;
+		int sample = (c1 & 0xff) + c2;
 
 		if(feof(f)) break;
 
@@ -1895,8 +1833,8 @@ static int LoadWavefile(FILE *f, const char *fname)
 		}
 		else
 		{
-			x = (float(sample) / scale_factor) + 0.5;
-			sample2= int(x);
+			float x = (float(sample) / scale_factor) + 0.5;
+			int sample2= int(x);
 			if(sample2 > 127)
 				sample2 = 127;
 			if(sample2 < -128)
@@ -1925,10 +1863,9 @@ static int LoadWavefile(FILE *f, const char *fname)
 
 static int LoadEnvelope(FILE *f, const char *fname)
 {//================================================
-	int displ;
 	char buf[128];
 
-	displ = ftell(f_phdata);
+	int displ = ftell(f_phdata);
 
 	fseek(f,12,SEEK_SET);
 	if(fread(buf,128,1,f) == 0)
@@ -1972,19 +1909,13 @@ static int Hash8(const char *string)
 
 static int LoadEnvelope2(FILE *f, const char *fname)
 {//===================================================
-	int ix, ix2;
-	int n;
-	int x, y;
-	int displ;
-	int n_points;
-	double yy;
 	char line_buf[128];
 	float env_x[20];
 	float env_y[20];
 	int env_lin[20];
 	unsigned char env[ENV_LEN];
 
-	n_points = 0;
+	int n_points = 0;
 	fgets(line_buf,sizeof(line_buf),f);   // skip first line
 	while(!feof(f))
 	{
@@ -1992,7 +1923,7 @@ static int LoadEnvelope2(FILE *f, const char *fname)
 			break;
 
 		env_lin[n_points] = 0;
-		n = sscanf(line_buf,"%f %f %d",&env_x[n_points],&env_y[n_points],&env_lin[n_points]);
+		int n = sscanf(line_buf,"%f %f %d",&env_x[n_points],&env_y[n_points],&env_lin[n_points]);
 		if(n >= 2)
 		{
 			env_x[n_points] *= (float)1.28;  // convert range 0-100 to 0-128
@@ -2002,18 +1933,19 @@ static int LoadEnvelope2(FILE *f, const char *fname)
 	env_x[n_points] = env_x[n_points-1];
 	env_y[n_points] = env_y[n_points-1];
 
-	ix = -1;
-	ix2 = 0;
-	for(x=0; x<ENV_LEN; x++)
+	int ix = -1;
+	int ix2 = 0;
+	for(int x=0; x<ENV_LEN; x++)
 	{
 		if(x > env_x[ix+4])
 			ix++;
 		if(x >= env_x[ix2+1])
 			ix2++;
 
+		int y;
 		if(env_lin[ix2] > 0)
 		{
-			yy = env_y[ix2] + (env_y[ix2+1] - env_y[ix2]) * (float(x) - env_x[ix2]) / (env_x[ix2+1] - env_x[ix2]);
+			double yy = env_y[ix2] + (env_y[ix2+1] - env_y[ix2]) * (float(x) - env_x[ix2]) / (env_x[ix2+1] - env_x[ix2]);
 			y = int(yy * 2.55);
 		}
 		else
@@ -2034,7 +1966,7 @@ static int LoadEnvelope2(FILE *f, const char *fname)
 		n_envelopes++;
 	}
 
-	displ = ftell(f_phdata);
+	int displ = ftell(f_phdata);
 	fwrite(env,1,128,f_phdata);
 
 	return(displ);
@@ -2045,12 +1977,8 @@ static int LoadDataFile(const char *path, int control)
 	// load spectrum sequence or sample data from a file.
 	// return index into spect or sample data area. bit 23=1 if a sample
 
-	FILE *f;
-	int id;
-	int hash;
 	int addr = 0;
 	int type_code=' ';
-	REF_HASH_TAB *p, *p2;
 	char buf[sizeof(path_source)+120];
 
 	if(strcmp(path,"NULL")==0)
@@ -2060,8 +1988,8 @@ static int LoadDataFile(const char *path, int control)
 
 	count_references++;
 
-	hash = Hash8(path);
-	p = ref_hash_tab[hash];
+	int hash = Hash8(path);
+	REF_HASH_TAB *p = ref_hash_tab[hash];
 	while(p != NULL)
 	{
 		if(strcmp(path,p->string)==0)
@@ -2077,6 +2005,7 @@ static int LoadDataFile(const char *path, int control)
 	{
 		sprintf(buf,"%s%s",path_source,path);
 	
+		FILE *f;
 		if((f = fopen(buf,"rb")) == NULL)
 		{
 			sprintf(buf,"%s%s.wav",path_source,path);
@@ -2087,7 +2016,7 @@ static int LoadDataFile(const char *path, int control)
 			}
 		}
 
-		id = Read4Bytes(f);
+		int id = Read4Bytes(f);
 		rewind(f);
 	
 		if(id == 0x43455053)
@@ -2130,7 +2059,7 @@ static int LoadDataFile(const char *path, int control)
 	if(addr > 0)
 	{
 		p = ref_hash_tab[hash];
-		p2 = (REF_HASH_TAB *)malloc(sizeof(REF_HASH_TAB)+strlen(path)+1);
+		REF_HASH_TAB *p2 = (REF_HASH_TAB *)malloc(sizeof(REF_HASH_TAB)+strlen(path)+1);
 		p2->value = addr;
 		p2->ph_mnemonic = phoneme_out->mnemonic;   // phoneme which uses this file
 		p2->ph_table = n_phoneme_tabs-1;
@@ -2145,13 +2074,11 @@ static int LoadDataFile(const char *path, int control)
 
 static int CompileToneSpec(void)
 {//=============================
-	int pitch1=0;
-	int pitch2=0;
 	int pitch_env = 0;
 	int amp_env = 0;
 
-	pitch1 = NextItemBrackets(tNUMBER,2);
-	pitch2 = NextItemBrackets(tNUMBER,3);
+	int pitch1 = NextItemBrackets(tNUMBER,2);
+	int pitch2 = NextItemBrackets(tNUMBER,3);
 
 	if(item_terminator == ',')
 	{
@@ -2194,7 +2121,6 @@ static int CompileToneSpec(void)
 
 int CompileSound(int keyword, int isvowel)
 {//=======================================
-	int addr;
 	int value = 0;
 	char path[N_ITEM_STRING];
 	static int sound_instns[] = {i_FMT, i_WAV, i_VWLSTART, i_VWLENDING, i_WAVADD};
@@ -2227,7 +2153,7 @@ int CompileSound(int keyword, int isvowel)
 			}
 		}
 	}
-	addr = LoadDataFile(path, isvowel);
+	int addr = LoadDataFile(path, isvowel);
 	addr = addr / 4;   // addr is words not bytes
 
 	*prog_out++ = sound_instns[keyword-kFMT] + ((value & 0xff) << 4) + ((addr >> 16) & 0xf);
@@ -2255,9 +2181,6 @@ int CompileIf(int elif)
 	int finish = 0;
 	int word = 0;
 	int data;
-	int bitmap;
-	int brackets;
-	USHORT *prog_last_if = NULL;
 
 	then_count = 2;
 	after_if = 1;
@@ -2292,8 +2215,8 @@ int CompileIf(int elif)
 		{
 			if(key == kTHISSTRESS)
 			{
-				bitmap = 0;
-				brackets = 2;
+				int bitmap = 0;
+				int brackets = 2;
 				do {
 					data = NextItemBrackets(tNUMBER,brackets);
 					if(data > 7)
@@ -2315,7 +2238,7 @@ int CompileIf(int elif)
 		}
 
 		// output the word
-		prog_last_if = prog_out;
+		USHORT *prog_last_if = prog_out;
 		*prog_out++ = word | i_CONDITION;
 
 		// expect AND, OR, THEN
@@ -2356,13 +2279,10 @@ int CompileIf(int elif)
 
 void FillThen(int add)
 {//===================
-	USHORT *p;
-	int offset;
-
-	p = if_stack[if_level].p_then;
+	USHORT *p = if_stack[if_level].p_then;
 	if(p != NULL)
 	{
-		offset = prog_out - p + add;
+		int offset = prog_out - p + add;
 
 		if((then_count == 1) && (if_level == 1))
 		{
@@ -2392,9 +2312,6 @@ void FillThen(int add)
 
 int CompileElse(void)
 {//==================
-	USHORT *ref;
-	USHORT *p;
-
 	if(if_level < 1)
 	{
 		error("ELSE not expected",NULL);
@@ -2412,9 +2329,10 @@ int CompileElse(void)
 
 	if(if_stack[if_level].returned == 0)
 	{
-		ref = prog_out;
+		USHORT *ref = prog_out;
 		*prog_out++ = 0;
 	
+		USHORT *p;
 		if((p = if_stack[if_level].p_else) != NULL)
 		{
 			*ref = ref - p;    // backwards offset to the previous else
@@ -2444,7 +2362,6 @@ int CompileEndif(void)
 {//===================
 	USHORT *p;
 	int chain;
-	int offset;
 
 	if(if_level < 1)
 	{
@@ -2460,7 +2377,7 @@ int CompileEndif(void)
 		{
 			chain = *p;   // a chain of previous else links
 	
-			offset = prog_out - p;
+			int offset = prog_out - p;
 			if(offset > MAX_JUMP)
 			{
 				error("IF block is too long",NULL);
@@ -2502,9 +2419,7 @@ static int CompileSwitch(int type)
 
 static PHONEME_TAB_LIST *FindPhonemeTable(const char *string)
 {//==========================================================
-	int ix;
-
-	for(ix=0; ix<n_phoneme_tabs; ix++)
+	for(int ix=0; ix<n_phoneme_tabs; ix++)
 	{
 		if(strcmp(phoneme_tab_list2[ix].name, string) == 0)
 		{
@@ -2519,9 +2434,7 @@ static PHONEME_TAB_LIST *FindPhonemeTable(const char *string)
 
 static PHONEME_TAB *FindPhoneme(const char *string)
 {//================================================
-	PHONEME_TAB_LIST *phtab = NULL;
 	int ix;
-	unsigned int mnem;
 	char *phname;
 	char buf[200];
 
@@ -2538,13 +2451,13 @@ static PHONEME_TAB *FindPhoneme(const char *string)
 		*phname++ = 0;
 	}
 
-	phtab = FindPhonemeTable(buf);
+	PHONEME_TAB_LIST *phtab = FindPhonemeTable(buf);
 	if(phtab == NULL)
 	{
 		return(NULL);  // phoneme table not found
 	}
 
-	mnem = StringToWord(phname);
+	unsigned int mnem = StringToWord(phname);
 	for(ix=1; ix<256; ix++)
 	{
 		if(mnem == phtab->phoneme_tab_ptr[ix].mnemonic)
@@ -2560,8 +2473,6 @@ static PHONEME_TAB *FindPhoneme(const char *string)
 
 static void ImportPhoneme(void)
 {//============================
-	unsigned int ph_mnem;
-	unsigned int ph_code;
 	PHONEME_TAB *ph;
 
 	NextItem(tSTRING);
@@ -2569,8 +2480,8 @@ static void ImportPhoneme(void)
 	if((ph = FindPhoneme(item_string)) == NULL)
 		return;
 
-	ph_mnem = phoneme_out->mnemonic;
-	ph_code = phoneme_out->code;
+	unsigned int ph_mnem = phoneme_out->mnemonic;
+	unsigned int ph_code = phoneme_out->code;
 	memcpy(phoneme_out,ph,sizeof(PHONEME_TAB));
 	phoneme_out->mnemonic = ph_mnem;
 	phoneme_out->code = ph_code;
@@ -2632,10 +2543,9 @@ static void DecThenCount()
 
 static void InstnPlusPhoneme(int instn)
 {//====================================
-	int phcode;
 	DecThenCount();
 
-	phcode = NextItemBrackets(tPHONEMEMNEM,0);
+	int phcode = NextItemBrackets(tPHONEMEMNEM,0);
 	*prog_out++ = instn + phcode;
 }
 
@@ -3021,28 +2931,21 @@ int CompilePhoneme(int compile_phoneme)
 
 static void WritePhonemeTables()
 {//=============================
-	int ix;
-	int j;
-	int n;
-	int value;
-	int count;
-	PHONEME_TAB *p;
-
-	value = n_phoneme_tabs;
+	int value = n_phoneme_tabs;
 	fputc(value,f_phtab);
 	fputc(0,f_phtab);
 	fputc(0,f_phtab);
 	fputc(0,f_phtab);
 
-	for(ix=0; ix<n_phoneme_tabs; ix++)
+	for(int ix=0; ix<n_phoneme_tabs; ix++)
 	{
-		p = phoneme_tab_list2[ix].phoneme_tab_ptr;
-		n = n_phcodes_list[ix];
+		PHONEME_TAB *p = phoneme_tab_list2[ix].phoneme_tab_ptr;
+		int n = n_phcodes_list[ix];
 		p[n].mnemonic = 0;   // terminate the phoneme table
 
 		// count number of locally declared phonemes
-		count=0;
-		for(j=0; j<n; j++)
+		int count=0;
+		for(int j=0; j<n; j++)
 		{
 			if(ix==0)
 				p[j].phflags |= phLOCAL;  // write all phonemes in the base phoneme table
@@ -3060,7 +2963,7 @@ static void WritePhonemeTables()
 
 		fwrite(phoneme_tab_list2[ix].name,1,N_PHONEME_TAB_NAME,f_phtab);
 
-		for(j=0; j<n; j++)
+		for(int j=0; j<n; j++)
 		{
 			if(p[j].phflags & phLOCAL)
 			{
@@ -3078,8 +2981,6 @@ static void WritePhonemeTables()
 
 static void EndPhonemeTable()
 {//==========================
-	int  ix;
-	int *pw;
 	int length;
 
 	if(n_phoneme_tabs == 0)
@@ -3088,7 +2989,7 @@ static void EndPhonemeTable()
 	fprintf(f_errors,"\n");
 
 	// check that all referenced phonemes have been declared
-	for(ix=0; ix<n_phcodes; ix++)
+	for(int ix=0; ix<n_phcodes; ix++)
 	{
 		if(phoneme_tab2[ix].type == phINVALID)
 		{
@@ -3104,11 +3005,11 @@ static void EndPhonemeTable()
 	if((length = p_equivalence - equivalence_buf) > 0)
 	{
 		// terminate the list of phoneme equivalence tables
-		pw = (int *)p_equivalence;
+		int *pw = (int *)p_equivalence;
 		pw[0] = 0;
 
 		// write the equivalence data into phondata, and remember it's address
-		ix = ftell(f_phdata);
+		int ix = ftell(f_phdata);
 		fprintf(f_phcontents,"Q  0x%.5x  %s\n", ix, phoneme_tab_list2[n_phoneme_tabs-1].name);
 		phoneme_tab_list2[n_phoneme_tabs-1].equivalence_tables = ix;
 		fwrite(equivalence_buf, length+4, 1, f_phdata);
@@ -3119,8 +3020,6 @@ static void EndPhonemeTable()
 static void StartPhonemeTable(const char *name)
 {//============================================
 	int ix;
-	int j;
-	PHONEME_TAB *p;
 
 	fprintf(f_errors,"______________________________\nPhoneme Table: '%s'\n",name);
 
@@ -3129,8 +3028,8 @@ static void StartPhonemeTable(const char *name)
 		Error("Too many phonemetables");
 		return;
 	}
-	p = (PHONEME_TAB *)calloc(sizeof(PHONEME_TAB),N_PHONEME_TAB);
 
+	PHONEME_TAB *p = (PHONEME_TAB *)calloc(sizeof(PHONEME_TAB),N_PHONEME_TAB);
 	if(p == NULL)
 	{
 		Error("Out of memory");
@@ -3161,7 +3060,7 @@ static void StartPhonemeTable(const char *name)
 				n_phcodes = n_phcodes_list[ix];
 
 				// clear "local phoneme" bit"
-				for(j=0; j<n_phcodes; j++)
+				for(int j=0; j<n_phcodes; j++)
 					phoneme_tab2[j].phflags &= ~phLOCAL;
 				break;
 			}
@@ -3184,13 +3083,9 @@ static void CompileEquivalents()
 {//=============================
 	// a list of phonemes in another language and the equivalent phoneme strings in this language
 
-	int ix;
-	int n_names;
-	int n_bytes;
 	int foreign_phoneme;
 	int foreign_error = 0;
 	int remove_stress = 0;
-	char *p_start;
 	char *p;
 	int foreign_table;
 	char foreign_table_name[40];
@@ -3213,7 +3108,7 @@ static void CompileEquivalents()
 		foreign_phoneme = 0;
 	}
 
-	p_start = p_equivalence;
+	char *p_start = p_equivalence;
 	p_equivalence += 8;
 
 	p_start[0] = foreign_table;
@@ -3228,9 +3123,9 @@ static void CompileEquivalents()
 		if((p = strstr(line_buf,"//")) != NULL)
 			*p = 0;
 
-		for(ix=0; ix<6; ix++)
+		for(int ix=0; ix<6; ix++)
 			names[ix][0] = 0;
-		n_names = sscanf(line_buf,"%s %s %s %s %s %s",names[0],names[1],names[2],names[3],names[4],names[5]);
+		int n_names = sscanf(line_buf,"%s %s %s %s %s %s",names[0],names[1],names[2],names[3],names[4],names[5]);
 		if(n_names < 1)
 			continue;
 
@@ -3262,7 +3157,7 @@ static void CompileEquivalents()
 			}
 		}
 
-		for(ix=1; ix<n_names; ix++)
+		for(int ix=1; ix<n_names; ix++)
 		{
 			phcode[ix] = LookupPhoneme(names[ix], 1);
 		}
@@ -3279,7 +3174,7 @@ static void CompileEquivalents()
 	*p_equivalence++ = 0;
 
 	p_equivalence = (char *)((long int)(p_equivalence + 3) & ~0x3);  // align to word boundary
-	n_bytes = p_equivalence - p_start;
+	int n_bytes = p_equivalence - p_start;
 	p_start[1] = remove_stress;
 	n_bytes = n_bytes / 4;
 	p_start[2] = n_bytes >> 8;    // index of next table
@@ -3293,7 +3188,6 @@ static void CompileEquivalents()
 
 static void CompilePhonemeFiles()
 {//==============================
-	int item;
 	FILE *f;
 	char buf[sizeof(path_source)+120];
 
@@ -3319,8 +3213,7 @@ static void CompilePhonemeFiles()
 			fprintf(f_errors,"\n\n");
 		}
 
-		item = NextItem(tKEYWORD);
-
+		int item = NextItem(tKEYWORD);
 		switch(item)
 		{
 		case kINCLUDE:
@@ -3535,9 +3428,6 @@ void CompileMbrola()
 	FILE *f_in;
 	FILE *f_out;
 	int percent;
-	int n;
-	int *pw;
-	int *pw_end;
 	int count = 0;
 	int control;
 	char phoneme[40];
@@ -3570,7 +3460,7 @@ void CompileMbrola()
 			continue;
 		}
 
-		n = sscanf(buf,"%d %s %s %d %s %s",&control,phoneme,phoneme2,&percent,name1,name2);
+		int n = sscanf(buf,"%d %s %s %d %s %s",&control,phoneme,phoneme2,&percent,name1,name2);
 		if(n >= 5)
 		{
 			data[count].name = StringToWord(phoneme);
@@ -3607,8 +3497,8 @@ void CompileMbrola()
 	data[count].name = 0;  // list terminator
 	Write4Bytes(f_out, mbrola_ctrl);
 
-	pw_end = (int *)(&data[count+1]);
-	for(pw = (int *)data; pw < pw_end; pw++)
+	int *pw_end = (int *)(&data[count+1]);
+	for(int *pw = (int *)data; pw < pw_end; pw++)
 	{
 		Write4Bytes(f_out, *pw);
 	}
@@ -3666,9 +3556,7 @@ int LookupEnvelope(const char *name)
 void CompileIntonation()
 {//=====================
 	int ix;
-	char *p;
 	char c;
-	int keyword;
 	int compiling_tune = 0;
 	int n_tune_names = 0;
 	int done_split;
@@ -3677,9 +3565,7 @@ void CompileIntonation()
 	int n_preset_tunes = 0;
 	int found;
 	int tune_number = 0;
-	FILE *f_out;
 	wxString report;
-	TUNE *tune_data;
 	TUNE new_tune;
 
 
@@ -3722,7 +3608,7 @@ void CompileIntonation()
 
 		if((memcmp(buf,"tune",4)==0) && isspace(buf[4]))
 		{
-			p = &buf[5];
+			char *p = &buf[5];
 			while(isspace(*p)) p++;
 
 			ix = 0;
@@ -3754,7 +3640,7 @@ void CompileIntonation()
 	rewind(f_in);
 	linenum = 1;
 
-	tune_data = (TUNE *)calloc(sizeof(TUNE), n_tune_names);
+	TUNE *tune_data = (TUNE *)calloc(sizeof(TUNE), n_tune_names);
 	if(tune_data == NULL)
 	{
 		fprintf(f_errors, "Failed to allocate data for tunes\n");
@@ -3764,7 +3650,7 @@ void CompileIntonation()
 	}
 
 	sprintf(buf,"%s/intonations",path_home);
-	f_out = fopen_log(f_errors, buf, "wb");
+	FILE *f_out = fopen_log(f_errors, buf, "wb");
 	if(f_out == NULL)
 	{
 		fclose(f_in);
@@ -3774,8 +3660,7 @@ void CompileIntonation()
 
 	while(!feof(f_in))
 	{
-		keyword = NextItem(tINTONATION);
-
+		int keyword = NextItem(tINTONATION);
 		switch(keyword)
 		{
 		case kTUNE:
@@ -3977,4 +3862,3 @@ void CompilePhonemeData()
 	CompilePhonemeData2("phonemes");
 	return;
 }
-
