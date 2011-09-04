@@ -17,8 +17,6 @@
  *               <http://www.gnu.org/licenses/>.                           *
  ***************************************************************************/
 
-#include "StdAfx.h"
-
 // this version keeps wavemult window as a constant fraction
 // of the cycle length - but that spreads out the HF peaks too much
 

@@ -17,8 +17,6 @@
  *               <http://www.gnu.org/licenses/>.                           *
  ***************************************************************************/
 
-#include "StdAfx.h"
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <wctype.h>

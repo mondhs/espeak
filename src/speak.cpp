@@ -17,8 +17,6 @@
  *               <http://www.gnu.org/licenses/>.                           *
  ***************************************************************************/
 
-#include "StdAfx.h"
-
 #include "speech.h"
 
 #include <stdio.h>

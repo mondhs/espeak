@@ -24,8 +24,6 @@
 
 // See URL: ftp://svr-ftp.eng.cam.ac.uk/pub/comp.speech/synthesis/klatt.3.04.tar.gz  
 
-#include "StdAfx.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
