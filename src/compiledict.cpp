@@ -195,9 +195,7 @@ char *DecodeRule(const char *group_chars, int group_length, char *rule, int cont
 {//=================================================================================
 /* Convert compiled match template to ascii */
 
-   unsigned char rb;
 	unsigned char c;
-	char *p;
    int  ix;
 	int  match_type;
 	int  finished=0;
@@ -227,10 +225,10 @@ char *DecodeRule(const char *group_chars, int group_length, char *rule, int cont
 	}
 	buf[ix] = 0;
 
-	p = &buf[strlen(buf)];
+	char *p = &buf[strlen(buf)];
    while(!finished)
    {
-		rb = *rule++;
+		unsigned char rb = *rule++;
 
 		if(rb <= RULE_LINENUM)
 		{
@@ -367,27 +365,18 @@ char *DecodeRule(const char *group_chars, int group_length, char *rule, int cont
 static int compile_line(char *linebuf, char *dict_line, int *hash)
 {//===============================================================
 // Compile a line in the language_list file
-	unsigned char  c;
-	char *p;
 	char *word;
 	char *phonetic;
-	unsigned int  ix;
-	int  step;
 	unsigned int  n_flag_codes = 0;
-	int  flag_offset;
 	int  length;
 	int  multiple_words = 0;
 	int  multiple_numeric_hyphen = 0;
 	char *multiple_string = NULL;
 	char *multiple_string_end = NULL;
 	
-	int len_word;
-	int len_phonetic;
 	int text_not_phonemes;   // this word specifies replacement text, not phonemes
 	unsigned int  wc;
-	int all_upper_case;
 	
-	char *mnemptr;
 #ifdef OPT_FORMAT
 	char *comment = NULL;
 #endif
@@ -399,11 +388,7 @@ static char nullstring[] = {0};
 	text_not_phonemes = 0;
 	phonetic = word = nullstring;
 
-if(memcmp(linebuf,"_-",2)==0)
-{
-step=1;  // TEST
-}
-	p = linebuf;
+	char *p = linebuf;
 //	while(isspace2(*p)) p++;
 
 #ifdef deleted
@@ -422,9 +407,9 @@ step=1;  // TEST
 	}
 #endif
 
-	step = 0;
+	int step = 0;
 	
-	c = 0;
+	unsigned char c = 0;
 	while(c != '\n')
 	{
 		c = *p;
@@ -432,7 +417,7 @@ step=1;  // TEST
 		if((c == '?') && (step==0))
 		{
 			// conditional rule, allow only if the numbered condition is set for the voice
-			flag_offset = 100;
+			int flag_offset = 100;
 
 			p++;
 			if(*p == '!')
@@ -442,7 +427,7 @@ step=1;  // TEST
 				p++;
 			}
 
-			ix = 0;
+			unsigned int ix = 0;
 			if(isdigit(*p))
 			{
 				ix += (*p-'0');
@@ -460,11 +445,11 @@ step=1;  // TEST
 		if((c == '$') && isalnum(p[1]))
 		{
 			/* read keyword parameter */
-			mnemptr = p;
+			char *mnemptr = p;
 			while(!isspace2(c = *p)) p++;
 			*p = 0;
 	
-			ix = LookupMnem(mnem_flags,mnemptr);
+			unsigned int ix = LookupMnem(mnem_flags,mnemptr);
 			if(ix > 0)
 			{
 				if(ix == 200)
@@ -661,7 +646,7 @@ step=1;  // TEST
 	if(sscanf(word,"U+%x",&wc) == 1)
 	{
 		// Character code
-		ix = utf8_out(wc, word);
+		unsigned int ix = utf8_out(wc, word);
 		word[ix] = 0;
 	}
 	else
@@ -670,13 +655,13 @@ step=1;  // TEST
 		// convert to lower case, and note if the word is all-capitals
 		int c2;
 
-		all_upper_case = 1;
+		int all_upper_case = 1;
 		p = word;
 		for(p=word;;)
 		{
 			// this assumes that the lower case char is the same length as the upper case char
 			// OK, except for Turkish "I", but use towlower() rather than towlower2()
-			ix = utf8_in(&c2,p);
+			unsigned int ix = utf8_in(&c2,p);
 			if(c2 == 0)
 				break;
 			if(iswupper(c2))
@@ -695,7 +680,7 @@ step=1;  // TEST
 		}
 	}
 
-	len_word = strlen(word);
+	int len_word = strlen(word);
 
 	if(translator->transpose_min > 0)
 	{
@@ -703,7 +688,7 @@ step=1;  // TEST
 	}
 
 	*hash = HashDictionary(word);
-	len_phonetic = strlen(encoded_ph);
+	int len_phonetic = strlen(encoded_ph);
 	
 	dict_line[1] = len_word;   // bit 6 indicates whether the word has been compressed
 	len_word &= 0x3f;
@@ -722,7 +707,7 @@ step=1;  // TEST
 		strcpy(&dict_line[(len_word)+2],encoded_ph);
 	}
 	
-	for(ix=0; ix<n_flag_codes; ix++)
+	for(unsigned int ix=0; ix<n_flag_codes; ix++)
 	{
 		dict_line[ix+length] = flag_codes[ix];
 	}
@@ -737,7 +722,7 @@ step=1;  // TEST
 		else
 		{
 			dict_line[length++] = 80 + multiple_words;
-			ix = multiple_string_end - multiple_string;
+			unsigned int ix = multiple_string_end - multiple_string;
 			if(multiple_numeric_hyphen)
 			{
 				dict_line[length++] = ' ';   // ???
@@ -750,7 +735,7 @@ step=1;  // TEST
 
 #ifdef OPT_FORMAT
 	spaces = 16;
-	for(ix=0; ix<n_flag_codes; ix++)
+	for(unsigned int ix=0; ix<n_flag_codes; ix++)
 	{
 		if(flag_codes[ix] >= 100)
 		{
@@ -767,7 +752,7 @@ step=1;  // TEST
 	
 	fprintf(f_log," %s",decoded_ph);
 	while(spaces-- > 0) fputc(' ',f_log);
-	for(ix=0; ix<n_flag_codes; ix++)
+	for(unsigned int ix=0; ix<n_flag_codes; ix++)
 	{
 		if(flag_codes[ix] < 100)
 			fprintf(f_log," %s",lookup_mnem(mnem_flags,flag_codes[ix]));
@@ -786,15 +771,12 @@ step=1;  // TEST
 static void compile_dictlist_start(void)
 {//=====================================
 // initialise dictionary list
-	int ix;
-	char *p;
-	char *p2;
-
-	for(ix=0; ix<N_HASH_DICT; ix++)
+	for(int ix=0; ix<N_HASH_DICT; ix++)
 	{
-		p = hash_chains[ix];
+		char *p = hash_chains[ix];
 		while(p != NULL)
 		{
+			char *p2;
 			memcpy(&p2,p,sizeof(char *));
 			free(p);
 			p = p2;
@@ -808,14 +790,10 @@ static void compile_dictlist_start(void)
 static void compile_dictlist_end(FILE *f_out)
 {//==========================================
 // Write out the compiled dictionary list
-	int hash;
-	int length;
-	char *p;
-
 	if(f_log != NULL)
 	{
 #ifdef OUTPUT_FORMAT
-		for(hash=0; hash<N_HASH_DICT; hash++)
+		for(int hash=0; hash<N_HASH_DICT; hash++)
 		{
 			fprintf(f_log,"%8d",hash_counts[hash]);
 			if((hash & 7) == 7)
@@ -825,14 +803,14 @@ static void compile_dictlist_end(FILE *f_out)
 #endif
 	}
 	
-	for(hash=0; hash<N_HASH_DICT; hash++)
+	for(int hash=0; hash<N_HASH_DICT; hash++)
 	{
-		p = hash_chains[hash];
+		char *p = hash_chains[hash];
 		hash_counts[hash] = (int)ftell(f_out);
 	
 		while(p != NULL)
 		{
-			length = *(p+sizeof(char *));
+			int length = *(p+sizeof(char *));
 			fwrite(p+sizeof(char *),length,1,f_out);
 			memcpy(&p,p,sizeof(char *));
 		}
@@ -844,9 +822,7 @@ static void compile_dictlist_end(FILE *f_out)
 
 static int compile_dictlist_file(const char *path, const char* filename)
 {//=====================================================================
-	int  length;
 	int  hash;
-	char *p;
 	int  count=0;
 	FILE *f_in;
 	char buf[200];
@@ -872,12 +848,12 @@ static int compile_dictlist_file(const char *path, const char* filename)
 	{
 		linenum++;
 
-		length = compile_line(buf,dict_line,&hash);
+		int length = compile_line(buf,dict_line,&hash);
 		if(length == 0)  continue;   /* blank line */
 
 		hash_counts[hash]++;
 	
-		p = (char *)malloc(length+sizeof(char *));
+		char *p = (char *)malloc(length+sizeof(char *));
 		if(p == NULL)
 		{
 			if(f_log != NULL)
@@ -918,33 +894,27 @@ static void copy_rule_string(char *string, int &state)
 // state 0: conditional, 1=pre, 2=match, 3=post, 4=phonemes
 	static char *outbuf[5] = {rule_cond, rule_pre, rule_match, rule_post, rule_phonemes};
 	static int next_state[5] = {2,2,4,4,4};
-	char *output;
-	char *p;
-	int ix;
-	int len;
-	char c;
-	int  sxflags;
 	int  value;
-	int  literal;
-	MNEM_TAB *mr;
 
 	if(string[0] == 0) return;
 
-	output = outbuf[state];
+	char *output = outbuf[state];
 	if(state==4)
 	{
 		// append to any previous phoneme string, i.e. allow spaces in the phoneme string
-		len = strlen(rule_phonemes);
+		int len = strlen(rule_phonemes);
 		if(len > 0)
 			rule_phonemes[len++] = ' ';
 		output = &rule_phonemes[len];
 	}
-	sxflags = 0x808000;           // to ensure non-zero bytes
+	int sxflags = 0x808000;           // to ensure non-zero bytes
 	
-	for(p=string,ix=0;;)
+	char *p = string;
+	int ix = 0;
+	for(;;)
 	{
-		literal = 0;
-		c = *p++;
+		int literal = 0;
+		char c = *p++;
 		if(c == '\\')
 		{
 			c = *p++;   // treat next character literally
@@ -1068,17 +1038,15 @@ static void copy_rule_string(char *string, int &state)
 				case '$':
 					output[ix++] = RULE_DOLLAR;
 					c = 0;
-					mr = mnem_rules;
-					while(mr->mnem != NULL)
+					for(MNEM_TAB *mr = mnem_rules;mr->mnem != NULL;++mr)
 					{
-						len = strlen(mr->mnem);
+						int len = strlen(mr->mnem);
 						if(memcmp(p, mr->mnem, len) == 0)
 						{
 							c = mr->value;
 							p += len;
 							break;
 						}
-						mr++;
 					}
 					if(c == 0)
 					{
@@ -1151,14 +1119,7 @@ static void copy_rule_string(char *string, int &state)
 
 static char *compile_rule(char *input)
 {//===================================
-	int ix;
-	unsigned char c;
 	int wc;
-	char *p;
-	char *prule;
-	int len;
-	int len_name;
-	int start;
 	int state=2;
 	int finish=0;
 	char buf[80];
@@ -1172,11 +1133,11 @@ static char *compile_rule(char *input)
 	rule_match[0]=0;
 	rule_phonemes[0]=0;
 
-	p = buf;
+	char *p = buf;
 	
-	for(ix=0; finish==0; ix++)
+	for(int ix=0; finish==0; ix++)
 	{
-		c = input[ix];
+		unsigned char c = input[ix];
 
 		switch(c = input[ix])
 		{
@@ -1248,9 +1209,9 @@ static char *compile_rule(char *input)
 		error_count++;
 	}
 	strcpy(output,buf);
-	len = strlen(buf)+1;
+	int len = strlen(buf)+1;
 	
-	len_name = strlen(group_name);
+	int len_name = strlen(group_name);
 	if((len_name > 0) && (memcmp(rule_match,group_name,len_name) != 0))
 	{
 		utf8_in(&wc,rule_match);
@@ -1277,7 +1238,7 @@ static char *compile_rule(char *input)
 
 	if(rule_cond[0] != 0)
 	{
-		ix = -1;
+		int ix = -1;
 		if(rule_cond[0] == '!')
 		{
 			// allow the rule only if the condition number is NOT set for the voice
@@ -1302,21 +1263,20 @@ static char *compile_rule(char *input)
 	}
 	if(rule_pre[0] != 0)
 	{
-		start = 0;
+		int start = 0;
 		if(rule_pre[0] == RULE_SPACE)
 		{
 			// omit '_' at the beginning of the pre-string and imply it by using RULE_PRE_ATSTART
-			c = RULE_PRE_ATSTART;
+			output[len++] = RULE_PRE_ATSTART;
 			start = 1;
 		}
 		else
 		{
-			c = RULE_PRE;
+			output[len++] = RULE_PRE;
 		}
-		output[len++] = c;
 
 		// output PRE string in reverse order
-		for(ix = strlen(rule_pre)-1; ix>=start; ix--)
+		for(int ix = strlen(rule_pre)-1; ix>=start; ix--)
 			output[len++] = rule_pre[ix];
 	}
 
@@ -1326,7 +1286,7 @@ static char *compile_rule(char *input)
 		len += (strlen(rule_post)+1);
 	}
 	output[len++]=0;
-	prule = (char *)malloc(len);
+	char *prule = (char *)malloc(len);
 	memcpy(prule,output,len);
 	return(prule);
 }  //  end of compile_rule
@@ -1348,8 +1308,7 @@ int __cdecl string_sorter(char **a, char **b)
 static int __cdecl rgroup_sorter(RGROUP *a, RGROUP *b)
 {//===================================================
 // Sort long names before short names
-	int ix;
-	ix = strlen(b->name) - strlen(a->name);
+	int ix = strlen(b->name) - strlen(a->name);
 	if(ix != 0) return(ix);
 	ix = strcmp(a->name,b->name);
 	if(ix != 0) return(ix);
@@ -1360,15 +1319,7 @@ static int __cdecl rgroup_sorter(RGROUP *a, RGROUP *b)
 #ifdef OUTPUT_FORMAT
 static void print_rule_group(FILE *f_out, int n_rules, char **rules, char *name)
 {//=============================================================================
-	int rule;
-	int ix;
 	unsigned char c;
-	int len1;
-	int len2;
-	int spaces;
-	char *p;
-	char *pout;
-	int condition;
 	char buf[80];
 	char suffix[12];
 
@@ -1376,20 +1327,20 @@ static void print_rule_group(FILE *f_out, int n_rules, char **rules, char *name)
 
 	fprintf(f_out,"\n$group %s\n",name);
 
-	for(rule=0; rule<n_rules; rule++)
+	for(int rule=0; rule<n_rules; rule++)
 	{
-		p = rules[rule];
-		len1 = strlen(p) + 1;
+		char *p = rules[rule];
+		int len1 = strlen(p) + 1;
 		p = &p[len1];
-		len2 = strlen(p);
+		int len2 = strlen(p);
 		
 		rule_match[0]=0;
 		rule_pre[0]=0;
 		rule_post[0]=0;
-		condition = 0;
+		int condition = 0;
 
-		pout = rule_match;
-		for(ix=0; ix<len2; ix++)
+		char *pout = rule_match;
+		for(int ix=0; ix<len2; ix++)
 		{
 			switch(c = p[ix])
 			{
@@ -1421,7 +1372,7 @@ static void print_rule_group(FILE *f_out, int n_rules, char **rules, char *name)
 		}
 		*pout = 0;
 		
-		spaces = 12;
+		int spaces = 12;
 		if(condition > 0)
 		{
 			sprintf(buf,"?%d ",condition);
@@ -1432,17 +1383,17 @@ static void print_rule_group(FILE *f_out, int n_rules, char **rules, char *name)
 		if(rule_pre[0] != 0)
 		{
 			p = buf;
-			for(ix=strlen(rule_pre)-1;ix>=0;ix--)
+			for(int ix=strlen(rule_pre)-1;ix>=0;ix--)
 				*p++ = rule_pre[ix];
 			sprintf(p,") ");
 			spaces -= strlen(buf);
-			for(ix=0; ix<spaces; ix++)
+			for(int ix=0; ix<spaces; ix++)
 			   fputc(' ',f_out);
 			fprintf(f_out,"%s",buf);
 			spaces = 0;
 		}
 		
-		for(ix=0; ix<spaces; ix++)
+		for(int ix=0; ix<spaces; ix++)
 			fputc(' ',f_out);
 		
 		spaces = 14;
@@ -1455,7 +1406,7 @@ static void print_rule_group(FILE *f_out, int n_rules, char **rules, char *name)
 		fprintf(f_out,"%s",buf);
 		spaces -= strlen(buf);
 
-		for(ix=0; ix<spaces; ix++)
+		for(int ix=0; ix<spaces; ix++)
 			fputc(' ',f_out);
 		DecodePhonemes(rules[rule],buf);
 		fprintf(f_out,"%s\n",buf);   // phonemes
@@ -1467,37 +1418,29 @@ static void print_rule_group(FILE *f_out, int n_rules, char **rules, char *name)
 //#define LIST_GROUP_INFO
 static void output_rule_group(FILE *f_out, int n_rules, char **rules, char *name)
 {//==============================================================================
-	int ix;
-	int len1;
-	int len2;
-	int len_name;
-	char *p;
-	char *p2, *p3;
-	const char *common;
-
 	short nextchar_count[256];
 	memset(nextchar_count,0,sizeof(nextchar_count));
 
-	len_name = strlen(name);
+	int len_name = strlen(name);
 
 #ifdef OUTPUT_FORMAT
 	print_rule_group(f_log,n_rules,rules,name);
 #endif
 
 	// sort the rules in this group by their phoneme string
-	common = "";
+	const char *common = "";
 	qsort((void *)rules,n_rules,sizeof(char *),(int (__cdecl *)(const void *,const void *))string_sorter);
 
 	if(strcmp(name,"9")==0)
 		len_name = 0;    //  don't remove characters from numeric match strings
 
-	for(ix=0; ix<n_rules; ix++)
+	for(int ix=0; ix<n_rules; ix++)
 	{
-		p = rules[ix];
-		len1 = strlen(p) + 1;  // phoneme string
-		p3 = &p[len1];
-		p2 = p3 + len_name;        // remove group name from start of match string
-		len2 = strlen(p2);
+		char *p = rules[ix];
+		int len1 = strlen(p) + 1;  // phoneme string
+		char *p3 = &p[len1];
+		char *p2 = p3 + len_name;        // remove group name from start of match string
+		int len2 = strlen(p2);
 
 		nextchar_count[(unsigned char)(p2[0])]++;   // the next byte after the group name
 
@@ -1521,7 +1464,7 @@ static void output_rule_group(FILE *f_out, int n_rules, char **rules, char *name
 	}
 
 #ifdef LIST_GROUP_INFO
-	for(ix=32; ix<256; ix++)
+	for(int ix=32; ix<256; ix++)
 	{
 		if(nextchar_count[ix] > 30)
 			printf("Group %s   %c  %d\n",name,ix,nextchar_count[ix]);
@@ -1533,19 +1476,13 @@ static void output_rule_group(FILE *f_out, int n_rules, char **rules, char *name
 
 static int compile_lettergroup(char *input, FILE *f_out)
 {//=====================================================
-	char *p;
-	char *p_start;
-	int group;
-	int ix;
-	int n_items;
-	int length;
 	int max_length = 0;
 
 	#define N_LETTERGP_ITEMS 200
 	char *items[N_LETTERGP_ITEMS];
 	char item_length[N_LETTERGP_ITEMS];
 
-	p = input;
+	char *p = input;
 	if(!isdigit(p[0]) || !isdigit(p[1]))
 	{
 		fprintf(f_log,"%5d: Expected 2 digits after '.L'\n",linenum);
@@ -1553,7 +1490,7 @@ static int compile_lettergroup(char *input, FILE *f_out)
 		return(1);
 	}
 
-	group = atoi(&p[0]);
+	int group = atoi(&p[0]);
 	if(group >= N_LETTER_GROUPS)
 	{
 		fprintf(f_log,"%5d: lettergroup out of range (01-%.2d)\n",linenum,N_LETTER_GROUPS-1);
@@ -1573,20 +1510,20 @@ static int compile_lettergroup(char *input, FILE *f_out)
 	}
 	letterGroupsDefined[group] = 1;
 
-	n_items = 0;
+	int n_items = 0;
 	while(n_items < N_LETTERGP_ITEMS)
 	{
 		while(isspace2(*p)) p++;
 		if(*p == 0)
 			break;
 
-		items[n_items] = p_start = p;
+		char *p_start = items[n_items] = p;
 		while((*p & 0xff) > ' ')
 		{
 			p++;
 		}
 		*p++ = 0;
-		length = p - p_start;
+		int length = p - p_start;
 		if(length > max_length)
 			max_length = length;
 		item_length[n_items++] = length;
@@ -1595,7 +1532,7 @@ static int compile_lettergroup(char *input, FILE *f_out)
 	// write out the items, longest first
 	while(max_length > 1)
 	{
-		for(ix=0; ix < n_items; ix++)
+		for(int ix=0; ix < n_items; ix++)
 		{
 			if(item_length[ix] == max_length)
 			{
@@ -1615,18 +1552,14 @@ static int compile_dictrules(FILE *f_in, FILE *f_out, char *fname_temp)
 {//====================================================================
 	char *prule;
 	unsigned char *p;
-	int ix;
 	int c;
-	int gp;
 	FILE *f_temp;
 	int n_rules=0;
 	int count=0;
 	int different;
 	int wc;
-	const char *prev_rgroup_name;
 	unsigned int char_code;
 	int compile_mode=0;
-	char *buf;
 	char buf1[500];
 	char *rules[N_RULES];
 
@@ -1643,7 +1576,7 @@ static int compile_dictrules(FILE *f_in, FILE *f_out, char *fname_temp)
 	for(;;)
 	{
 		linenum++;
-		buf = fgets(buf1,sizeof(buf1),f_in);
+		char *buf = fgets(buf1,sizeof(buf1),f_in);
 		if(buf != NULL)
 		{
 			if((p = (unsigned char *)strstr(buf,"//")) != NULL)
@@ -1701,7 +1634,7 @@ static int compile_dictrules(FILE *f_in, FILE *f_out, char *fname_temp)
 
 				p = (unsigned char *)&buf[6];
 				while((p[0]==' ') || (p[0]=='\t')) p++;    // Note: Windows isspace(0xe1) gives TRUE !
-				ix = 0;
+				int ix = 0;
 				while((*p > ' ') && (ix < LEN_GROUP_NAME))
 					group_name[ix++] = *p++;
 				group_name[ix]=0;
@@ -1758,15 +1691,11 @@ static int compile_dictrules(FILE *f_in, FILE *f_out, char *fname_temp)
 
 		case 2:   //  .replace
 			{
-				int replace1;
-				int replace2;
-				char *p;
-
-				p = buf;
-				replace1 = 0;
-				replace2 = 0;
+				char *p = buf;
+				int replace1 = 0;
+				int replace2 = 0;
 				while(isspace2(*p)) p++;
-				ix = 0;
+				int ix = 0;
 				while((unsigned char)(*p) > 0x20)   // not space or zero-byte
 				{
 					p += utf8_in(&c,p);
@@ -1797,9 +1726,9 @@ static int compile_dictrules(FILE *f_in, FILE *f_out, char *fname_temp)
 	if((f_temp = fopen(fname_temp,"rb"))==NULL)
 		return(2);
 
-	prev_rgroup_name = "\n";
+	const char *prev_rgroup_name = "\n";
 
-	for(gp = 0; gp < n_rgroups; gp++)
+	for(int gp = 0; gp < n_rgroups; gp++)
 	{
 		fseek(f_temp,rgroup[gp].start,SEEK_SET);
 
@@ -1823,7 +1752,7 @@ static int compile_dictrules(FILE *f_in, FILE *f_out, char *fname_temp)
 			fputc(0,f_out);
 		}
 
-		for(ix=rgroup[gp].length; ix>0; ix--)
+		for(int ix=rgroup[gp].length; ix>0; ix--)
 		{
 			c = fgetc(f_temp);
 			fputc(c,f_out);
@@ -1853,7 +1782,6 @@ int CompileDictionary(const char *dsource, const char *dict_name, FILE *log, cha
 	FILE *f_in;
 	FILE *f_out;
 	int offset_rules=0;
-	int value;
 	char fname_in[sizeof(path_home)+45];
 	char fname_out[sizeof(path_home)+15];
 	char fname_temp[sizeof(path_home)+15];
@@ -1896,7 +1824,7 @@ int CompileDictionary(const char *dsource, const char *dict_name, FILE *log, cha
 	}
 	sprintf(fname_temp,"%s%ctemp",path_home,PATHSEP);
 
-	value = N_HASH_DICT;
+	int value = N_HASH_DICT;
 	Write4Bytes(f_out,value);
 	Write4Bytes(f_out,offset_rules);
 
