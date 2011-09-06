@@ -123,12 +123,7 @@ void strncpy0(char *dest, const char *source, int size)
 
 void DisplayVoices(FILE *f_out, char *language)
 {//============================================
-	int ix;
-	const char *p;
-	int len;
-	int count;
 	const espeak_VOICE *v;
-	const char *lang_name;
 	char age_buf[12];
 	const espeak_VOICE **voices;
 	espeak_VOICE voice_select;
@@ -151,14 +146,14 @@ void DisplayVoices(FILE *f_out, char *language)
 
 	fprintf(f_out,"Pty Language Age/Gender VoiceName       File        Other Langs\n");
 
-	for(ix=0; (v = voices[ix]) != NULL; ix++)
+	for(int ix=0; (v = voices[ix]) != NULL; ix++)
 	{
-		count = 0;
-		p = v->languages;
+		int count = 0;
+		const char *p = v->languages;
 		while(*p != 0)
 		{
-			len = strlen(p+1);
-			lang_name = p+1;
+			int len = strlen(p+1);
+			const char *lang_name = p+1;
 
 			if(v->age == 0)
 				strcpy(age_buf,"   ");
@@ -187,9 +182,7 @@ void DisplayVoices(FILE *f_out, char *language)
 static void Write4Bytes(FILE *f, int value)
 {//=================================
 // Write 4 bytes to a file, least significant first
-	int ix;
-
-	for(ix=0; ix<4; ix++)
+	for(int ix=0; ix<4; ix++)
 	{
 		fputc(value & 0xff,f);
 		value = value >> 8;
@@ -236,13 +229,11 @@ int OpenWavFile(char *path, int rate)
 static void CloseWavFile()
 //========================
 {
-	unsigned int pos;
-
 	if((f_wavfile==NULL) || (f_wavfile == stdout))
 		return;
 
 	fflush(f_wavfile);
-	pos = ftell(f_wavfile);
+	unsigned int pos = ftell(f_wavfile);
 
 	fseek(f_wavfile,4,SEEK_SET);
 	Write4Bytes(f_wavfile,pos - 8);
