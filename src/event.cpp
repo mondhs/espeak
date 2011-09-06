@@ -434,9 +434,8 @@ ENTER("get_remaining_time");
 
 	int err = 0;
 	*stop_is_required = 0;
-	int i=0;
 
-	for (i=0; i < MAX_ACTIVITY_CHECK && (*stop_is_required == 0); i++)
+	for (int i=0; i < MAX_ACTIVITY_CHECK && (*stop_is_required == 0); i++)
 	{
 		err = wave_get_remaining_time( sample, time_in_ms);
 
