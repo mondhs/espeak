@@ -420,7 +420,6 @@ static void set_pitch(SYLLABLE *syl, int base, int drop)
 // Set the pitch of a vowel in syllable_tab
 {
 	int  pitch1, pitch2;
-	int  flags = 0;
 
 	if(base < 0)  base = 0;
 
@@ -428,7 +427,7 @@ static void set_pitch(SYLLABLE *syl, int base, int drop)
 
 	if(drop < 0)
 	{
-		flags = SYL_RISE;
+		syl->flags |= SYL_RISE;
 		drop = -drop;
 	}
 
@@ -441,7 +440,6 @@ static void set_pitch(SYLLABLE *syl, int base, int drop)
 
 	syl->pitch1 = pitch1;
 	syl->pitch2 = pitch2;
-	syl->flags |= flags;
 }   /* end of set_pitch */
 
 
