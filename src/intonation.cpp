@@ -413,33 +413,26 @@ static int count_increments(int ix, int end_ix, int min_stress)
 }  /* end of count_increments */
 
 
+inline int clamp_to_range(int value, int min, int max)
+{
+	if (value < min) return min;
+	if (value > max) return max;
+	return value;
+}
 
 
 static void set_pitch(SYLLABLE *syl, int base, int drop)
 /******************************************************/
 // Set the pitch of a vowel in syllable_tab
 {
-	int  pitch1, pitch2;
-
-	if(base < 0)  base = 0;
-
-	pitch2 = base;
-
 	if(drop < 0)
 	{
 		syl->flags |= SYL_RISE;
 		drop = -drop;
 	}
 
-	pitch1 = pitch2 + drop;
-	if(pitch1 < 0)
-		pitch1 = 0;
-
-	if(pitch1 > 254) pitch1 = 254;
-	if(pitch2 > 254) pitch2 = 254;
-
-	syl->pitch1 = pitch1;
-	syl->pitch2 = pitch2;
+	syl->pitch1 = clamp_to_range(base + drop, 0, 254);
+	syl->pitch2 = clamp_to_range(base, 0, 254);
 }   /* end of set_pitch */
 
 
