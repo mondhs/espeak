@@ -240,12 +240,11 @@ static void free_pending_data(void)
 
 static int mbrola_died(void)
 {
-	pid_t pid;
-	int status, len;
+	int status;
 	const char *msg;
 	char msgbuf[80];
 
-	pid = waitpid(mbr_pid, &status, WNOHANG);
+	pid_t pid = waitpid(mbr_pid, &status, WNOHANG);
 	if (!pid) {
 		msg = "mbrola closed stderr and did not exit";
 	} else if (pid != mbr_pid) {
@@ -269,7 +268,7 @@ static int mbrola_died(void)
 
 	log("mbrowrap error: %s", msg);
 
-	len = strlen(mbr_errorbuf);
+	int len = strlen(mbr_errorbuf);
 	if (!len)
 		snprintf(mbr_errorbuf, sizeof(mbr_errorbuf), "%s", msg);
 	else
@@ -280,13 +279,12 @@ static int mbrola_died(void)
 
 static int mbrola_has_errors(void)
 {
-	int result;
 	char buffer[256];
-	char *buf_ptr, *lf;
+	char *lf;
 
-	buf_ptr = buffer;
+	char *buf_ptr = buffer;
 	for (;;) {
-		result = read(mbr_error_fd, buf_ptr,
+		int result = read(mbr_error_fd, buf_ptr,
 				sizeof(buffer) - (buf_ptr - buffer) - 1);
 		if (result == -1) {
 			if (errno == EAGAIN)
@@ -325,14 +323,11 @@ static int mbrola_has_errors(void)
 
 static int send_to_mbrola(const char *cmd)
 {
-	ssize_t result;
-	int len;
-	
 	if (!mbr_pid)
 		return -1;
 
-	len = strlen(cmd);
-	result = write(mbr_cmd_fd, cmd, len);
+	int len = strlen(cmd);
+	ssize_t result = write(mbr_cmd_fd, cmd, len);
 
 	if (result == -1) {
 		int error = errno;
@@ -368,7 +363,6 @@ static int send_to_mbrola(const char *cmd)
 
 static int mbrola_is_idle(void)
 {
-	char *p;
 	char buffer[20]; /* looking for "12345 (mbrola) S" so 20 is plenty*/
 
 	/* look in /proc to determine if mbrola is still running or sleeping */
@@ -376,7 +370,7 @@ static int mbrola_is_idle(void)
 		return 0;
 	if (read(mbr_proc_stat, buffer, sizeof(buffer)) != sizeof(buffer))
 		return 0;
-	p = (char *)memchr(buffer, ')', sizeof(buffer));
+	char *p = (char *)memchr(buffer, ')', sizeof(buffer));
 	if (!p || (unsigned)(p - buffer) >= sizeof(buffer) - 2)
 		return 0;
 	return (p[1] == ' ' && p[2] == 'S');
@@ -384,7 +378,7 @@ static int mbrola_is_idle(void)
 
 static ssize_t receive_from_mbrola(void *buffer, size_t bufsize)
 {
-	int result, wait = 1;
+	int wait = 1;
 	size_t cursize = 0;
 
 	if (!mbr_pid)
@@ -393,7 +387,6 @@ static ssize_t receive_from_mbrola(void *buffer, size_t bufsize)
 	do {
 		struct pollfd pollfd[3];
 		nfds_t nfds = 0;
-		int idle;
 
 		pollfd[0].fd = mbr_audio_fd;
 		pollfd[0].events = POLLIN;
@@ -409,8 +402,8 @@ static ssize_t receive_from_mbrola(void *buffer, size_t bufsize)
 			nfds++;
 		}
 
-		idle = mbrola_is_idle();
-		result = poll(pollfd, nfds, idle ? 0 : wait);
+		int idle = mbrola_is_idle();
+		int result = poll(pollfd, nfds, idle ? 0 : wait);
 		if (result == -1) {
 			err("poll(): %s", strerror(errno));
 			return -1;
@@ -481,14 +474,13 @@ static ssize_t receive_from_mbrola(void *buffer, size_t bufsize)
 
 int init_MBR(const char *voice_path)
 {
-	int error, result;
 	unsigned char wavhdr[45];
 
-	error = start_mbrola(voice_path);
+	int error = start_mbrola(voice_path);
 	if (error)
 		return -1;
 
-	result = send_to_mbrola("#\n");
+	int result = send_to_mbrola("#\n");
 	if (result != 2) {
 		stop_mbrola();
 		return -1;
@@ -534,7 +526,7 @@ void close_MBR(void)
 
 int reset_MBR()
 {
-	int result, success = 1;
+	int success = 1;
 	char dummybuf[4096];
 
 	if (mbr_state == MBR_IDLE)
@@ -544,7 +536,7 @@ int reset_MBR()
 	if (kill(mbr_pid, SIGUSR1) == -1)
 		success = 0;
 	free_pending_data();
-	result = write(mbr_cmd_fd, "\n#\n", 3);
+	int result = write(mbr_cmd_fd, "\n#\n", 3);
 	if (result != 3)
 		success = 0;
 	do {
@@ -598,10 +590,9 @@ void setVolumeRatio_MBR(float value)
 
 int lastErrorStr_MBR(char *buffer, int bufsize)
 {
-	int result;
 	if (mbr_pid)
 		mbrola_has_errors();
-	result = snprintf(buffer, bufsize, "%s", mbr_errorbuf);
+	int result = snprintf(buffer, bufsize, "%s", mbr_errorbuf);
 	return result >= bufsize ? (bufsize - 1) : result;
 }
 
