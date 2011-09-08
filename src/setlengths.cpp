@@ -322,54 +322,52 @@ void SetParameter(int parameter, int value, int relative)
 // parameter: reset-all, amp, pitch, speed, linelength, expression, capitals, number grouping
 // relative 0=absolute  1=relative
 
-	int new_value = value;
-
 	if(relative)
 	{
 		if(parameter < 5)
 		{
 			int default_value = param_defaults[parameter];
-			new_value = default_value + (default_value * value)/100;
+			value = default_value + (default_value * value)/100;
 		}
 	}
-	param_stack[0].parameter[parameter] = new_value;
+	param_stack[0].parameter[parameter] = value;
 
 	switch(parameter)
 	{
 	case espeakRATE:
-		embedded_value[EMBED_S] = new_value;
-		embedded_value[EMBED_S2] = new_value;
+		embedded_value[EMBED_S] = value;
+		embedded_value[EMBED_S2] = value;
 		SetSpeed(3);
 		break;
 
 	case espeakVOLUME:
-		embedded_value[EMBED_A] = new_value;
+		embedded_value[EMBED_A] = value;
 		GetAmplitude();
 		break;
 
 	case espeakPITCH:
-		if(new_value > 99) new_value = 99;
-		if(new_value < 0) new_value = 0;
-		embedded_value[EMBED_P] = new_value;
+		if(value > 99) value = 99;
+		if(value < 0) value = 0;
+		embedded_value[EMBED_P] = value;
 		break;
 
 	case espeakRANGE:
-		if(new_value > 99) new_value = 99;
-		embedded_value[EMBED_R] = new_value;
+		if(value > 99) value = 99;
+		embedded_value[EMBED_R] = value;
 		break;
 
 	case espeakLINELENGTH:
-		option_linelength = new_value;
+		option_linelength = value;
 		break;
 
 	case espeakWORDGAP:
-		option_wordgap = new_value;
+		option_wordgap = value;
 		break;
 
 	case espeakINTONATION:
-		if((new_value & 0xff) != 0)
-			translator->langopts.intonation_group = new_value & 0xff;
-		option_tone_flags = new_value;
+		if((value & 0xff) != 0)
+			translator->langopts.intonation_group = value & 0xff;
+		option_tone_flags = value;
 		break;
 
 	default:
