@@ -367,7 +367,6 @@ static void init_path(const char *path)
 
 static int initialise(int control)
 {//===============================
-	int param;
 	int result;
 
 	LoadConfig();
@@ -391,7 +390,7 @@ static int initialise(int control)
 	SynthesizeInit();
 	InitNamedata();
 
-	for(param=0; param<N_SPEECH_PARAM; param++)
+	for(int param=0; param<N_SPEECH_PARAM; param++)
 		param_stack[0].parameter[param] = param_defaults[param];
 
 	return(0);
@@ -545,20 +544,18 @@ void MarkerEvent(int type, unsigned int char_position, int value, unsigned char 
 {//======================================================================================
 	// type: 1=word, 2=sentence, 3=named mark, 4=play audio, 5=end
 	ENTER("MarkerEvent");
-	espeak_EVENT *ep;
-	double time;
 	
 	if((event_list == NULL) || (event_list_ix >= (n_event_list-2)))
 		return;
 	
-	ep = &event_list[event_list_ix++];
+	espeak_EVENT *ep = &event_list[event_list_ix++];
 	ep->type = (espeak_EVENT_TYPE)type;
 	ep->unique_identifier = my_unique_identifier;
 	ep->user_data = my_user_data;
 	ep->text_position = char_position & 0xffffff;
 	ep->length = char_position >> 24;
 	
-	time = (double(count_samples + mbrola_delay + (out_ptr - out_start)/2)*1000.0)/samplerate;
+	double time = (double(count_samples + mbrola_delay + (out_ptr - out_start)/2)*1000.0)/samplerate;
 	ep->audio_position = int(time);
 	ep->sample = (count_samples + mbrola_delay + (out_ptr - out_start)/2);
 	
@@ -588,8 +585,6 @@ espeak_ERROR sync_espeak_Synth(unsigned int unique_identifier, const void *text,
 	SHOW("sync_espeak_Synth > position=%d, position_type=%d, end_position=%d, flags=%d, user_data=0x%x, text=%s\n", position, position_type, end_position, flags, user_data, text);
 #endif
 
-	espeak_ERROR aStatus;
-	
 	InitText(flags);
 	my_unique_identifier = unique_identifier;
 	my_user_data = user_data;
@@ -614,7 +609,7 @@ espeak_ERROR sync_espeak_Synth(unsigned int unique_identifier, const void *text,
 	
 	end_character_position = end_position;
 	
-	aStatus = Synthesize(unique_identifier, text, flags);
+	espeak_ERROR aStatus = Synthesize(unique_identifier, text, flags);
 	#ifdef USE_ASYNC
 	wave_flush(my_audio);
 	#endif
@@ -630,8 +625,6 @@ espeak_ERROR sync_espeak_Synth_Mark(unsigned int unique_identifier, const void *
 			   const char *index_mark, unsigned int end_position, 
 			   unsigned int flags, void* user_data)
 {//=========================================================================
-	espeak_ERROR aStatus;
-	
 	InitText(flags);
 	
 	my_unique_identifier = unique_identifier;
@@ -646,7 +639,7 @@ espeak_ERROR sync_espeak_Synth_Mark(unsigned int unique_identifier, const void *
 	end_character_position = end_position;
 	
 	
-	aStatus = Synthesize(unique_identifier, text, flags | espeakSSML);
+	espeak_ERROR aStatus = Synthesize(unique_identifier, text, flags | espeakSSML);
 	SHOW_TIME("LEAVE sync_espeak_Synth_Mark");
 	
 	return (aStatus);
@@ -658,9 +651,8 @@ void sync_espeak_Key(const char *key)
 {//==================================
 	// symbolic name, symbolicname_character  - is there a system resource of symbolic names per language?
 	int letter;
-	int ix;
 
-	ix = utf8_in(&letter,key);
+	int ix = utf8_in(&letter,key);
 	if(key[ix] == 0)
 	{
 		// a single character
@@ -727,8 +719,6 @@ ESPEAK_API void espeak_SetPhonemeCallback(int (* PhonemeCallback)(const char*))
 ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output_type, int buf_length, const char *path, int options)
 {//=============================================================================================================
 ENTER("espeak_Initialize");
-	int param;
-
 	// It seems that the wctype functions don't work until the locale has been set
 	// to something other than the default "C".  Then, not only Latin1 but also the
 	// other characters give the correct results with iswalpha() etc.
@@ -772,7 +762,7 @@ ENTER("espeak_Initialize");
 	VoiceReset(0);
 //	SetVoiceByName("default");
 	
-	for(param=0; param<N_SPEECH_PARAM; param++)
+	for(int param=0; param<N_SPEECH_PARAM; param++)
 		param_stack[0].parameter[param] = param_defaults[param];
 	
 	SetParameter(espeakRATE,175,0);
