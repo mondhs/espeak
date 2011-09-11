@@ -921,24 +921,24 @@ ESPEAK_API espeak_ERROR espeak_Key(const char *key)
 		fprintf(f_logespeak,"\nKEY %s\n",key);
 	}
 
-	espeak_ERROR a_error = EE_OK;
-
+#ifdef USE_ASYNC
 	if(synchronous_mode)
 	{
+#endif
 		sync_espeak_Key(key);
 		return(EE_OK);
+#ifdef USE_ASYNC
 	}
 
-#ifdef USE_ASYNC
 	t_espeak_command* c = create_espeak_key( key, NULL);
-	a_error = fifo_add_command(c);
+	espeak_ERROR a_error = fifo_add_command(c);
 	if (a_error != EE_OK)
 	{
 		delete_espeak_command(c);
 	}
 
+	return a_error;
 #endif
-  return a_error;
 }
 
 
@@ -953,24 +953,21 @@ ESPEAK_API espeak_ERROR espeak_Char(wchar_t character)
 	}
 
 #ifdef USE_ASYNC
-	espeak_ERROR a_error;
-
 	if(synchronous_mode)
 	{
+#endif
 		sync_espeak_Char(character);
 		return(EE_OK);
+#ifdef USE_ASYNC
 	}
 
 	t_espeak_command* c = create_espeak_char( character, NULL);
-	a_error = fifo_add_command(c);
+	espeak_ERROR a_error = fifo_add_command(c);
 	if (a_error != EE_OK)
 	{
 		delete_espeak_command(c);
 	}
 	return a_error;
-#else
-	sync_espeak_Char(character);
-	return(EE_OK);
 #endif
 }
 
@@ -979,26 +976,7 @@ ESPEAK_API espeak_ERROR espeak_SetVoiceByName(const char *name)
 {//============================================================
   ENTER("espeak_SetVoiceByName");
 
-//#ifdef USE_ASYNC
-// I don't think there's a need to queue change voice requests
-#ifdef deleted
-	espeak_ERROR a_error;
-
-	if(synchronous_mode)
-	{
-		return(SetVoiceByName(name));
-	}
-
-	t_espeak_command* c = create_espeak_voice_name(name);
-	a_error = fifo_add_command(c);
-	if (a_error != EE_OK)
-	{
-		delete_espeak_command(c);
-	}
-	return a_error;
-#else
 	return(SetVoiceByName(name));
-#endif
 }  // end of espeak_SetVoiceByName
 
 
@@ -1007,25 +985,7 @@ ESPEAK_API espeak_ERROR espeak_SetVoiceByProperties(espeak_VOICE *voice_selector
 {//==============================================================================
   ENTER("espeak_SetVoiceByProperties");
 
-//#ifdef USE_ASYNC
-#ifdef deleted
-	espeak_ERROR a_error;
-
-	if(synchronous_mode)
-	{
-		return(SetVoiceByProperties(voice_selector));
-	}
-
-	t_espeak_command* c = create_espeak_voice_spec( voice_selector);
-	a_error = fifo_add_command(c);
-	if (a_error != EE_OK)
-	{
-		delete_espeak_command(c);
-	}
-	return a_error;
-#else
 	return(SetVoiceByProperties(voice_selector));
-#endif
 }  // end of espeak_SetVoiceByProperties
 
 
@@ -1053,25 +1013,22 @@ ESPEAK_API espeak_ERROR espeak_SetParameter(espeak_PARAMETER parameter, int valu
 		fprintf(f_logespeak,"SETPARAM %d %d %d\n",parameter,value,relative);
 	}
 #ifdef USE_ASYNC
-	espeak_ERROR a_error;
-
 	if(synchronous_mode)
 	{
+#endif
 		SetParameter(parameter,value,relative);
 		return(EE_OK);
+#ifdef USE_ASYNC
 	}
 
 	t_espeak_command* c = create_espeak_parameter(parameter, value, relative);
 
-	a_error = fifo_add_command(c);
+	espeak_ERROR a_error = fifo_add_command(c);
 	if (a_error != EE_OK)
 	{
 		delete_espeak_command(c);
 	}
 	return a_error;
-#else
-	SetParameter(parameter,value,relative);
-	return(EE_OK);
 #endif
 }
 
@@ -1082,24 +1039,21 @@ ESPEAK_API espeak_ERROR espeak_SetPunctuationList(const wchar_t *punctlist)
   // Set the list of punctuation which are spoken for "some".
 
 #ifdef USE_ASYNC
-	espeak_ERROR a_error;
-
 	if(synchronous_mode)
 	{
+#endif
 		sync_espeak_SetPunctuationList(punctlist);
 		return(EE_OK);
+#ifdef USE_ASYNC
 	}
 
 	t_espeak_command* c = create_espeak_punctuation_list( punctlist);
-	a_error = fifo_add_command(c);
+	espeak_ERROR a_error = fifo_add_command(c);
 	if (a_error != EE_OK)
 	{
 		delete_espeak_command(c);
 	}
 	return a_error;
-#else
-	sync_espeak_SetPunctuationList(punctlist);
-	return(EE_OK);
 #endif
 }  //  end of espeak_SetPunctuationList
 
