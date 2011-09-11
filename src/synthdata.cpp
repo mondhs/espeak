@@ -72,11 +72,10 @@ static char *ReadPhFile(void *ptr, const char *fname, int *size)
 {//=============================================================
 	FILE *f_in;
 	char *p;
-	unsigned int  length;
 	char buf[sizeof(path_home)+40];
 
 	sprintf(buf,"%s%c%s",path_home,PATHSEP,fname);
-	length = GetFileLength(buf);
+	unsigned int length = GetFileLength(buf);
 	
 	if((f_in = fopen(buf,"rb")) == NULL)
 	{
@@ -107,13 +106,8 @@ static char *ReadPhFile(void *ptr, const char *fname, int *size)
 
 int LoadPhData()
 {//=============
-	int ix;
-	int n_phonemes;
-	int version;
 	int result = 1;
 	int length;
-	unsigned char *p;
-	int *pw;
 
 	if((phoneme_tab_data = (unsigned char *)ReadPhFile((void *)(phoneme_tab_data),"phontab",NULL)) == NULL)
 		return(-1);
@@ -127,8 +121,8 @@ int LoadPhData()
 	n_tunes = length / sizeof(TUNE);
 
 	// read the version number from the first 4 bytes of phondata
-	version = 0;
-	for(ix=0; ix<4; ix++)
+	int version = 0;
+	for(int ix=0; ix<4; ix++)
 	{
 		version += (wavefile_data[ix] << (ix*8));
 	}
@@ -139,16 +133,16 @@ int LoadPhData()
 	}
 
 	// set up phoneme tables
-	p = phoneme_tab_data;
+	unsigned char *p = phoneme_tab_data;
 	n_phoneme_tables = p[0];
 	p+=4;
 
-	for(ix=0; ix<n_phoneme_tables; ix++)
+	for(int ix=0; ix<n_phoneme_tables; ix++)
 	{
-		n_phonemes = p[0];
+		int n_phonemes = p[0];
 		phoneme_tab_list[ix].n_phonemes = p[0];
 		phoneme_tab_list[ix].includes = p[1];
-		pw = (int *)p;
+		int *pw = (int *)p;
 		phoneme_tab_list[ix].equivalence_tables = Reverse4Bytes(pw[1]);
 		p += 8;
 		memcpy(phoneme_tab_list[ix].name,p,N_PHONEME_TAB_NAME);
@@ -178,9 +172,7 @@ void FreePhData(void)
 
 int PhonemeCode(unsigned int mnem)
 {//===============================
-	int ix;
-
-	for(ix=0; ix<n_phoneme_tab; ix++)
+	for(int ix=0; ix<n_phoneme_tab; ix++)
 	{
 		if(phoneme_tab[ix] == NULL)
 			continue;
@@ -193,16 +185,12 @@ int PhonemeCode(unsigned int mnem)
 
 int LookupPhonemeString(const char *string)
 {//========================================
-	int  ix;
-	unsigned char c;
-	unsigned int  mnem;
-
 	// Pack up to 4 characters into a word
-	mnem = 0;
-	for(ix=0; ix<4; ix++)
+	unsigned int mnem = 0;
+	for(int ix=0; ix<4; ix++)
 	{
 		if(string[ix]==0) break;
-		c = string[ix];
+		unsigned char c = string[ix];
 		mnem |= (c << (ix*8));
 	}
 
@@ -214,32 +202,21 @@ int LookupPhonemeString(const char *string)
 
 frameref_t *LookupSpect(PHONEME_TAB *this_ph, int which, FMT_PARAMS *fmt_params,  int *n_frames, PHONEME_LIST *plist)
 {//===================================================================================================================
-	int  ix;
-	int  nf;
-	int  nf1;
-	int  seq_break;
-	frameref_t *frames;
-	int  length1;
-	int  length_std;
-	int  length_factor;
-	SPECT_SEQ *seq, *seq2;
-	SPECT_SEQK *seqk, *seqk2;
-	frame_t *frame;
 	static frameref_t frames_buf[N_SEQ_FRAMES];
 	
-	seq = (SPECT_SEQ *)(&phondata_ptr[fmt_params->fmt_addr]);
-	seqk = (SPECT_SEQK *)seq;
-	nf = seq->n_frames;
-
+	SPECT_SEQ *seq = (SPECT_SEQ *)(&phondata_ptr[fmt_params->fmt_addr]);
+	SPECT_SEQK *seqk = (SPECT_SEQK *)seq;
+	int nf = seq->n_frames;
 
 	if(nf >= N_SEQ_FRAMES)
 		nf = N_SEQ_FRAMES - 1;
 
 	seq_len_adjust = fmt_params->fmt2_lenadj + fmt_params->fmt_length;
-	seq_break = 0;
+	int seq_break = 0;
 
-	for(ix=0; ix<nf; ix++)
+	for(int ix=0; ix<nf; ix++)
 	{
+		frame_t *frame;
 		if(seq->frame[0].frflags & FRFLAG_KLATT)
 			frame = &seqk->frame[ix];
 		else
@@ -251,7 +228,7 @@ frameref_t *LookupSpect(PHONEME_TAB *this_ph, int which, FMT_PARAMS *fmt_params,
 			seq_break = ix;
 	}
 
-	frames = &frames_buf[0];
+	frameref_t *frames = &frames_buf[0];
 	if(seq_break > 0)
 	{
 		if(which==1)
@@ -271,22 +248,23 @@ frameref_t *LookupSpect(PHONEME_TAB *this_ph, int which, FMT_PARAMS *fmt_params,
 		seq_len_adjust += FormantTransition2(frames,nf,fmt_params->transition0,fmt_params->transition1,NULL,which);
 	}
 
-	length1 = 0;
-	nf1 = nf - 1;
-	for(ix=0; ix<nf1; ix++)
+	int length1 = 0;
+	int nf1 = nf - 1;
+	for(int ix=0; ix<nf1; ix++)
 		length1 += frames[ix].length;
 
 	if(fmt_params->fmt2_addr != 0)
 	{
 		// a secondary reference has been returned, which is not a wavefile
 		// add these spectra to the main sequence
-		seq2 = (SPECT_SEQ *)(&phondata_ptr[fmt_params->fmt2_addr]);
-		seqk2 = (SPECT_SEQK *)seq2;
+		SPECT_SEQ *seq2 = (SPECT_SEQ *)(&phondata_ptr[fmt_params->fmt2_addr]);
+		SPECT_SEQK *seqk2 = (SPECT_SEQK *)seq2;
 	
 		// first frame of the addition just sets the length of the last frame of the main seq
 		nf--;
-		for(ix=0; ix<seq2->n_frames; ix++)
+		for(int ix=0; ix<seq2->n_frames; ix++)
 		{
+			frame_t *frame;
 			if(seq2->frame[0].frflags & FRFLAG_KLATT)
 				frame = &seqk2->frame[ix];
 			else
@@ -310,7 +288,7 @@ frameref_t *LookupSpect(PHONEME_TAB *this_ph, int which, FMT_PARAMS *fmt_params,
 			// adjust the length of the main part to match the standard length specified for the vowel
 			//   less the front part of the vowel and any added suffix
 
-			length_std = fmt_params->std_length + seq_len_adjust - 45;
+			int length_std = fmt_params->std_length + seq_len_adjust - 45;
 			if(length_std < 10)
 				length_std = 10;
 			if(plist->synthflags & SFLAG_LENGTHEN)
@@ -319,9 +297,9 @@ frameref_t *LookupSpect(PHONEME_TAB *this_ph, int which, FMT_PARAMS *fmt_params,
 // can adjust vowel length for stressed syllables here
 
 
-			length_factor = (length_std * 256)/ length1;
+			int length_factor = (length_std * 256)/ length1;
 			
-			for(ix=0; ix<nf1; ix++)
+			for(int ix=0; ix<nf1; ix++)
 			{
 				frames[ix].length = (frames[ix].length * length_factor)/256;
 			}
@@ -350,8 +328,8 @@ frameref_t *LookupSpect(PHONEME_TAB *this_ph, int which, FMT_PARAMS *fmt_params,
 
 			if(seq_len_adjust != 0)
 			{
-				length_factor = ((length1 + seq_len_adjust) * 256)/length1;
-				for(ix=0; ix<nf1; ix++)
+				int length_factor = ((length1 + seq_len_adjust) * 256)/length1;
+				for(int ix=0; ix<nf1; ix++)
 				{
 					frames[ix].length = (frames[ix].length * length_factor)/256;
 				}
@@ -378,10 +356,7 @@ unsigned char *GetEnvelope(int index)
 
 static void SetUpPhonemeTable(int number, int recursing)
 {//=====================================================
-	int ix;
 	int includes;
-	int ph_code;
-	PHONEME_TAB *phtab;
 
 	if(recursing==0)
 	{
@@ -395,10 +370,10 @@ static void SetUpPhonemeTable(int number, int recursing)
 	}
 
 	// now add the phonemes from this table
-	phtab = phoneme_tab_list[number].phoneme_tab_ptr;
-	for(ix=0; ix<phoneme_tab_list[number].n_phonemes; ix++)
+	PHONEME_TAB *phtab = phoneme_tab_list[number].phoneme_tab_ptr;
+	for(int ix=0; ix<phoneme_tab_list[number].n_phonemes; ix++)
 	{
-		ph_code = phtab[ix].code;
+		int ph_code = phtab[ix].code;
 		phoneme_tab[ph_code] = &phtab[ix];
 		if(ph_code > n_phoneme_tab)
 			n_phoneme_tab = ph_code;
@@ -458,14 +433,12 @@ void LoadConfig(void)
 // Load configuration file, if one exists
 	char buf[sizeof(path_home)+10];
 	FILE *f;
-	int ix;
 	char c1;
-	char *p;
 	char string[200];
 
 	logging_type = 0;
 
-	for(ix=0; ix<N_SOUNDICON_SLOTS; ix++)
+	for(int ix=0; ix<N_SOUNDICON_SLOTS; ix++)
 	{
 		soundicon_tab[ix].filename = NULL;
 		soundicon_tab[ix].data = NULL;
@@ -499,11 +472,11 @@ void LoadConfig(void)
 		else
 		if(memcmp(buf,"soundicon",9)==0)
 		{
-			ix = sscanf(&buf[10],"_%c %s",&c1,string);
+			int ix = sscanf(&buf[10],"_%c %s",&c1,string);
 			if(ix==2)
 			{
 				soundicon_tab[n_soundicon_tab].name = c1;
-				p = Alloc(strlen(string)+1);
+				char *p = Alloc(strlen(string)+1);
 				strcpy(p,string);
 				soundicon_tab[n_soundicon_tab].filename = p;
 				soundicon_tab[n_soundicon_tab++].length = 0;
@@ -530,7 +503,6 @@ static bool StressCondition(Translator *tr, PHONEME_LIST *plist, int condition, 
 // condition:
 //	0	if diminished, 1 if unstressed, 2 if not stressed, 3 if stressed, 4 if max stress
 
-	int stress_level;
 	PHONEME_LIST *pl;
 	static int condition_level[4] = {1,2,4,15};
 
@@ -549,7 +521,7 @@ static bool StressCondition(Translator *tr, PHONEME_LIST *plist, int condition, 
 			return(false);  // no stress elevel for this consonant
 	}
 
-	stress_level = pl->stresslevel & 0xf;
+	int stress_level = pl->stresslevel & 0xf;
 
 	if(tr != NULL)
 	{
@@ -605,20 +577,15 @@ static int CountVowelPosition(PHONEME_LIST *plist)
 
 static bool InterpretCondition(Translator *tr, int control, PHONEME_LIST *plist, int instn)
 {//========================================================================================
-	int which;
-	unsigned int data;
-	int instn2;
 	int count;
-	PHONEME_TAB *ph;
-	PHONEME_LIST *plist_this;
 	static int ph_position[8] = {0, 1, 2, 3, 2, 0, 1, 3};  // prevPh, thisPh, nextPh, next2Ph, nextPhW, prevPhW, nextVowel, next2PhW
 
-	data = instn & 0xff;
-	instn2 = instn >> 8;
+	unsigned int data = instn & 0xff;
+	int instn2 = instn >> 8;
 
 	if(instn2 < 14)
 	{
-		which = (instn2) % 7;
+		int which = (instn2) % 7;
 
 		if(which==4)
 		{
@@ -655,7 +622,7 @@ static bool InterpretCondition(Translator *tr, int control, PHONEME_LIST *plist,
 			which = ph_position[which];
 		}
 
-		plist_this = plist;
+		PHONEME_LIST *plist_this = plist;
 		plist = &plist[which-1];
 
 		if(which == 0)
@@ -672,7 +639,7 @@ static bool InterpretCondition(Translator *tr, int control, PHONEME_LIST *plist,
 			// change phonemes pass
 			plist->ph = phoneme_tab[plist->phcode];
 		}
-		ph = plist->ph;
+		PHONEME_TAB *ph = plist->ph;
 
 		if(instn2 < 7)
 		{
@@ -807,9 +774,7 @@ static bool InterpretCondition(Translator *tr, int control, PHONEME_LIST *plist,
 
 static void SwitchVowelType(PHONEME_LIST *plist, PHONEME_DATA *phdata, USHORT **p_prog, int instn_type)
 {//=====================================================================================================
-	USHORT *prog;
 	int voweltype;
-	signed char x;
 
 	if(instn_type == 2)
 	{
@@ -824,9 +789,9 @@ static void SwitchVowelType(PHONEME_LIST *plist, PHONEME_DATA *phdata, USHORT **
 	voweltype -= phonVOWELTYPES;
 	if((voweltype >= 0) && (voweltype < 6))
 	{
-		prog = *p_prog + voweltype*2;
+		USHORT *prog = *p_prog + voweltype*2;
 		phdata->sound_addr[instn_type] = (((prog[1] & 0xf) << 16) + prog[2]) * 4;
-		x = (prog[1] >> 4) & 0xff;
+		signed char x = (prog[1] >> 4) & 0xff;
 		phdata->sound_param[instn_type] = x;  // sign extend
 	}
 
@@ -836,18 +801,15 @@ static void SwitchVowelType(PHONEME_LIST *plist, PHONEME_DATA *phdata, USHORT **
 
 static int NumInstnWords(USHORT *prog)
 {//===================================
-	int instn;
-	int instn2;
-	int instn_type;
 	static char n_words[11] = {1,1,1,1,1,1,1,1,1,2,4};
 
-	instn = *prog;
-	instn_type = instn >> 12;
+	int instn = *prog;
+	int instn_type = instn >> 12;
 	if(instn_type < 11)
 		return(n_words[instn_type]);
 
 	// 11 to 15, 2 words
-	instn2 = prog[2];
+	int instn2 = prog[2];
 	if((instn2 >> 12) == 0xf)
 	{
 		// addWav(), 2 more words
@@ -867,14 +829,8 @@ void InterpretPhoneme(Translator *tr, int control, PHONEME_LIST *plist, PHONEME_
 // control:
 //bit 0:  PreVoicing
 //bit 8:  change phonemes
-	PHONEME_TAB *ph;
-	USHORT *prog;
-	USHORT instn;
-	int instn2;
-	int or_flag;
 	bool truth;
 	int data;
-	int end_flag;
 	int ix;
 	signed char param_sc;
 
@@ -882,7 +838,7 @@ void InterpretPhoneme(Translator *tr, int control, PHONEME_LIST *plist, PHONEME_
 	int n_return=0;
 	USHORT *return_addr[N_RETURN];  // return address stack
 
-	ph = plist->ph;
+	PHONEME_TAB *ph = plist->ph;
 
 	memset(phdata, 0, sizeof(PHONEME_DATA));
 	phdata->pd_param[i_SET_LENGTH] = ph->std_length;
@@ -891,13 +847,13 @@ void InterpretPhoneme(Translator *tr, int control, PHONEME_LIST *plist, PHONEME_
 	if(ph->program == 0)
 		return;
 
-	end_flag = 0;
+	int end_flag = 0;
 	
-	for(prog = &phoneme_index[ph->program]; end_flag != 1; prog++)
+	for(USHORT *prog = &phoneme_index[ph->program]; end_flag != 1; prog++)
 	{
-		instn = *prog;
-		instn2 = (instn >> 8) & 0xf;
-		or_flag = 0;
+		USHORT instn = *prog;
+		int instn2 = (instn >> 8) & 0xf;
+		int or_flag = 0;
 		
 		switch(instn >> 12)
 		{
@@ -1127,11 +1083,10 @@ void InterpretPhoneme(Translator *tr, int control, PHONEME_LIST *plist, PHONEME_
 void InterpretPhoneme2(int phcode, PHONEME_DATA *phdata)
 {//=====================================================
 // Examine the program of a single isolated phoneme
-	int ix;
 	PHONEME_LIST plist[4];
 	memset(plist, 0, sizeof(plist));
 
-	for(ix=0; ix<4; ix++)
+	for(int ix=0; ix<4; ix++)
 	{
 		plist[ix].phcode = phonPAUSE;
 		plist[ix].ph = phoneme_tab[phonPAUSE];
