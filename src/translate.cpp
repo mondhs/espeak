@@ -472,8 +472,6 @@ int utf8_out(unsigned int c, char *buf)
 // write a unicode character into a buffer as utf8
 // returns the number of bytes written
 	int n_bytes;
-	int j;
-	int shift;
 	static char unsigned code[4] = {0,0xc0,0xe0,0xf0};
 
 	if(c < 0x80)
@@ -494,9 +492,9 @@ int utf8_out(unsigned int c, char *buf)
 	else
 		n_bytes = 3;
 
-	shift = 6*n_bytes;
+	int shift = 6*n_bytes;
 	buf[0] = code[n_bytes] | (c >> shift);
-	for(j=0; j<n_bytes; j++)
+	for(int j=0; j<n_bytes; j++)
 	{
 		shift -= 6;
 		buf[j+1] = 0x80 + ((c >> shift) & 0x3f);
@@ -525,8 +523,6 @@ int utf8_in2(int *c, const char *buf, int backwards)
 // Returns the number of UTF8 bytes used.
 // backwards: set if we are moving backwards through the UTF8 string
 	int c1;
-	int n_bytes;
-	int ix;
 	static const unsigned char mask[4] = {0xff,0x1f,0x0f,0x07};
 
 	// find the start of the next/previous character
@@ -539,7 +535,7 @@ int utf8_in2(int *c, const char *buf, int backwards)
 			buf++;
 	}
 
-	n_bytes = 0;
+	int n_bytes = 0;
 
 	if((c1 = *buf++) & 0x80)
 	{
@@ -553,7 +549,7 @@ int utf8_in2(int *c, const char *buf, int backwards)
 			n_bytes = 3;
 
 		c1 &= mask[n_bytes];
-		for(ix=0; ix<n_bytes; ix++)
+		for(int ix=0; ix<n_bytes; ix++)
 		{
 			c1 = (c1 << 6) + (*buf++ & 0x3f);
 		}
@@ -624,21 +620,15 @@ static int CheckDottedAbbrev(char *word1, WORD_TAB *wtab)
 {//=====================================================
 	int wc;
 	int count = 0;
-	int nbytes;
-	int ok;
-	int ix;
-	char *word;
-	char *wbuf;
 	char word_buf[80];
 
-	word = word1;
-	wbuf = word_buf;
-	ix = 0;
+	char *word = word1;
+	char *wbuf = word_buf;
 
 	for(;;)
 	{
-		ok = 0;
-		nbytes = utf8_in(&wc, word);
+		int ok = 0;
+		int nbytes = utf8_in(&wc, word);
 		if((word[nbytes] == ' ') && IsAlpha(wc))
 		{
 		 	if(word[nbytes+1] == '.')
@@ -660,7 +650,7 @@ static int CheckDottedAbbrev(char *word1, WORD_TAB *wtab)
 		if(ok == 0)
 			break;
 
-		for(ix=0; ix < nbytes; ix++)
+		for(int ix=0; ix < nbytes; ix++)
 			*wbuf++ = word[ix];
 
 		count++;
@@ -676,7 +666,7 @@ static int CheckDottedAbbrev(char *word1, WORD_TAB *wtab)
 
 	if(count > 1)
 	{
-		ix = wbuf - word_buf;
+		int ix = wbuf - word_buf;
 		memcpy(word1, word_buf, ix);
 		while(&word1[ix] < word)
 			word1[ix++] = ' ';
@@ -695,21 +685,14 @@ int ChangeEquivalentPhonemes(Translator *tr, int lang2, char *phonemes)
 // phonemes: the phonemes to be replaced
 
 	int ix;
-	int len;
 	char  phon;
-	char *p;
-	unsigned char *pb;
-	char *eqlist;
-	char *p_out;
-	char *p_in;
-	int  remove_stress = 0;
 	char phonbuf[N_WORD_PHONEMES];
 
 	// has a phoneme equivalence table been specified for thus language pair?
 	if((ix = phoneme_tab_list[tr->phoneme_tab_ix].equivalence_tables) == 0)
 		return(0);
 
-	pb = (unsigned char *)&phondata_ptr[ix];
+	unsigned char *pb = (unsigned char *)&phondata_ptr[ix];
 
 	for(;;)
 	{
@@ -719,10 +702,10 @@ int ChangeEquivalentPhonemes(Translator *tr, int lang2, char *phonemes)
 		if(pb[0] == lang2)
 			break;
 
-		len = (pb[2] << 8) + pb[3];   // size of this table in words
+		int len = (pb[2] << 8) + pb[3];   // size of this table in words
 		pb += (len * 4);
 	}
-	remove_stress = pb[1];
+	int remove_stress = pb[1];
 
 	if(option_phonemes == 2)
 	{
@@ -730,9 +713,9 @@ int ChangeEquivalentPhonemes(Translator *tr, int lang2, char *phonemes)
 		fprintf(f_trans,"(%s) %s  -> (%s) ", phoneme_tab_list[lang2].name, phonbuf, phoneme_tab_list[tr->phoneme_tab_ix].name);
 	}
 
-	p_in = phonemes;
-	eqlist = (char *)&pb[8];
-	p_out = phonbuf;
+	char *p_in = phonemes;
+	char *eqlist = (char *)&pb[8];
+	char *p_out = phonbuf;
 
 	while((phon = *p_in++) != 0)
 	{
@@ -740,10 +723,10 @@ int ChangeEquivalentPhonemes(Translator *tr, int lang2, char *phonemes)
 			continue;   // remove stress marks
 
 		// is there a translation for this phoneme code?
-		p = eqlist;
+		char *p = eqlist;
 		while(*p != 0)
 		{
-			len = strlen(&p[1]);
+			int len = strlen(&p[1]);
 			if(*p == phon)
 			{
 				strcpy(p_out, &p[1]);
@@ -781,41 +764,25 @@ int ChangeEquivalentPhonemes(Translator *tr, int lang2, char *phonemes)
 
 int TranslateWord(Translator *tr, char *word_start, int next_pause, WORD_TAB *wtab)
 {//===========================================================================
-// word1 is terminated by space (0x20) character
-
-	char *word1;
-	int word_length;
-	int ix;
-	char *p;
-	int pfix;
-	int n_chars;
 	unsigned int dictionary_flags[2];
 	unsigned int dictionary_flags2[2];
 	int end_type=0;
 	int prefix_type=0;
-	int prefix_stress;
-	char *wordx;
 	char phonemes[N_WORD_PHONEMES];
 	char prefix_phonemes[N_WORD_PHONEMES];
 	char unpron_phonemes[N_WORD_PHONEMES];
 	char end_phonemes[N_WORD_PHONEMES];
 	char word_copy[N_WORD_BYTES];
 	char word_copy2[N_WORD_BYTES];
-	int word_copy_length;
 	char prefix_chars[0x3f + 2];  
 	int found=0;
    int end_flags;
-	char c_temp;   // save a character byte while we temporarily replace it with space
 	int first_char;
 	int last_char = 0;
 	int add_plural_suffix = 0;
 	int prefix_flags = 0;
-	int confirm_prefix;
-	int spell_word;
 	int stress_bits;
 	int emphasize_allcaps = 0;
-	int wflags;
-	int wmark;
 	int was_unpronouncable = 0;
 	WORD_TAB wtab_null[8];
 
@@ -830,8 +797,8 @@ int TranslateWord(Translator *tr, char *word_start, int next_pause, WORD_TAB *wt
 		memset(wtab_null, 0, sizeof(wtab_null));
 		wtab = wtab_null;
 	}
-	wflags = wtab->flags;
-	wmark = wtab->wmark;
+	int wflags = wtab->flags;
+	int wmark = wtab->wmark;
 
 	dictionary_flags[0] = 0;
 	dictionary_flags[1] = 0;
@@ -852,24 +819,24 @@ int TranslateWord(Translator *tr, char *word_start, int next_pause, WORD_TAB *wt
 	}
 
 	// count the length of the word
-	word1 = word_start;
+	char *word1 = word_start; // word1 is terminated by space (0x20) character
 	if(*word1 == ' ') word1++;   // possibly a dot was replaced by space:  $dot
-	wordx = word1;
+	char *wordx = word1;
 
 	utf8_in(&first_char,wordx);
-	word_length = 0;
+	int word_length = 0;
 	while((*wordx != 0) && (*wordx != ' '))
 	{
 		wordx += utf8_in(&last_char,wordx);
 		word_length++;
 	}
 
-	word_copy_length = wordx - word_start;
+	int word_copy_length = wordx - word_start;
 	if(word_copy_length >= N_WORD_BYTES)
 		word_copy_length = N_WORD_BYTES-1;
 	memcpy(word_copy2, word_start, word_copy_length);
 
-	spell_word = 0;
+	int spell_word = 0;
 
 	if(option_sayas == SAYAS_KEY)
 	{
@@ -923,7 +890,7 @@ int TranslateWord(Translator *tr, char *word_start, int next_pause, WORD_TAB *wt
 		{
 			// grouped words, but no translation.  Join the words with hyphens.
 			wordx = word1;
-			ix = 0;
+			int ix = 0;
 			while(ix < dictionary_skipwords)
 			{
 				if(*wordx == ' ')
@@ -1112,23 +1079,22 @@ if((wmark > 0) && (wmark < 8))
 				}
 			}
 
-			c_temp = wordx[-1];
+			char c_temp = wordx[-1]; // save a character byte while we temporarily replace it with space
 
 			found = 0;
-			confirm_prefix = 1;
+			int confirm_prefix = 1;
 			for (int loopcount = 0; (loopcount < 50) && (end_type & SUFX_P); loopcount++)
 			{
 				// Found a standard prefix, remove it and retranslate
 				// loopcount guards against an endless loop
 				if(confirm_prefix && !(end_type & SUFX_B))
 				{
-					int end2;
 					char phonemes2[N_WORD_PHONEMES];
 					char end_phonemes2[N_WORD_PHONEMES];
 
 					// remove any standard suffix and confirm that the prefix is still recognised
 					phonemes2[0] = 0;
-					end2 = TranslateRules(tr, wordx, phonemes2, N_WORD_PHONEMES, end_phonemes2, wflags|FLAG_NO_PREFIX|FLAG_NO_TRACE, dictionary_flags);
+					int end2 = TranslateRules(tr, wordx, phonemes2, N_WORD_PHONEMES, end_phonemes2, wflags|FLAG_NO_PREFIX|FLAG_NO_TRACE, dictionary_flags);
 					if(end2)
 					{
 						RemoveEnding(tr, wordx, end2, word_copy);
@@ -1163,7 +1129,7 @@ if((wmark > 0) && (wmark < 8))
 
 				if((prefix_type & SUFX_B) == 0)
 				{
-					for(ix=(prefix_type & 0xf); ix>0; ix--)    // num. of characters to remove
+					for(int ix=(prefix_type & 0xf); ix>0; ix--)    // num. of characters to remove
 					{
 						wordx++;
 						while((*wordx & 0xc0) == 0x80) wordx++;  // for multibyte characters
@@ -1171,11 +1137,11 @@ if((wmark > 0) && (wmark < 8))
 				}
 				else
 				{
-					pfix = 1;
+					int pfix = 1;
 					prefix_chars[0] = 0;
-					n_chars = prefix_type & 0x3f;
+					int n_chars = prefix_type & 0x3f;
 
-					for(ix=0; ix < n_chars; ix++)    // num. of bytes to remove
+					for(int ix=0; ix < n_chars; ix++)    // num. of bytes to remove
 					{
 						prefix_chars[pfix++] = *wordx++;
 	
@@ -1194,11 +1160,10 @@ if((wmark > 0) && (wmark < 8))
 				{
 // SUFX_B is used for Turkish, tr_rules contains " ' (Pb"
 					// examine the prefix part
-					char *wordpf;
 					char prefix_phonemes2[12];
 
 					strncpy0(prefix_phonemes2,end_phonemes,sizeof(prefix_phonemes2));
-					wordpf = &prefix_chars[1];
+					char *wordpf = &prefix_chars[1];
 					strcpy(prefix_phonemes, phonemes);
 
 					// look for stress marker or $abbrev
@@ -1357,8 +1322,8 @@ if(dictionary_flags2[0] & FLAG_ABBREV)
 
 	/* determine stress pattern for this word */
 	/******************************************/
-	prefix_stress = 0;
-	for(p = prefix_phonemes; *p != 0; p++)
+	int prefix_stress = 0;
+	for(char *p = prefix_phonemes; *p != 0; p++)
 	{
 		if((*p == phonSTRESS_P) || (*p == phonSTRESS_P2))
 		{
@@ -1369,13 +1334,12 @@ if(dictionary_flags2[0] & FLAG_ABBREV)
 	{
 		if((tr->langopts.param[LOPT_PREFIXES]) || (prefix_type & SUFX_T))
 		{
-			char *p;
 			// German, keep a secondary stress on the stem
 			SetWordStress(tr, phonemes, dictionary_flags, 3, 0);
 
 			// reduce all but the first primary stress
-			ix=0;
-			for(p=prefix_phonemes; *p != 0; p++)
+			int ix=0;
+			for(char *p=prefix_phonemes; *p != 0; p++)
 			{
 				if(*p == phonSTRESS_P)
 				{
@@ -1422,7 +1386,7 @@ if(dictionary_flags2[0] & FLAG_ABBREV)
 	if(end_phonemes[0] != 0)
 	{
 		// a suffix had the SUFX_T option set, add the suffix after the stress pattern has been determined
-		ix = strlen(word_phonemes);
+		int ix = strlen(word_phonemes);
 		end_phonemes[N_WORD_PHONEMES-1-ix] = 0;   // ensure no buffer overflow
 		strcpy(&word_phonemes[ix], end_phonemes);
 	}
@@ -1563,12 +1527,11 @@ void Word_EmbeddedCmd()
 {//====================
 // Process embedded commands for emphasis, sayas, and break
 	int embedded_cmd;
-	int value;
 
 	do
 	{
 		embedded_cmd = embedded_list[embedded_read++];
-		value = embedded_cmd >> 8;
+		int value = embedded_cmd >> 8;
 
 		switch(embedded_cmd & 0x1f)
 		{
@@ -1627,36 +1590,22 @@ int SetTranslator2(const char *new_language)
 static int TranslateWord2(Translator *tr, char *word, WORD_TAB *wtab, int pre_pause, int next_pause)
 {//=================================================================================================
 	int flags=0;
-	int stress;
-	int next_stress;
 	int next_tone=0;
-	unsigned char *p;
-	int srcix;
-	int found_dict_flag;
 	unsigned char ph_code;
-	PHONEME_LIST2 *plist2;
-	PHONEME_TAB *ph;
-	int max_stress;
 	int max_stress_ix=0;
 	int prev_vowel = -1;
 	int pitch_raised = 0;
 	int switch_phonemes = -1;
 	int first_phoneme = 1;
-	int source_ix;
-	int len;
-	int ix;
 	int sylimit;        // max. number of syllables in a word to be combined with a preceding preposition
-	const char *new_language;
 	unsigned char bad_phoneme[4];
-	int word_flags;
-	int word_copy_len;
 	char word_copy[N_WORD_BYTES+1];
 	char old_dictionary_name[40];
 
 	if((f_logespeak != NULL) && (logging_type & 8))
 	{
 		fprintf(f_logespeak,"WORD: flg=%.5x len=%d  '",wtab->flags,wtab->length);
-		for(ix=0; ix<40; ix++)
+		for(int ix=0; ix<40; ix++)
 		{
 			if(word[ix]==0) break;
 			fputc(word[ix], f_logespeak);
@@ -1664,11 +1613,11 @@ static int TranslateWord2(Translator *tr, char *word, WORD_TAB *wtab, int pre_pa
 		fprintf(f_logespeak,"'\n");
 	}
 
-	len = wtab->length;
+	int len = wtab->length;
 	if(len > 31) len = 31;
-	source_ix = (wtab->sourceix & 0x7ff) | (len << 11); // bits 0-10 sourceix, bits 11-15 word length
+	int source_ix = (wtab->sourceix & 0x7ff) | (len << 11); // bits 0-10 sourceix, bits 11-15 word length
 
-	word_flags = wtab[0].flags;
+	int word_flags = wtab[0].flags;
 	if(word_flags & FLAG_EMBEDDED)
 	{
 		embedded_flag = SFLAG_EMBEDDED;
@@ -1721,20 +1670,20 @@ static int TranslateWord2(Translator *tr, char *word, WORD_TAB *wtab, int pre_pa
 		}
 	}
 
-	p = (unsigned char *)word_phonemes;
+	unsigned char *p = (unsigned char *)word_phonemes;
 	if(word_flags & FLAG_PHONEMES)
 	{
 		// The input is in phoneme mnemonics, not language text
-		int c1;
 		char lang_name[12];
 
 		if(memcmp(word,"_^_",3)==0)
 		{
 			// switch languages
 			word+=3;
-			for(ix=0;;)
+			int ix=0;
+			for(;;)
 			{
-				c1 = *word++;
+				int c1 = *word++;
 				if((c1==' ') || (c1==0))
 					break;
 				lang_name[ix++] = tolower(c1);
@@ -1758,9 +1707,9 @@ static int TranslateWord2(Translator *tr, char *word, WORD_TAB *wtab, int pre_pa
 	else
 	{
 		int c2;
-		ix = 0;
+		int ix = 0;
 		while(((c2 = word_copy[ix] = word[ix]) != ' ') && (c2 != 0) && (ix < N_WORD_BYTES)) ix++;
-		word_copy_len = ix;
+		int word_copy_len = ix;
 
 		flags = TranslateWord(translator, word, next_pause, wtab);
 
@@ -1773,7 +1722,6 @@ static int TranslateWord2(Translator *tr, char *word, WORD_TAB *wtab, int pre_pa
 
 		if((flags & FLAG_COMBINE) && !(wtab[1].flags & FLAG_PHONEMES))
 		{
-			char *p2;
 			int ok = 1;
 			unsigned int flags2[2];
 			int c_word2;
@@ -1784,7 +1732,7 @@ static int TranslateWord2(Translator *tr, char *word, WORD_TAB *wtab, int pre_pa
 
 			// LANG=cs,sk
 			// combine a preposition with the following word
-			p2 = word;
+			char *p2 = word;
 			while(*p2 != ' ') p2++;
 
 			utf8_in(&c_word2, p2+1);   // first character of the next word;
@@ -1847,7 +1795,7 @@ static int TranslateWord2(Translator *tr, char *word, WORD_TAB *wtab, int pre_pa
 			// this word uses a different language
 			memcpy(word, word_copy, word_copy_len);
 
-			new_language = (char *)(&p[1]);
+			const char *new_language = (char *)(&p[1]);
 			if(new_language[0]==0)
 				new_language = "en";
 
@@ -1911,13 +1859,13 @@ static int TranslateWord2(Translator *tr, char *word, WORD_TAB *wtab, int pre_pa
 			pre_pause = 1;
 	}
 
-	plist2 = &ph_list2[n_ph_list2];
-	stress = 0;
-	next_stress = 1;
-	srcix = 0;
-	max_stress = -1;
+	PHONEME_LIST2 *plist2 = &ph_list2[n_ph_list2];
+	int stress = 0;
+	int next_stress = 1;
+	int srcix = 0;
+	int max_stress = -1;
 
-	found_dict_flag = 0;
+	int found_dict_flag = 0;
 	if((flags & FLAG_FOUND) && !(flags & FLAG_TEXTMODE))
 		found_dict_flag = SFLAG_DICTIONARY;
 
@@ -1975,7 +1923,7 @@ static int TranslateWord2(Translator *tr, char *word, WORD_TAB *wtab, int pre_pa
 			continue;      // unknown phoneme
 
 		// Add the phonemes to the first stage phoneme list (ph_list2)
-		ph = phoneme_tab[ph_code];
+		PHONEME_TAB *ph = phoneme_tab[ph_code];
 
 		if(ph_code == phonSWITCH)
 		{
@@ -2146,11 +2094,9 @@ static int EmbeddedCommand(unsigned int &source_index)
 	const char *commands = "PSARHTIVYMUBF";
 	int value = -1;
 	int sign = 0;
-	unsigned char c;
 	char *p;
-	int cmd;
 
-	c = source[source_index];
+	unsigned char c = source[source_index];
 	if(c == '+')
 	{
 		sign = 0x40;
@@ -2176,7 +2122,7 @@ static int EmbeddedCommand(unsigned int &source_index)
 
 	if((p = strchr_w(commands,c)) == NULL)
 		return(0);
-	cmd = (p - commands)+1;
+	int cmd = (p - commands)+1;
 	if(value == -1)
 	{
 		value = embedded_default[cmd];
@@ -2204,9 +2150,8 @@ static int EmbeddedCommand(unsigned int &source_index)
 
 static int SubstituteChar(Translator *tr, unsigned int c, unsigned int next_in, int *insert)
 {//=========================================================================================
-	int ix;
 	unsigned int word;
-	unsigned int new_c, c2, c_lower;
+	unsigned int c2, c_lower;
 	int upper_case = 0;
 	static int ignore_next = 0;
 	const unsigned int *replace_chars;
@@ -2229,8 +2174,8 @@ static int SubstituteChar(Translator *tr, unsigned int c, unsigned int next_in, 
 		upper_case = 1;
 	}
 
-	new_c = 0;
-	for(ix=0; (word = replace_chars[ix]) != 0; ix+=2)
+	unsigned int new_c = 0;
+	for(int ix=0; (word = replace_chars[ix]) != 0; ix+=2)
 	{
 		if(c_lower == (word & 0xffff))
 		{
@@ -2274,9 +2219,6 @@ static int TranslateChar(Translator *tr, char *ptr, int prev_in, unsigned int c,
 	// To allow language specific examination and replacement of characters
 
 	int code;
-	int initial;
-	int medial;
-	int final;
 	int next2;
 
 	static const unsigned char hangul_compatibility[0x34] = {
@@ -2320,9 +2262,9 @@ static int TranslateChar(Translator *tr, char *ptr, int prev_in, unsigned int c,
 		if(((code = c - 0xac00) >= 0) && (c <= 0xd7af))
 		{
 			// break a syllable hangul into 2 or 3 individual jamo
-			initial = (code/28)/21;
-			medial = (code/28) % 21;
-			final = code % 28;
+			int initial = (code/28)/21;
+			int medial = (code/28) % 21;
+			int final = code % 28;
 
 			if(initial == 11)
 			{
@@ -2353,44 +2295,34 @@ static int TranslateChar(Translator *tr, char *ptr, int prev_in, unsigned int c,
 
 void *TranslateClause(Translator *tr, FILE *f_text, const void *vp_input, int *tone_out, char **voice_change)
 {//==========================================================================================================
-	int ix;
 	int c;
 	int cc;
 	unsigned int source_index=0;
-	unsigned int prev_source_index=0;
 	int source_index_word=0;
 	int prev_in;
 	int prev_out=' ';
-	int prev_out2;
 	int prev_in_save=0;
 	int next_in;
-	int next_in_nbytes;
 	int char_inserted=0;
 	int clause_pause;
 	int pre_pause_add=0;
 	int word_mark = 0;
 	int all_upper_case=FLAG_ALL_UPPER;
-	int finished;
-	int single_quoted;
 	int phoneme_mode = 0;
 	int dict_flags = 0;        // returned from dictionary lookup
-	int word_flags;        // set here
-	int next_word_flags;
 	int embedded_count = 0;
 	int letter_count = 0;
 	int space_inserted = 0;
 	int syllable_marked = 0;
 	int decimal_sep_count = 0;
-	char *word;
 	char *p;
-	int j, k;
+	int j;
 	int n_digits;
 	int charix_top=0;
 
 	short charix[N_TR_SOURCE+4];
 	WORD_TAB words[N_CLAUSE_WORDS];
 	static char voice_change_name[40];
-	int word_count=0;      // index into words
 
 	char sbuf[N_TR_SOURCE];
 
@@ -2415,7 +2347,7 @@ void *TranslateClause(Translator *tr, FILE *f_text, const void *vp_input, int *t
 		clause_start_char = 0;
 	clause_start_word = count_words + 1;
 
-	for(ix=0; ix<N_TR_SOURCE; ix++)
+	for(int ix=0; ix<N_TR_SOURCE; ix++)
 		charix[ix] = 0;
 	terminator = ReadClause(tr, f_text, source, charix, &charix_top, N_TR_SOURCE, &tone2, voice_change_name);
 
@@ -2490,24 +2422,24 @@ p = source;
 	tr->end_stressed_vowel=0;
 	tr->prev_dict_flags = 0;
 
-	word_count = 0;
-	single_quoted = 0;
-	word_flags = 0;
-	next_word_flags = 0;
+	int word_count = 0; // index into words
+	int single_quoted = 0;
+	int word_flags = 0;
+	int next_word_flags = 0;
 
 	sbuf[0] = 0;
 	sbuf[1] = ' ';
 	sbuf[2] = ' ';
-	ix = 3;
+	int ix = 3;
 	prev_in = ' ';
 
 	words[0].start = ix;
 	words[0].flags = 0;
-	finished = 0;
+	int finished = 0;
 
 	for(j=0; charix[j]<=0; j++);
 	words[0].sourceix = charix[j];
-	k = 0;
+	int k = 0;
 	while(charix[j] != 0)
 	{
 		// count the number of characters (excluding multibyte continuation bytes)
@@ -2518,7 +2450,7 @@ p = source;
 
 	while(!finished && (ix < (int)sizeof(sbuf))&& (n_ph_list2 < N_PHONEME_LIST-4))
 	{
-		prev_out2 = prev_out;
+		int prev_out2 = prev_out;
 		utf8_in2(&prev_out,&sbuf[ix-1],1);   // prev_out = sbuf[ix-1];
 
 		if(tr->langopts.tone_numbers && IsDigit09(prev_out) && IsAlpha(prev_out2))
@@ -2538,7 +2470,7 @@ p = source;
 			utf8_in2(&prev_in,&source[source_index-1],1);  //  prev_in = source[source_index-1];
 		}
 
-		prev_source_index = source_index;
+		unsigned int prev_source_index = source_index;
 
 		if(char_inserted)
 		{
@@ -2550,7 +2482,7 @@ p = source;
 			source_index += utf8_in(&cc,&source[source_index]);   // cc = source[source_index++];
 			c = cc;
 		}
-		next_in_nbytes = utf8_in(&next_in,&source[source_index]);
+		int next_in_nbytes = utf8_in(&next_in,&source[source_index]);
 
 		if(c == 0)
 		{
@@ -3069,11 +3001,7 @@ if((c == '/') && (tr->langopts.testing & 2) && IsDigit09(next_in) && IsAlpha(pre
 
 	for(ix=0; ix < word_count; ix++)
 	{
-		int nx;
 		int c_temp;
-		char *pn;
-		char *pw;
-		int nw;
 		char number_buf[150];
 		WORD_TAB num_wtab[50];  // copy of 'words', when splitting numbers into parts
 
@@ -3090,12 +3018,13 @@ if((c == '/') && (tr->langopts.testing & 2) && IsDigit09(next_in) && IsAlpha(pre
 
 
 		// digits should have been converted to Latin alphabet ('0' to '9')
-		word = pw = &sbuf[words[ix].start];
+		char *word = &sbuf[words[ix].start];
+		char *pw = word;
 
 		if(iswdigit(word[0]) && (tr->langopts.break_numbers != BREAK_THOUSANDS))
 		{
 			// Languages with 100000 numbers.  Remove thousands separators so that we can insert them again later
-			pn = number_buf;
+			char *pn = number_buf;
 			while(pn < &number_buf[sizeof(number_buf)-20])
 			{
 				if(iswdigit(*pw))
@@ -3111,7 +3040,7 @@ if((c == '/') && (tr->langopts.testing & 2) && IsDigit09(next_in) && IsAlpha(pre
 				}
 				else
 				{
-					nx = pw - word;
+					int nx = pw - word;
 					memset(word,' ',nx);
 					nx = pn - number_buf;
 					memcpy(word,number_buf,nx);
@@ -3127,9 +3056,9 @@ if((c == '/') && (tr->langopts.testing & 2) && IsDigit09(next_in) && IsAlpha(pre
 		{
 			// word is entirely digits, insert commas and break into 3 digit "words"
 			number_buf[0] = ' ';
-			pn = &number_buf[1];
-			nx = n_digits;
-			nw = 0;
+			char *pn = &number_buf[1];
+			int nx = n_digits;
+			int nw = 0;
 
 			if((n_digits > tr->langopts.max_digits) || (word[0] == '0'))
 				words[ix].flags |= FLAG_INDIVIDUAL_DIGITS;
@@ -3201,7 +3130,7 @@ if((c == '/') && (tr->langopts.testing & 2) && IsDigit09(next_in) && IsAlpha(pre
 				for(pw = word; *pw != ' ';)
 				{
 					memset(number_buf,' ',9);
-					nx = utf8_in(&c_temp, pw);
+					int nx = utf8_in(&c_temp, pw);
 					memcpy(&number_buf[2],pw,nx);
 					TranslateWord2(tr, &number_buf[2], &words[ix], 0, 0 );
 					pw += nx;
@@ -3236,8 +3165,7 @@ if((c == '/') && (tr->langopts.testing & 2) && IsDigit09(next_in) && IsAlpha(pre
 	for(ix=0; ix<2; ix++)
 	{
 		// terminate the clause with 2 PAUSE phonemes
-		PHONEME_LIST2 *p2;
-		p2 = &ph_list2[n_ph_list2 + ix];
+		PHONEME_LIST2 *p2 = &ph_list2[n_ph_list2 + ix];
 		p2->phcode = phonPAUSE;
 		p2->stresslevel = 0;
 		p2->sourceix = source_index;
