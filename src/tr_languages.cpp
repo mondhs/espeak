@@ -74,12 +74,9 @@ static void SetLetterVowel(Translator *tr, int c)
 static void ResetLetterBits(Translator *tr, int groups)
 {//====================================================
 // Clear all the specified groups
-	unsigned int ix;
-	unsigned int mask;
+	unsigned int mask = ~groups;
 
-	mask = ~groups;
-
-	for(ix=0; ix<sizeof(tr->letter_bits); ix++)
+	for(unsigned ix=0; ix<sizeof(tr->letter_bits); ix++)
 	{
 		tr->letter_bits[ix] &= mask;
 	}
@@ -87,21 +84,17 @@ static void ResetLetterBits(Translator *tr, int groups)
 
 static void SetLetterBits(Translator *tr, int group, const char *string)
 {//=====================================================================
-	int bits;
 	unsigned char c;
 	
-	bits = (1L << group);
+	int bits = (1L << group);
 	while((c = *string++) != 0)
 		tr->letter_bits[c] |= bits;
 }
 
 static void SetLetterBitsRange(Translator *tr, int group, int first, int last)
 {//===========================================================================
-	int bits;
-	int ix;
-
-	bits = (1L << group);
-	for(ix=first; ix<=last; ix++)
+	int bits = (1L << group);
+	for(int ix=first; ix<=last; ix++)
 	{
 		tr->letter_bits[ix] |= bits;
 	}
@@ -110,15 +103,13 @@ static void SetLetterBitsRange(Translator *tr, int group, int first, int last)
 
 static Translator* NewTranslator(void)
 {//===================================
-	Translator *tr;
-	int ix;
 	static const unsigned char stress_amps2[] = {18,18, 20,20, 20,22, 22,20 };
 	static const short stress_lengths2[8] = {182,140, 220,220, 220,240, 260,280};
 	static const wchar_t empty_wstring[1] = {0};
 	static const wchar_t punct_in_word[2] = {'\'', 0};  // allow hyphen within words
 	static const unsigned char default_tunes[6] = {0, 1, 2, 3, 0, 0};
 
-	tr = (Translator *)Alloc(sizeof(Translator));
+	Translator *tr = (Translator *)Alloc(sizeof(Translator));
 	if(tr == NULL)
 		return(NULL);
 
@@ -152,7 +143,7 @@ static Translator* NewTranslator(void)
 	tr->char_plus_apostrophe = empty_wstring;
 	tr->punct_within_word = punct_in_word;
 
-	for(ix=0; ix<8; ix++)
+	for(int ix=0; ix<8; ix++)
 	{
 		tr->stress_amps[ix] = stress_amps2[ix];
 		tr->stress_amps_r[ix] = stress_amps2[ix] - 1;
@@ -335,7 +326,6 @@ void SetupTranslator(Translator *tr, const short *lengths, const unsigned char *
 Translator *SelectTranslator(const char *name)
 {//===========================================
 	int name2 = 0;
-	Translator *tr;
 
 	static const short stress_lengths_fr[8] = {190, 170,  190, 200,  0, 0,  190, 240};
 	static const unsigned char stress_amps_fr[8] = {18,16, 18,18, 18,18, 18,18 };
@@ -350,7 +340,7 @@ Translator *SelectTranslator(const char *name)
 	while(*name != 0)
 		name2 = (name2 << 8) + *name++;
 
-	tr = NewTranslator();
+	Translator *tr = NewTranslator();
 
 	switch(name2)
 	{
