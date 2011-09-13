@@ -130,13 +130,12 @@ static unsigned int get_used_mem()
 
 static void start_stream()
 {
-  PaError err;
   SHOW_TIME("start_stream");
 
   my_stream_could_start=0;  
   mInCallbackFinishedState = false;
 
-  err = Pa_StartStream(pa_stream);
+  PaError err = Pa_StartStream(pa_stream);
   SHOW("start_stream > Pa_StartStream=%d (%s)\n", err, Pa_GetErrorText(err));
   
 #if USE_PORTAUDIO == 19
@@ -188,8 +187,7 @@ static int pa_callback(void *inputBuffer, void *outputBuffer,
 			SHOW_TIME("pa_callback > underflow");
 			aResult=1; // paComplete;
 			mInCallbackFinishedState = true;
-			size_t aUsedMem=0;
-			aUsedMem = (size_t)(aWrite - myRead);
+			size_t aUsedMem = (size_t)(aWrite - myRead);
 			if (aUsedMem)
 			{
 				memcpy(outputBuffer, myRead, aUsedMem);
@@ -318,12 +316,11 @@ static int wave_open_sound()
   ENTER("wave_open_sound");
 
   PaError err=paNoError;
-  PaError active;
 
 #if USE_PORTAUDIO == 18
-  active = Pa_StreamActive(pa_stream);
+  PaError active = Pa_StreamActive(pa_stream);
 #else
-  active = Pa_IsStreamActive(pa_stream);
+  PaError active = Pa_IsStreamActive(pa_stream);
 #endif
 
   if(active == 1)
@@ -340,7 +337,7 @@ static int wave_open_sound()
 
    PaDeviceID playbackDevice = Pa_GetDefaultOutputDeviceID();
 
-   PaError err = Pa_OpenStream( &pa_stream,
+   err = Pa_OpenStream( &pa_stream,
 				/* capture parameters */
 				paNoDevice,
 				0,
@@ -617,7 +614,6 @@ void wave_set_callback_is_output_enabled(t_wave_callback* cb)
 void wave_init(int srate)
 {
   ENTER("wave_init");
-  PaError err;
 
   pa_stream = NULL;
 	wave_samplerate = srate;
@@ -625,7 +621,7 @@ void wave_init(int srate)
   init_buffer();
 
   // PortAudio sound output library
-  err = Pa_Initialize();
+  PaError err = Pa_Initialize();
   pa_init_err = err;
   if(err != paNoError)
     {
@@ -658,9 +654,6 @@ void* wave_open(const char* the_api)
 static size_t copyBuffer(char* dest, char* src, const size_t theSizeInBytes) 
 { 
 	size_t bytes_written = 0;
-	unsigned int i = 0;
-	uint16_t* a_dest = NULL;
-	uint16_t* a_src = NULL;
  
 	if ((src != NULL) && dest != NULL)
 	{ 
@@ -674,11 +667,10 @@ static size_t copyBuffer(char* dest, char* src, const size_t theSizeInBytes)
 		else // copy for 2 channels (stereo)
 		{
 			SHOW("copyBuffer > 2 channels > memcpy %x (%d bytes)\n", (int)myWrite, theSizeInBytes);
-			i = 0;
-			a_dest = (uint16_t* )dest;
-			a_src = (uint16_t* )src;
+			uint16_t *a_dest = (uint16_t* )dest;
+			uint16_t *a_src = (uint16_t* )src;
  
-			for(i=0; i<theSizeInBytes/2; i++)
+			for(unsigned int i=0; i<theSizeInBytes/2; i++)
 			{
 				a_dest[2*i] = a_src[i];
 				a_dest[2*i+1] = a_src[i];
