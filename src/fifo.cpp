@@ -293,12 +293,16 @@ static int sleep_until_start_request_or_inactivity()
 	}
 
       int err=0;
-      struct timespec ts, to;
+      struct timespec ts;
       struct timeval tv;
       
       clock_gettime2( &ts);
+
+#ifdef DEBUG_ENABLED
+      struct timespec to;
       to.tv_sec = ts.tv_sec;
       to.tv_nsec = ts.tv_nsec;
+#endif
       
       add_time_in_ms( &ts, INACTIVITY_TIMEOUT);
       

@@ -47,9 +47,6 @@ FILE *f_events = NULL;
 FILE *OpenWaveFile3(const char *path)
 /***********************************/
 {
-	int *p;
-	FILE *f;
-
 	static unsigned char wave_hdr[44] = {
 		'R','I','F','F',0,0,0,0,'W','A','V','E','f','m','t',' ',
 		0x10,0,0,0,1,0,1,0,  9,0x3d,0,0,0x12,0x7a,0,0,
@@ -60,11 +57,11 @@ FILE *OpenWaveFile3(const char *path)
 		return(NULL);
 
 	// set the sample rate in the header
-	p = (int *)(&wave_hdr[24]);
+	int *p = (int *)(&wave_hdr[24]);
 	p[0] = samplerate;
 	p[1] = samplerate * 2;
 
-	f = fopen(path,"wb");
+	FILE *f = fopen(path,"wb");
 
 	if(f != NULL)
 	{
@@ -79,14 +76,13 @@ FILE *OpenWaveFile3(const char *path)
 void CloseWaveFile3(FILE *f)
 /*************************/
 {
-   unsigned int pos;
    static int value;
 
 	if(f == NULL)
 		return;
 
    fflush(f);
-   pos = ftell(f);
+   unsigned int pos = ftell(f);
 
    value = pos - 8;
    fseek(f,4,SEEK_SET);
@@ -160,15 +156,13 @@ int TestSynthCallback(short *wav, int numsamples, espeak_EVENT *events)
 #ifdef deleted
 static int RuLex_sorter(char **a, char **b)
 {//=======================================
-	char *pa, *pb;
-	int xa, xb;
 	int ix;
 
-	pa = *a;
-	pb = *b;
+	char *pa = *a;
+	char *pb = *b;
 
-	xa = strlen(pa)-1;
-	xb = strlen(pb)-1;
+	int xa = strlen(pa)-1;
+	int xb = strlen(pb)-1;
 
 	while((xa >= 0) && (xb >= 0))
 	{
@@ -211,20 +205,14 @@ static void DecodePhonemes2(const char *inptr, char *outptr)
 {
 	unsigned char phcode;
 	unsigned char c;
-	unsigned int  mnem;
 	PHONEME_TAB *ph;
-	const char *p;
-	int ix;
-	int j;
-	int start;
 	static const char *stress_chars = "==,,'*  ";
 
 	unsigned int replace_ph[] = {',',PH('@','-'),'W','3','y','A',PH('A',':'),'*',PH('_','!'),PH('_','|'),PH('O','I'),PH('Y',':'),PH('p','F'),PH('E','2'),0};
 	const char *replace_ph2[] = {NULL,NULL,"9","@r","Y","a:",  "a:",        "r",   "?",        "?",        "OY",       "2:",   "pf" ,"E",NULL};
 
-
-	start = 1;
-	for(ix=0; (phcode = inptr[ix]) != 0; ix++)
+	int start = 1;
+	for(int ix=0; (phcode = inptr[ix]) != 0; ix++)
 	{
 		if(phcode == 255)
 			continue;     /* indicates unrecognised phoneme */
@@ -238,7 +226,7 @@ static void DecodePhonemes2(const char *inptr, char *outptr)
 		}
 		else
 		{
-			mnem = ph->mnemonic;
+			unsigned int mnem = ph->mnemonic;
 			if(ph->type == phPAUSE)
 			{
 				if(start)
@@ -249,9 +237,9 @@ static void DecodePhonemes2(const char *inptr, char *outptr)
 			}
 
 			start = 0;
-			p = NULL;
+			const char *p = NULL;
 
-			for(j=0;;j++)
+			for(int j=0;;j++)
 			{
 				if(replace_ph[j] == 0)
 					break;
@@ -294,24 +282,12 @@ void Lexicon_It(int pass)
 // Words which are still in error are listed in file:  it_compare  (in the directory of the lexicon file).
 	int count=0;
 	int matched=0;
-	int ix;
 	int c;
-	char *p, *p2;
-	int len;
-	int vowel_ix;
-	int stress_posn1;
-	int stress_posn2;
-	int stress_vowel1;
-	int stress_vowel2;
-	int use_phonemes;
+	char *p;
 	FILE *f_in;
 	FILE *f_out;
 	FILE *f_listx;
 	FILE *f_list_in = NULL;
-	int listx_count;
-	long int displ;
-	const char *alt_string;
-	wxString str;
 	static wxString fname_lex;
 	char buf[200];
 	char word[80];
@@ -325,7 +301,6 @@ void Lexicon_It(int pass)
 	char buf_out[200];
 	char buf_error[200];
 	char last_listx[200];
-int test;
 	static const char *vowels1 = "aeiou";
 	static const char *vowels2 = "aeou";
 
@@ -360,12 +335,11 @@ int test;
 	
 	if((f_out = fopen(buf,"w")) == NULL)
 	{
-		str = wxString(buf, wxConvLocal);
-		wxLogError(_T("Can't write file: ") + str);
+		wxLogError(_T("Can't write file: ") + wxString(buf, wxConvLocal));
 		return;
 	}
 
-	listx_count = 0;
+	int listx_count = 0;
 	last_listx[0] = 0;
 
 	if(pass == 1)
@@ -419,7 +393,7 @@ int test;
 
 		// should we remove a vowel ending to produce a stem ?
 		strcpy(word_stem, word);
-		len = strlen(word) - 1;
+		int len = strlen(word) - 1;
 		utf8_in(&c, temp);
 //		if(iswlower(c))
 		{
@@ -432,7 +406,8 @@ int test;
 
 		// convert word to lower-case
 		word2[0] = ' ';
-		for(ix=0, p=&word2[1];;)
+		p = &word2[1];
+		for(int ix=0;;)
 		{
 			ix += utf8_in(&c,&temp[ix]);
 			c = towlower(c);
@@ -442,8 +417,8 @@ int test;
 		}
 		strcat(word2,"  ");
 
-		use_phonemes = 0;
-		for(ix=0; ; ix++)
+		int use_phonemes = 0;
+		for(int ix=0; ; ix++)
 		{
 			if(exceptions[ix] == NULL)
 				break;
@@ -461,13 +436,13 @@ int test;
 		TranslateWord(translator,&word1[1],0, NULL);
 		DecodePhonemes(word_phonemes,phonemes);
 
-		stress_posn1 = 0;
-		stress_posn2 = 0;
-		stress_vowel1 = 0;
-		stress_vowel2 = 0;
+		int stress_posn1 = 0;
+		int stress_posn2 = 0;
+		int stress_vowel1 = 0;
+		int stress_vowel2 = 0;
 
-		vowel_ix = 1;
-		for(ix=0; ;ix++)
+		int vowel_ix = 1;
+		for(int ix=0; ;ix++)
 		{
 			if((c = word_phonemes[ix]) == 0)
 				break;
@@ -485,7 +460,7 @@ int test;
 		DecodePhonemes(word_phonemes,phonemes2);
 
 		vowel_ix = 1;
-		for(ix=0; ;ix++)
+		for(int ix=0; ;ix++)
 		{
 			if((c = word_phonemes[ix]) == 0)
 				break;
@@ -526,7 +501,7 @@ int test;
 		}
 
 		// reduce [E] and [O] to [e] and [o] if not stressed
-		for(ix=0; phonemes[ix] != 0; ix++)
+		for(int ix=0; phonemes[ix] != 0; ix++)
 		{
 			if((phonemes[ix] == 'E') || (phonemes[ix] == 'O'))
 			{
@@ -535,7 +510,7 @@ int test;
 			}
 		}
 
-		for(ix=0; phonemes2[ix] != 0; ix++)
+		for(int ix=0; phonemes2[ix] != 0; ix++)
 		{
 			if((phonemes2[ix] == 'E') || (phonemes2[ix] == 'O'))
 			{
@@ -546,7 +521,7 @@ int test;
 
 		if(strcmp(phonemes,phonemes2) == 0)
 		{
-			alt_string = NULL;
+			const char *alt_string = NULL;
 			if((pass == 2) && (stress_posn1 > 0) && (stress_posn2 > 0))
 			{
 				if(((stress_vowel1 == PhonemeCode('E')) && (stress_vowel2 == PhonemeCode('e'))) ||
@@ -565,7 +540,7 @@ int test;
 				{
 					while(!feof(f_list_in))
 					{
-						displ = ftell(f_list_in);
+						long int displ = ftell(f_list_in);
 						if(fgets(buf, sizeof(buf), f_list_in) == NULL)
 							break;
 
@@ -612,7 +587,7 @@ int test;
 		else
 		{
 			// allow if the only difference is no primary stress
-			p2 = phonemes2;
+			char *p2 = phonemes2;
 			p = phonemes3;
 			while(*p2 != 0)
 			{
@@ -671,13 +646,10 @@ void Lexicon_De()
 // Compare eSpeak's translation of German words with a pronunciation lexicon
 	FILE *f_in;
 	FILE *f_out;
-	int ix;
 	int c;
 	int c2;
 	char *p;
-	int stress;
 	int count=0;
-	int start;
 	int matched=0;
 	int defer_stress = 0;
 	char buf[200];
@@ -719,7 +691,8 @@ void Lexicon_De()
 		sscanf(buf,"%s %s %s",word,type,pronounce);
 
 		// convert word to lower-case
-		for(ix=0, p=&word2[1];;)
+		p=&word2[1];
+		for(int ix=0;;)
 		{
 			ix += utf8_in(&c,&word[ix]);
 			c = towlower(c);
@@ -731,9 +704,10 @@ void Lexicon_De()
 		strcat(&word2[1],"  ");
 
 		// remove | syllable boundaries
-		stress=0;
-		start=1;
-		for(ix=0, p=pronounce2;;ix++)
+		int stress=0;
+		int start=1;
+		p=pronounce2;
+		for(int ix=0;;ix++)
 		{
 			c = pronounce[ix];
 			if(c == '\'')
@@ -809,7 +783,7 @@ void Lexicon_De()
 			// remove secondary stress
 			strcpy(phonemes2,phonemes);
 			p = phonemes;
-			for(ix=0; ;ix++)
+			for(int ix=0; ;ix++)
 			{
 				if((c = phonemes2[ix]) != ',')
 					*p++ = c;
@@ -909,27 +883,13 @@ void Lexicon_Bg()
 {//==============
 // Bulgarian: compare stress markup in a list of words with lookup using bg_rules
 
-	char *p;
-	char *pw;
-	char *pw1;
 	int cc;
-	int ix;
-	int vcount;
-	int lex_stress;
-	int input_length;
 	int n_words=0;
 	int n_wrong=0;
 	int n_out=0;
-	int n_stress;
-	int max_stress;
-	int max_stress_posn;
-	int stress_first;
-	int done;
-	PHONEME_TAB *ph;
 
 	FILE *f_in;
 	FILE *f_out;
-	FILE *f_log;
 	
 	char word[80];
 	char word_in[80];
@@ -954,7 +914,7 @@ void Lexicon_Bg()
 		wxLogError(_T("Can't read file: ") + wxString(buf,wxConvLocal));
 		return;
 	}
-	input_length = GetFileLength(buf);
+	int input_length = GetFileLength(buf);
 
 	sprintf(fname,"%s%c%s",path_dsource,PATHSEP,"bg_listx");
 	remove(fname);
@@ -966,9 +926,6 @@ void Lexicon_Bg()
 		fclose(f_in);
 		return;
 	}
-
-//	sprintf(fname,"%s%c%s",path_dsource,PATHSEP,"bg_log");
-//	f_log = fopen(fname,"w");
 
 	LoadVoice("bg",0);
 	progress = new wxProgressDialog(_T("Lexicon"),_T(""),input_length);
@@ -989,14 +946,14 @@ void Lexicon_Bg()
 		// convert from UTF-8 to Unicode
 		word[0] = 0;
 		word[1] = ' ';
-		pw = &word[2];
-		pw1 = word_in;
-		p = buf;
+		char *pw = &word[2];
+		char *pw1 = word_in;
+		char *p = buf;
 		while(*p == ' ') p++;
-		vcount = 0;
-		lex_stress = 0;
-		n_stress = 0;
-		stress_first = 0;
+		int vcount = 0;
+		int lex_stress = 0;
+		int n_stress = 0;
+		int stress_first = 0;
 
 		// find the marked stress position
 		for(;;)
@@ -1045,11 +1002,11 @@ void Lexicon_Bg()
 		DecodePhonemes(word_phonemes,phonemes);
 
 		// find the stress position in the translation
-		max_stress = 0;
-		max_stress_posn = -1;
+		int max_stress = 0;
+		int max_stress_posn = -1;
 		vcount = 0;
 
-		ph = phoneme_tab[phonPAUSE];
+		PHONEME_TAB *ph = phoneme_tab[phonPAUSE];
 		for(p=word_phonemes; *p != 0; p++)
 		{
 			ph = phoneme_tab[(unsigned int)*p];
@@ -1069,7 +1026,7 @@ void Lexicon_Bg()
 		}
 
 if(n_stress > 1) n_stress = 1;
-		done = 0;
+		int done = 0;
 
 		if(vcount < 2)
 		{
@@ -1107,7 +1064,6 @@ if(n_stress > 1) n_stress = 1;
 
 	fclose(f_in);
 	fclose(f_out);
-//	fclose(f_log);
 
 	CompileDictionary(path_dsource,"bg",NULL,NULL,0);
 
@@ -1132,30 +1088,14 @@ void Lexicon_Ru()
 
 // espeakedit produces a file:  dictsource/ru_listx  and a log file dictsource/ru_log
 
-	int ix;
 	char *p;
 	int  c;
 	FILE *f_in;
 	FILE *f_out;
-	FILE *f_log;
-	FILE *f_roots;
-	PHONEME_TAB *ph;
 	int ph_code;
-	int vcount;
-	int ru_stress;
-	int max_stress;
-	int max_stress_posn;
 	int n_words=0;
 	int n_wrong=0;
 	int n_errors=0;
-	int wlength;
-	int input_length;
-
-	int sfx;
-	const char *suffix;
-	int wlen;
-	int len;
-	int check_root;
 
 	char word[80];
 	char word2[80];
@@ -1172,27 +1112,6 @@ void Lexicon_Ru()
 		const char *suffix;
 		int  syllables;
 	} SUFFIX;
-
-	static SUFFIX suffixes[] = {
-{NULL,0},
-	{"ичу",2},
-	{"ского",2},
-	{"ская",2},
-	{"ски",1},
-	{"ские",2},
-	{"ский",1},
-	{"ским",1},
-	{"ское",2},
-	{"ской",1},
-	{"ском",1},
-	{"скую",2},
-
-	{"а",1},
-	{"е",1},
-	{"и",1},
-
-	{NULL,0}};
-
 
 	memset(counts,0,sizeof(counts));
 
@@ -1217,7 +1136,7 @@ void Lexicon_Ru()
 			fprintf(stderr,"Can't read file: %s\n",buf);
 		return;
 	}
-	input_length = GetFileLength(buf);
+	int input_length = GetFileLength(buf);
 
 	sprintf(fname,"%s%c%s",path_dsource,PATHSEP,"ru_listx");
 	remove(fname);
@@ -1233,9 +1152,8 @@ void Lexicon_Ru()
 	}
 
 	sprintf(fname,"%s%c%s",path_dsource,PATHSEP,"ru_log");
-	f_log = fopen(fname,"w");
+	FILE *f_log = fopen(fname,"w");
 	sprintf(fname,"%s%c%s",path_dsource,PATHSEP,"ru_roots_1");
-//	f_roots = fopen(fname,"w");
 
 	LoadVoice("ru",0);
 
@@ -1263,10 +1181,10 @@ void Lexicon_Ru()
 		if(*p == '\n')
 			continue;  // blank line
 
-		ix = 0;
-		wlength = 0;
-		vcount = 0;
-		ru_stress = -1;
+		int ix = 0;
+		int wlength = 0;
+		int vcount = 0;
+		int ru_stress = -1;
 
 		for(;;)
 		{
@@ -1303,12 +1221,11 @@ void Lexicon_Ru()
 		DecodePhonemes(word_phonemes,phonemes);
 
 		// find the stress position in the translation
-		max_stress = 0;
-		max_stress_posn = -1;
+		int max_stress = 0;
+		int max_stress_posn = -1;
 		vcount = 0;
-		check_root = 0;
 
-		ph = phoneme_tab[phonPAUSE];
+		PHONEME_TAB *ph = phoneme_tab[phonPAUSE];
 		for(p=word_phonemes; (ph_code = *p & 0xff) != 0; p++)
 		{
 			ph = phoneme_tab[ph_code];
@@ -1352,8 +1269,6 @@ void Lexicon_Ru()
 					}
 					n_errors++;
 				}
-				else
-					check_root = 1;
 
 #define X_COMPACT
 
@@ -1370,37 +1285,10 @@ void Lexicon_Ru()
 //CharStats();
 			}
 		}
-
-
-#ifdef deleted
-		if(check_root)
-		{
-			// does this word match any suffixes ?
-			wlen = strlen(word);
-			for(sfx=0;(suffix = suffixes[sfx].suffix) != NULL; sfx++)
-			{
-				len = strlen(suffix);
-				if(len >= (wlen-2))
-					continue;
-	
-				if(ru_stress > (vcount - suffixes[sfx].syllables))
-					continue;
-				
-				if(strcmp(suffix,&word[wlen-len])==0)
-				{
-					strcpy(word2,word);
-					word2[wlen-len] = 0;
-//					fprintf(f_roots,"%s\t $%d\t\\ %s\n",word2,ru_stress,suffix);
-					fprintf(f_roots,"%s\t $%d\n",word2,ru_stress);
-				}
-			}
-		}
-#endif
 	}
 
 	fclose(f_in);
 	fclose(f_out);
-//	fclose(f_roots);
 
 	sprintf(buf,"Lexicon: Total %d  OK %d  fixed %d  errors %d (see ru_log)",n_words,n_words-n_wrong,n_wrong,n_errors);
 	if(gui_flag)
@@ -1418,14 +1306,13 @@ void Lexicon_Ru()
 
 #ifdef deleted
 		// list tables of frequency of stress position for words of different syllable lengths
-		int j,k;
-		for(ix=2; ix<12; ix++)
+		for(int ix=2; ix<12; ix++)
 		{
 			fprintf(f_log,"%2d syllables\n",ix);
-			for(k=0; k<10; k++)
+			for(int k=0; k<10; k++)
 			{
 				fprintf(f_log,"  %2d :",k);
-				for(j=1; j<=ix; j++)
+				for(int j=1; j<=ix; j++)
 				{
 					fprintf(f_log,"%6d ",counts[ix][j][k]);
 				}
@@ -1480,9 +1367,8 @@ struct wcount {
 static int wfreq_sorter(wcount **p1, wcount **p2)
 {//==============================================
 	int x;
-	wcount *a, *b;
-	a = *p1;
-	b = *p2;
+	wcount *a = *p1;
+	wcount *b = *p2;
 	if((x = b->count - a->count) != 0)
 		return(x);
 	return(strcmp(a->word,b->word));
@@ -1491,14 +1377,9 @@ static int wfreq_sorter(wcount **p1, wcount **p2)
 
 static void wfreq_add(const char *word, wcount **hashtab)
 {//======================================================
-	wcount *p;
-	wcount **p2;
-	int len;
-	int hash;
-
-	hash = HashDictionary(word);
-	p2 = &hashtab[hash];
-	p = *p2;
+	int hash = HashDictionary(word);
+	wcount **p2 = &hashtab[hash];
+	wcount *p = *p2;
 
 	while(p != NULL)
 	{
@@ -1512,7 +1393,7 @@ static void wfreq_add(const char *word, wcount **hashtab)
 	}
 
 	// word not found, add it to the list
-	len = strlen(word) + 1;
+	int len = strlen(word) + 1;
 	if((p = (wcount *)malloc(sizeof(wcount)+len)) == NULL)
 		return;
 
@@ -1531,8 +1412,6 @@ void CountWordFreq(wxString path, wcount **hashtab)
 	FILE *f_in;
 	unsigned char c;
 	int wc;
-	unsigned int ix, j, k;
-	int n_chars;
 	char buf[80];
 	char wbuf[80];
 
@@ -1548,7 +1427,7 @@ void CountWordFreq(wxString path, wcount **hashtab)
 		}
 	
 		// read utf8 bytes until a space, number or punctuation
-		ix = 0;
+		unsigned int ix = 0;
 		while(!feof(f_in) && (c >= 'A') && (ix < sizeof(buf)-1))
 		{
 			buf[ix++] = c;
@@ -1558,9 +1437,9 @@ void CountWordFreq(wxString path, wcount **hashtab)
 		buf[ix] = 0;
 	
 		// the buf may contain non-alphabetic characters
-		j = 0;
-		n_chars = 0;
-		for(k=0; k<ix; )
+		unsigned int j = 0;
+		int n_chars = 0;
+		for(unsigned int k=0; k<ix; )
 		{
 			k += utf8_in(&wc,&buf[k]);
 			wc = towlower(wc);       // convert to lower case
@@ -1590,11 +1469,6 @@ void MakeWordFreqList()
 {//====================
 // Read text files from a specified directory and make a list of the most frequently occuring words.
 	struct wcount *whashtab[N_HASH_DICT];
-	wcount **w_list;
-	int ix;
-	int j;
-	int hash;
-	wcount *p;
 	FILE *f_out;
 	char buf[200];
 	char buf2[200];
@@ -1616,12 +1490,12 @@ void MakeWordFreqList()
 	}
 
 	// put all the words into a list and then sort it
-	w_list = (wcount **)malloc(sizeof(wcount *) * n_words);
+	wcount **w_list = (wcount **)malloc(sizeof(wcount *) * n_words);
 
-	ix = 0;
-	for(hash=0; hash < N_HASH_DICT; hash++)
+	int ix = 0;
+	for(int hash=0; hash < N_HASH_DICT; hash++)
 	{
-		p = whashtab[hash];
+		wcount *p = whashtab[hash];
 		while((p != NULL) && (ix < n_words))
 		{
 			w_list[ix++] = p;
@@ -1637,9 +1511,9 @@ void MakeWordFreqList()
 	if((f_out = fopen(buf2,"w")) == NULL)
 		return;
 
-	for(j=0; j<ix; j++)
+	for(int j=0; j<ix; j++)
 	{
-		p = w_list[j];
+		wcount *p = w_list[j];
 		fprintf(f_out,"%5d  %s\n",p->count,p->word);
 		free(p);
 	}
@@ -1654,10 +1528,6 @@ void MakeWordFreqList()
 void ConvertToUtf8()
 {//=================
 // Convert a file from 8bit to UTF8, according to the current voice
-	unsigned int c;
-	int ix;
-	FILE *f_in;
-	FILE *f_out;
 	char buf[200];
 
 	wxString fname = wxFileSelector(_T("Convert file to UTF8"),wxString(path_home,wxConvLocal),
@@ -1665,7 +1535,7 @@ void ConvertToUtf8()
 	if(fname.IsEmpty())
 		return;
 	strcpy(buf,fname.mb_str(wxConvLocal));
-	f_in = fopen(buf,"r");
+	FILE *f_in = fopen(buf,"r");
 	if(f_in == NULL)
 	{
 		wxLogError(_T("Can't read file: ")+fname);
@@ -1673,7 +1543,7 @@ void ConvertToUtf8()
 	}
 
 	strcat(buf,"_1");
-	f_out = fopen(buf,"w");
+	FILE *f_out = fopen(buf,"w");
 	if(f_out == NULL)
 	{
 		wxLogError(_T("Can't create file: ")+wxString(buf,wxConvLocal));
@@ -1683,11 +1553,11 @@ void ConvertToUtf8()
 
 	while(!feof(f_in))
 	{
-		c = fgetc(f_in);
+		unsigned int c = fgetc(f_in);
 		if(c >= 0xa0)
 			c = translator->charset_a0[c-0xa0];
 
-		ix = utf8_out(c,buf);
+		int ix = utf8_out(c,buf);
 		fwrite(buf,ix,1,f_out);
 	}
 	fclose(f_in);
@@ -1706,15 +1576,8 @@ void DictionarySort(const char *dictname)
 // Sort rules in *_rules file between lines which begin with //sort and //endsort
 	FILE *f_in;
 	FILE *f_out;
-	int ix;
-	char *p;
-	char *p_end;
-	char *p_pre;
-	int sorting;
 	int sort_ix=0;
 	int sort_count=0;
-	int line_len;
-	int key_len;
 	char buf[200];
 	char key[200];
 	char fname_in[200];
@@ -1743,12 +1606,12 @@ void DictionarySort(const char *dictname)
 		return;
 	}
 
-	sorting = 0;
+	int sorting = 0;
 	while(fgets(buf, sizeof(buf)-1, f_in) != NULL)
 	{
 		buf[sizeof(buf)-1] = 0;  // ensure zero byte terminator
 
-		line_len = strlen(buf);
+		int line_len = strlen(buf);
 
 		if(memcmp(buf,"//endsort",9)==0)
 		{
@@ -1757,10 +1620,10 @@ void DictionarySort(const char *dictname)
 			qsort((void *)sort_list, sort_ix, sizeof(char *), (int(*)(const void *, const void *))string_sorter);
 
 			// write out the sorted lines
-			for(ix=0; ix<sort_ix; ix++)
+			for(int ix=0; ix<sort_ix; ix++)
 			{
-				key_len = strlen(sort_list[ix]);
-				p = &sort_list[ix][key_len+1];   // the original line is after the key
+				int key_len = strlen(sort_list[ix]);
+				char *p = &sort_list[ix][key_len+1];   // the original line is after the key
 				fprintf(f_out,"%s",p);
 				free(sort_list[ix]);
 			}
@@ -1778,12 +1641,12 @@ void DictionarySort(const char *dictname)
 			continue;
 		}
 
-		p_end = strstr(buf,"//");
+		char *p_end = strstr(buf,"//");
 		if(p_end == NULL)
 			p_end = &buf[line_len];
 
 		// add to the list of lines to be sorted
-		p = buf;
+		char *p = buf;
 		while((*p==' ') || (*p == '\t')) p++;  // skip leading spaces
 		if(*p == '?')
 		{
@@ -1792,7 +1655,7 @@ void DictionarySort(const char *dictname)
 		}
 
 		// skip any pre -condition
-		p_pre = p;
+		char *p_pre = p;
 		while(p < p_end)
 		{
 			if(*p == ')')
@@ -1805,7 +1668,7 @@ void DictionarySort(const char *dictname)
 		p = p_pre;
 		while((*p==' ') || (*p == '\t')) p++;  // skip spaces
 
-		ix = 0;
+		int ix = 0;
 		while(!isspace(*p) && (*p != 0))
 		{
 			key[ix++] = *p++;
@@ -1821,7 +1684,7 @@ void DictionarySort(const char *dictname)
 			}
 		}
 		key[ix] = 0;
-		key_len = strlen(key);
+		int key_len = strlen(key);
 
 		p = (char *)malloc(key_len + line_len + 8);
 		sprintf(p,"%s%6d",key,sort_ix);   // include the line number (within the sort section) in case the keys are otherwise equal
@@ -1855,21 +1718,9 @@ void DictionaryFormat(const char *dictname)
 	FILE *f_in;
 	FILE *f_out;
 	char *p;
-	char *p_start;
-	unsigned short *pw;
-	unsigned short *pw_match;
 	unsigned short *pw_post = NULL;
 	unsigned short *pw_phonemes = NULL;
 	int c;
-	int ix;
-	int n_pre;
-	int n_match;
-	int n_post;
-	int n_phonemes;
-	int n_spaces;
-	int n_out;
-	int formatting;
-	int comment;
 	char buf[200];
 	unsigned short bufw[200];
 	char conditional[80];
@@ -1900,20 +1751,20 @@ void DictionaryFormat(const char *dictname)
 		return;
 	}
 
-	formatting = 0;
-	n_match = 0;
+	int formatting = 0;
+	int n_match = 0;
 	while(fgets(buf, sizeof(buf)-1, f_in) != NULL)
 	{
 		buf[sizeof(buf)-1] = 0;  // ensure zero byte terminator
 
-		ix = strlen(buf) - 1;
+		int ix = strlen(buf) - 1;
 		while((buf[ix]=='\n') || (buf[ix]==' ') || (buf[ix]=='\t')) ix--;
 		buf[ix+1] = 0;  // strip tailing spaces
 
-		p_start = buf;
+		char *p_start = buf;
 		while((*p_start==' ') || (*p_start == '\t')) p_start++;  // skip leading spaces
 
-		comment = 0;
+		int comment = 0;
 		if((p_start[0]=='/') && (p_start[1]=='/'))
 			comment = 1;
 
@@ -1949,7 +1800,7 @@ void DictionaryFormat(const char *dictname)
 		{
 			// convert from UTF-8 to UTF-16
 			p = p_start;
-			pw = bufw;
+			unsigned short *pw = bufw;
 			do {
 				p += utf8_in(&c, p);
 				*pw++ = c;
@@ -1959,10 +1810,10 @@ void DictionaryFormat(const char *dictname)
 
 			while((*pw != ')') && (*pw != 0) && !iswspace(*pw)) pw++;
 
-			n_pre = 0;
-			n_post = 0;
-			n_phonemes = 0;
-			n_spaces = 0;
+			int n_pre = 0;
+			int n_post = 0;
+			int n_phonemes = 0;
+			int n_spaces = 0;
 
 			if(*pw != 0)
 				n_spaces = tab1;
@@ -1980,7 +1831,7 @@ void DictionaryFormat(const char *dictname)
 				pw = bufw;
 			}
 
-			pw_match = pw;
+			unsigned short *pw_match = pw;
 			while(((c = *pw)!= ' ') && (c != '\t') && (c != '(') && (c != 0))
 			{
 				pw++;
@@ -2026,7 +1877,6 @@ void DictionaryFormat(const char *dictname)
 			}
 			if(n_pre > 0)
 			{
-				ix = 0;
 				for(ix=0; ix<n_pre; ix++)
 				{
 					p += utf8_out(bufw[ix], p);
@@ -2037,7 +1887,6 @@ void DictionaryFormat(const char *dictname)
 			// write the match condition
 			if(n_match > 0)
 			{
-				ix = 0;
 				for(ix=0; ix<n_match; ix++)
 				{
 					p += utf8_out(pw_match[ix], p);
@@ -2056,7 +1905,7 @@ void DictionaryFormat(const char *dictname)
 				n_post++;
 			}
 
-			n_out = tab1 + n_match + n_post;
+			int n_out = tab1 + n_match + n_post;
 			if(n_pre >= tab1)
 				n_out += (n_pre - tab1 + 1);
 
@@ -2135,23 +1984,19 @@ void SetSpeedTab(void)
 
 	unsigned char speed_lookup[290];
 	unsigned int ix;
-	float x;
-	int speed_wpm;
-	FILE *f;
 
 	// convert from word-per-minute to internal speed code
-	for(speed_wpm=80; speed_wpm<370; speed_wpm++)
+	for(int speed_wpm=80; speed_wpm<370; speed_wpm++)
 	{
 		for(ix=2; ix<N_WPM-2; ix++)
 		{
 			if(speed_wpm < wpm1[ix])
 				break;
 		}
-		x = polint(&wpm1[ix-1], &wpm2[ix-1], 3, speed_wpm);
 
-		speed_lookup[speed_wpm-80] = (unsigned char)x;
+		speed_lookup[speed_wpm-80] = (unsigned char)polint(&wpm1[ix-1], &wpm2[ix-1], 3, speed_wpm);
 	}
-	f = fopen("speed_lookup","w");
+	FILE *f = fopen("speed_lookup","w");
 	if(f == NULL) return;
 	for(ix=0; ix<sizeof(speed_lookup); ix++)
 	{
@@ -2170,21 +2015,12 @@ void CharsetToUnicode(const char *charset)
 {//=======================================
 // write a 8bit charset to unicode translation table to file
 // charset:  eg. "ISO-8859-1"
-	iconv_t cd;
 	unsigned char inbuf[4];
-	size_t n_inbuf;
 	unsigned char outbuf[12];
-	size_t n_outbuf;
-	int n;
-	int ix;
-	int x, y;
-	FILE *f;
-	char *p_inbuf;
-	char *p_outbuf;
 
-	f = fopen("/home/jsd1/tmp1/unicode1","a");
+	FILE *f = fopen("/home/jsd1/tmp1/unicode1","a");
 
-	cd = iconv_open("WCHAR_T",charset);
+	iconv_t cd = iconv_open("WCHAR_T",charset);
 	if (cd == (iconv_t) -1)
 	{
 		fprintf(stderr,"Error - iconv_open\n");
@@ -2192,12 +2028,12 @@ void CharsetToUnicode(const char *charset)
 	}
 
 	fprintf(f,"towlower_tab\n   ");
-	for(ix=0x80; ix<=0x241; ix++)
+	for(int ix=0x80; ix<=0x241; ix++)
 	{
-		y = 0;
+		int y = 0;
 		if(iswalpha(ix))
 		{
-			x = towlower(ix);
+			int x = towlower(ix);
 			if(x == ix)
 				y = 0xff;
 			else
@@ -2214,19 +2050,19 @@ void CharsetToUnicode(const char *charset)
 	}
 
 	fprintf(f,"\n%s\n   ",charset);
-	for(ix=0x80; ix<0x100; ix++)
+	for(int ix=0x80; ix<0x100; ix++)
 	{
 		inbuf[0] = ix;
 		inbuf[1] = 0;
 		inbuf[2] = 0;
 		outbuf[0] = 0;
 		outbuf[1] = 0;
-		n_inbuf = 2;
-		n_outbuf = sizeof(outbuf);
-		p_inbuf = (char *)inbuf;
-		p_outbuf = (char *)outbuf;
+		size_t n_inbuf = 2;
+		size_t n_outbuf = sizeof(outbuf);
+		char *p_inbuf = (char *)inbuf;
+		char *p_outbuf = (char *)outbuf;
 
-		n = iconv(cd, &p_inbuf, &n_inbuf, &p_outbuf, &n_outbuf);
+		int n = iconv(cd, &p_inbuf, &n_inbuf, &p_outbuf, &n_outbuf);
 
 		fprintf(f,"0x%.2x%.2x, ",outbuf[1],outbuf[0]);
 		if((ix&7)==7)
@@ -2246,13 +2082,10 @@ void Test2()
 {
 // 
 	char buf[120];
-	FILE *f;
-	FILE *f_out;
-	unsigned char *p;
 
-	f = fopen("/home/jsd1/tmp1/list","r");
+	FILE *f = fopen("/home/jsd1/tmp1/list","r");
 	if(f == NULL) return;
-	f_out = fopen("/home/jsd1/tmp1/list_out","w");
+	FILE *f_out = fopen("/home/jsd1/tmp1/list_out","w");
 	if(f_out == NULL) return;
 
 	while(!feof(f))
@@ -2260,7 +2093,7 @@ void Test2()
 		if(fgets(buf,sizeof(buf),f) == NULL)
 			break;
 
-		p = (unsigned char *)buf;
+		unsigned char *p = (unsigned char *)buf;
 		while(*p > ' ') p++;
 		*p = 0;
 		fprintf(f_out,"%s . . .\n",buf);
@@ -2278,11 +2111,8 @@ extern void TestCompile2(void);
 
 void TestTest(int control)
 {//=======================
-	FILE *f;
-	unsigned int c;
 	unsigned int ix=0;
 	char textbuf[2000];
-	espeak_VOICE voice;
 	static unsigned int unique_identifier= 123;
 	static int user_data = 456;
 
@@ -2293,16 +2123,15 @@ if(control==2)
 {
 	return;
 }
-	memset(&voice,0,sizeof(voice));
 
-	f = fopen("/home/jsd1/speechdata/text/test.txt","r");
+	FILE *f = fopen("/home/jsd1/speechdata/text/test.txt","r");
 	if(f==NULL)
 		return;
 	
 
 	while(!feof(f) && (ix < sizeof(textbuf)-2))
 	{
-		c = fgetc(f);
+		unsigned int c = fgetc(f);
 		if(!feof(f))
 			textbuf[ix++] = c;
 	}
@@ -2328,5 +2157,3 @@ if(control==2)
   espeak_SetParameter(espeakPUNCTUATION, 1, 0);
 
 }
-
-

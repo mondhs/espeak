@@ -386,13 +386,17 @@ static int sleep_until_timeout_or_stop_request(uint32_t time_in_ms)
 ENTER("sleep_until_timeout_or_stop_request");
 
 	int a_stop_is_required=0;
-	struct timespec ts, to;
+	struct timespec ts;
 	struct timeval tv;
 	int err=0;
 
 	clock_gettime2( &ts);
+
+#ifdef DEBUG_ENABLED
+	struct timespec to;
 	to.tv_sec = ts.tv_sec;
 	to.tv_nsec = ts.tv_nsec;
+#endif
 
 	add_time_in_ms( &ts, time_in_ms);
 
@@ -430,9 +434,8 @@ ENTER("get_remaining_time");
 
 	int err = 0;
 	*stop_is_required = 0;
-	int i=0;
 
-	for (i=0; i < MAX_ACTIVITY_CHECK && (*stop_is_required == 0); i++)
+	for (int i=0; i < MAX_ACTIVITY_CHECK && (*stop_is_required == 0); i++)
 	{
 		err = wave_get_remaining_time( sample, time_in_ms);
 

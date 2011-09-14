@@ -333,13 +333,11 @@ static int OpenWaveFile(const char *path, int rate)
 static void CloseWaveFile(int rate)
 //=================================
 {
-   unsigned int pos;
-
    if((f_wave == NULL) || (f_wave == stdout))
       return;
 
    fflush(f_wave);
-   pos = ftell(f_wave);
+   unsigned int pos = ftell(f_wave);
 
 	fseek(f_wave,4,SEEK_SET);
 	Write4Bytes(f_wave,pos - 8);
@@ -364,13 +362,12 @@ void MarkerEvent(int type, unsigned int char_position, int value, unsigned char 
 
 static int WavegenFile(void)
 {//=========================
-	int finished;
 	unsigned char wav_outbuf[1024];
 
 	out_ptr = out_start = wav_outbuf;
 	out_end = wav_outbuf + sizeof(wav_outbuf);
 
-	finished = WavegenFill(0);
+	int finished = WavegenFill(0);
 
 	if(f_wave != NULL)
 	{
@@ -428,7 +425,6 @@ void speak_text_string(char *data, int terminator, int len, int wait, int voice_
 /* 'wait' indictes wait until speaking is finished before returning */
 {
 	int  c;
-	int ix;
 	static static_length=0;
 	static int user_token=0;   /* increment for each call of translate() */
 	_kernel_swi_regs regs;
@@ -449,7 +445,7 @@ void speak_text_string(char *data, int terminator, int len, int wait, int voice_
 	/* don't count CR as terminator if length is specified */
 	if(len > 0) terminator = 0;
 
-	ix = 0;
+	int ix = 0;
 	if(more_text == 0)
 		static_length = 0;
 	else
@@ -523,10 +519,9 @@ void speak_text_string(char *data, int terminator, int len, int wait, int voice_
 
 void speak_file(char *fname)
 {//=========================
-	FILE *f_in;
 	char buf[120];
 
-	f_in = fopen(fname,"r");
+	FILE *f_in = fopen(fname,"r");
 	if(f_in == NULL)
 	{
 		fprintf(stderr,"Can't read file: '%s'",fname);
@@ -728,15 +723,13 @@ _kernel_oserror *swi_handler(int swi_no, int  *r, void *pw)
 
 void PitchAdjust(int pitch_adjustment)
 {//===================================
-	int ix, factor;
-	
 	extern unsigned char pitch_adjust_tab[MAX_PITCH_VALUE+1];
 
 	voice->pitch_base = (voice->pitch_base * pitch_adjust_tab[pitch_adjustment])/128;
 
 	// adjust formants to give better results for a different voice pitch
-	factor = 256 + (25 * (pitch_adjustment - 50))/50;
-	for(ix=0; ix<=5; ix++)
+	int factor = 256 + (25 * (pitch_adjustment - 50))/50;
+	for(int ix=0; ix<=5; ix++)
 	{
 		voice->freq[ix] = (voice->freq2[ix] * factor)/256;
 	}
@@ -746,22 +739,17 @@ void PitchAdjust(int pitch_adjustment)
 
 void DisplayVoices(FILE *f_out, char *language)
 {//============================================
-	int ix;
-	const char *p;
-	int len;
-	int count;
 	int scores = 0;
 	const espeak_VOICE *v;
-	const char *lang_name;
 	char age_buf[12];
 	const espeak_VOICE **voices;
-	espeak_VOICE voice_select;
 
 	static char genders[4] = {' ','M','F',' '};
 
 	if(language[0] == '=')
 	{
 		// display only voices for the specified language, in order of priority
+		espeak_VOICE voice_select;
 		voice_select.languages = &language[1];
 		voice_select.age = 0;
 		voice_select.gender = 0;
@@ -776,14 +764,14 @@ void DisplayVoices(FILE *f_out, char *language)
 
 	fprintf(f_out,"Pty Language Age/Gender VoiceName       File        Other Langs\n");
 
-	for(ix=0; (v = voices[ix]) != NULL; ix++)
+	for(int ix=0; (v = voices[ix]) != NULL; ix++)
 	{
-		count = 0;
-		p = v->languages;
+		int count = 0;
+		const char *p = v->languages;
 		while(*p != 0)
 		{
-			len = strlen(p+1);
-			lang_name = p+1;
+			int len = strlen(p+1);
+			const char *lang_name = p+1;
 
 			if(v->age == 0)
 				strcpy(age_buf,"   ");
@@ -812,11 +800,10 @@ void DisplayVoices(FILE *f_out, char *language)
 
 char *param_string(char **argp)
 {//============================
-	char *p;
 	int ix=0;
 	static char buf[80];
 
-	p = *argp;
+	char *p = *argp;
 	while(*p == ' ') p++;
 	while(!isspace(*p))
 		buf[ix++] = *p++;
@@ -828,13 +815,10 @@ char *param_string(char **argp)
 
 int param_number(char **argp)
 {//==========================
-	int value;
-	char *p;
-
-	p = *argp;
+	char *p = *argp;
 	while(*p == ' ') p++;
 
-	value = atoi(p);
+	int value = atoi(p);
 	while(!isspace(*p)) p++;
 	*argp = p;
 	return(value);
@@ -1156,24 +1140,18 @@ int callback_handler(_kernel_swi_regs *r, void *pw)
 int sound_handler(_kernel_swi_regs *r, void *pw)
 /**********************************************/
 {
-	int n_queue;
-	int size;
-	int *dma_buf;
-	int x;
-	int ix;
-
 	module_data = (int *)pw;
-	dma_buf = (int *)r->r[1];
-	size = (r->r[2] - r->r[1])/4;
+	int *dma_buf = (int *)r->r[1];
+	int size = (r->r[2] - r->r[1])/4;
 	FillSoundBuf(size);
 
-	for(ix=0; ix<size; ix++)
+	for(int ix=0; ix<size; ix++)
 	{
-		x = SoundBuf[ix];
+		int x = SoundBuf[ix];
 		dma_buf[ix] = x + (x << 16);
 	}
 
-	n_queue = WcmdqUsed();
+	int n_queue = WcmdqUsed();
 
 	r->r[0] = 0;
 	if(callback_inhibit == 0)
@@ -1199,21 +1177,12 @@ int InitSound16(int sample_rate)
 /******************************/
 /* Find sample rate index */
 {
-	int  current_rate_index;  // current value
-
-	int  sound_mode;
-	int  sound_config;
-	int  srate;
-	int  n_srix;
-	int  ix;
 	_kernel_swi_regs regs;
-	_kernel_oserror *error;
 
-	sound_mode = 0;
 	regs.r[0] = 0;
-	error = _kernel_swi(0x40144+os_X,&regs,&regs);
-	sound_mode = regs.r[0];
-	sound_config = regs.r[1];
+	_kernel_oserror *error = _kernel_swi(0x40144+os_X,&regs,&regs);
+	int sound_mode = regs.r[0];
+	int sound_config = regs.r[1];
 
 	if((error == NULL) && (sound_mode == 1))
 	{
@@ -1221,14 +1190,13 @@ int InitSound16(int sample_rate)
 		regs.r[0] = 0;
 		regs.r[1] = 0;
 		_kernel_swi(0x40146,&regs,&regs);
-		n_srix = regs.r[1];
+		int n_srix = regs.r[1];
 
 		regs.r[0] = 1;
 		regs.r[1] = 0;
 		_kernel_swi(0x40146,&regs,&regs);
-		current_rate_index = regs.r[1];      // current sample rate index
-		srate = regs.r[2];
-		for(ix=1; ix<=n_srix; ix++)
+		int srate = regs.r[2];
+		for(int ix=1; ix<=n_srix; ix++)
 		{
 			regs.r[0] = 2;
 			regs.r[1] = ix;
@@ -1281,7 +1249,6 @@ _kernel_oserror *user_init(char *cmd_fail, int podule_base, void *pw)
 {
 	_kernel_swi_regs regs;
 	_kernel_oserror *error;
-	int param;
 
 	// It seems that the wctype functions don't work until the locale has been set
 	// to something other than the default "C".  Then, not only Latin1 but also the
@@ -1304,7 +1271,7 @@ _kernel_oserror *user_init(char *cmd_fail, int podule_base, void *pw)
 	ReadVoiceNames();
 	SetVoiceByName("default");
 
-	for(param=0; param<N_SPEECH_PARAM; param++)
+	for(int param=0; param<N_SPEECH_PARAM; param++)
 		param_stack[0].parameter[param] = param_defaults[param];
 
 	SetParameter(espeakRATE,170,0);

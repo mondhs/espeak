@@ -17,8 +17,6 @@
  *               <http://www.gnu.org/licenses/>.                           *
  ***************************************************************************/
 
-#include "StdAfx.h"
-
 #include "speech.h"
 
 #include <stdio.h>
@@ -155,28 +153,21 @@ void Free(void *ptr)
 
 void DisplayVoices(FILE *f_out, char *language)
 {//============================================
-	int ix;
-	const char *p;
-	int len;
-	int count;
-	int scores = 0;
 	const espeak_VOICE *v;
-	const char *lang_name;
 	char age_buf[12];
 	const espeak_VOICE **voices;
-	espeak_VOICE voice_select;
 
 	static char genders[4] = {' ','M','F',' '};
 
 	if((language != NULL) && (language[0] != 0))
 	{
 		// display only voices for the specified language, in order of priority
+		espeak_VOICE voice_select;
 		voice_select.languages = language;
 		voice_select.age = 0;
 		voice_select.gender = 0;
 		voice_select.name = NULL;
 		voices = espeak_ListVoices(&voice_select);
-		scores = 1;
 	}
 	else
 	{
@@ -185,14 +176,14 @@ void DisplayVoices(FILE *f_out, char *language)
 
 	fprintf(f_out,"Pty Language Age/Gender VoiceName       File        Other Langs\n");
 
-	for(ix=0; (v = voices[ix]) != NULL; ix++)
+	for(int ix=0; (v = voices[ix]) != NULL; ix++)
 	{
-		count = 0;
-		p = v->languages;
+		int count = 0;
+		const char *p = v->languages;
 		while(*p != 0)
 		{
-			len = strlen(p+1);
-			lang_name = p+1;
+			int len = strlen(p+1);
+			const char *lang_name = p+1;
 
 			if(v->age == 0)
 				strcpy(age_buf,"   ");
@@ -211,8 +202,6 @@ void DisplayVoices(FILE *f_out, char *language)
 			count++;
 			p += len+2;
 		}
-//		if(scores)
-//			fprintf(f_out,"%3d  ",v->score);
 		fputc('\n',f_out);
 	}
 }   //  end of DisplayVoices
@@ -263,13 +252,11 @@ static int OpenWaveFile(const char *path, int rate)
 static void CloseWaveFile()
 //=========================
 {
-   unsigned int pos;
-
    if((f_wave == NULL) || (f_wave == stdout))
       return;
 
    fflush(f_wave);
-   pos = ftell(f_wave);
+   unsigned int pos = ftell(f_wave);
 
 	fseek(f_wave,4,SEEK_SET);
 	Write4Bytes(f_wave,pos - 8);
@@ -296,14 +283,13 @@ void MarkerEvent(int type, unsigned int char_position, int value, unsigned char 
 
 static int WavegenFile(void)
 {//=========================
-	int finished;
 	unsigned char wav_outbuf[1024];
 	char fname[210];
 
 	out_ptr = out_start = wav_outbuf;
 	out_end = wav_outbuf + sizeof(wav_outbuf);
 
-	finished = WavegenFill(0);
+	int finished = WavegenFill(0);
 
 	if(quiet)
 		return(finished);
@@ -399,7 +385,6 @@ static void init_path(char *argv0, char *path_specified)
 
 static int initialise(void)
 {//========================
-	int param;
 	int result;
 
 	// It seems that the wctype functions don't work until the locale has been set
@@ -431,7 +416,7 @@ static int initialise(void)
 	SetVoiceStack(NULL, "");
 	SynthesizeInit();
 
-	for(param=0; param<N_SPEECH_PARAM; param++)
+	for(int param=0; param<N_SPEECH_PARAM; param++)
 		param_stack[0].parameter[param] = param_defaults[param];
 
 	return(0);
@@ -511,11 +496,9 @@ int main (int argc, char **argv)
 	espeak_VOICE voice_select;
 	char filename[200];
 	char voicename[40];
-	char dictname[40];
 
 	voicename[0] = 0;
 	mbrola_name[0] = 0;
-	dictname[0] = 0;
 	wavefile[0] = 0;
 	filename[0] = 0;
 	option_linelength = 0;

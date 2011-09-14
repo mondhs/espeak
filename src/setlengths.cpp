@@ -17,8 +17,6 @@
  *               <http://www.gnu.org/licenses/>.                           *
  ***************************************************************************/
 
-#include "StdAfx.h"
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <wctype.h>
@@ -137,24 +135,17 @@ static int speed3 = 118;
 
 void SetSpeed(int control)
 {//=======================
-	int x;
-	int s1;
-	int wpm;
-	int wpm2;
-	int wpm_value;
-	double sonic;
-
 	speed.loud_consonants = 0;
 	speed.min_sample_len = 450;
 	speed.lenmod_factor = 110;   // controls the effect of FRFLAG_LEN_MOD reduce length change
 	speed.lenmod2_factor = 100;
 	speed.min_pause = 5;
 
-	wpm = embedded_value[EMBED_S];
+	int wpm = embedded_value[EMBED_S];
 	if(control == 2)
 		wpm = embedded_value[EMBED_S2];
 
-	wpm_value = wpm;
+	int wpm_value = wpm;
 
 	if(voice->speed_percent > 0)
 	{
@@ -167,12 +158,12 @@ void SetSpeed(int control)
 	}
 	if((wpm_value > 450) || ((wpm_value > speed.fast_settings[0]) && (wpm > 350)))
 	{
-		wpm2 = wpm;
+		int wpm2 = wpm;
 		wpm = 175;
 
 		// set special eSpeak speed parameters for Sonic use
 		// The eSpeak output will be speeded up by at least x2
-		x = 73;
+		int x = 73;
 		if(control & 1)
 		{
 			speed1 = (x * voice->speedf1)/256;
@@ -181,7 +172,7 @@ void SetSpeed(int control)
 		}
 		if(control & 2)
 		{
-			sonic = ((double)wpm2)/wpm;
+			double sonic = ((double)wpm2)/wpm;
 			DoSonicSpeed((int)(sonic * 1024));
 			speed.pause_factor = 85;
 			speed.clause_pause_factor = 80;
@@ -212,10 +203,10 @@ void SetSpeed(int control)
 		speed.loud_consonants = (wpm - 360) / 8;
 	}
 
-	wpm2 = wpm;
+	int wpm2 = wpm;
 	if(wpm > 359) wpm2 = 359;
 	if(wpm < 80) wpm2 = 80;
-	x = speed_lookup[wpm2-80];
+	int x = speed_lookup[wpm2-80];
 
 	if(wpm >= 380)
 		x = 7;
@@ -253,7 +244,7 @@ void SetSpeed(int control)
 			speed.lenmod2_factor = 110 - (wpm - 250)/2;
 		}
 
-		s1 = (x * voice->speedf1)/256;
+		int s1 = (x * voice->speedf1)/256;
 
 		if(wpm >= 170)
 			speed.wav_factor = 110 + (150*s1)/128;  // reduced speed adjustment, used for playing recorded sounds
@@ -331,55 +322,52 @@ void SetParameter(int parameter, int value, int relative)
 // parameter: reset-all, amp, pitch, speed, linelength, expression, capitals, number grouping
 // relative 0=absolute  1=relative
 
-	int new_value = value;
-	int default_value;
-
 	if(relative)
 	{
 		if(parameter < 5)
 		{
-			default_value = param_defaults[parameter];
-			new_value = default_value + (default_value * value)/100;
+			int default_value = param_defaults[parameter];
+			value = default_value + (default_value * value)/100;
 		}
 	}
-	param_stack[0].parameter[parameter] = new_value;
+	param_stack[0].parameter[parameter] = value;
 
 	switch(parameter)
 	{
 	case espeakRATE:
-		embedded_value[EMBED_S] = new_value;
-		embedded_value[EMBED_S2] = new_value;
+		embedded_value[EMBED_S] = value;
+		embedded_value[EMBED_S2] = value;
 		SetSpeed(3);
 		break;
 
 	case espeakVOLUME:
-		embedded_value[EMBED_A] = new_value;
+		embedded_value[EMBED_A] = value;
 		GetAmplitude();
 		break;
 
 	case espeakPITCH:
-		if(new_value > 99) new_value = 99;
-		if(new_value < 0) new_value = 0;
-		embedded_value[EMBED_P] = new_value;
+		if(value > 99) value = 99;
+		if(value < 0) value = 0;
+		embedded_value[EMBED_P] = value;
 		break;
 
 	case espeakRANGE:
-		if(new_value > 99) new_value = 99;
-		embedded_value[EMBED_R] = new_value;
+		if(value > 99) value = 99;
+		embedded_value[EMBED_R] = value;
 		break;
 
 	case espeakLINELENGTH:
-		option_linelength = new_value;
+		option_linelength = value;
 		break;
 
 	case espeakWORDGAP:
-		option_wordgap = new_value;
+		option_wordgap = value;
 		break;
 
 	case espeakINTONATION:
-		if((new_value & 0xff) != 0)
-			translator->langopts.intonation_group = new_value & 0xff;
-		option_tone_flags = new_value;
+		if((value & 0xff) != 0)
+			translator->langopts.intonation_group = value & 0xff;
+		option_tone_flags = value;
 		break;
 
 	default:
@@ -410,49 +398,40 @@ static void DoEmbedded2(int *embix)
 
 void CalcLengths(Translator *tr)
 {//==============================
-	int ix;
 	int ix2;
-	PHONEME_LIST *prev;
-	PHONEME_LIST *next;
 	PHONEME_LIST *next2;
 	PHONEME_LIST *next3;
-	PHONEME_LIST *p;
 	PHONEME_LIST *p2;
 
-	int  stress;
-	int  type;
 	static int  more_syllables=0;
 	int  pre_sonorant=0;
 	int  pre_voiced=0;
 	int  last_pitch = 0;
-	int  pitch_start;
 	int  length_mod;
 	int  len;
-	int  env2;
 	int  end_of_clause;
 	int  embedded_ix = 0;
 	int  min_drop;
 	int  pitch1;
-	int emphasized;
 	int  tone_mod;
 	unsigned char *pitch_env=NULL;
 	PHONEME_DATA phdata_tone;
 
-	for(ix=1; ix<n_phoneme_list; ix++)
+	for(int ix=1; ix<n_phoneme_list; ix++)
 	{
-		prev = &phoneme_list[ix-1];
-		p = &phoneme_list[ix];
-		stress = p->stresslevel & 0x7;
-		emphasized = p->stresslevel & 0x8;
+		PHONEME_LIST *prev = &phoneme_list[ix-1];
+		PHONEME_LIST *p = &phoneme_list[ix];
+		int stress = p->stresslevel & 0x7;
+		int emphasized = p->stresslevel & 0x8;
 
-		next = &phoneme_list[ix+1];
+		PHONEME_LIST *next = &phoneme_list[ix+1];
 
 		if(p->synthflags & SFLAG_EMBEDDED)
 		{
 			DoEmbedded2(&embedded_ix);
 		}
 
-		type = p->type;
+		int type = p->type;
 		if(p->synthflags & SFLAG_SYLLABLE)
 			type = phVOWEL;
 
@@ -771,7 +750,7 @@ if(p->type != phVOWEL)
 
 			// pre-vocalic part
 			// set last-pitch
-			env2 = p->env + 1;  // version for use with preceding semi-vowel
+			int env2 = p->env + 1;  // version for use with preceding semi-vowel
 
 			if(p->tone_ph != 0)
 			{
@@ -783,7 +762,7 @@ if(p->type != phVOWEL)
 				pitch_env = envelope_data[env2];
 			}
 
-			pitch_start = p->pitch1 + ((p->pitch2-p->pitch1)*pitch_env[0])/256;
+			int pitch_start = p->pitch1 + ((p->pitch2-p->pitch1)*pitch_env[0])/256;
 
 			if(pre_sonorant || pre_voiced)
 			{
@@ -852,4 +831,3 @@ if(p->type != phVOWEL)
 		}
 	}
 }  //  end of CalcLengths
-

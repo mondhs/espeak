@@ -24,8 +24,6 @@
 
 // See URL: ftp://svr-ftp.eng.cam.ac.uk/pub/comp.speech/synthesis/klatt.3.04.tar.gz  
 
-#include "StdAfx.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -80,9 +78,7 @@ is stored in the globals structure.
 
 static double resonator(resonator_ptr r, double input)
 {
-	double x;
-	
-	x = (double) ((double)r->a * (double)input + (double)r->b * (double)r->p1 + (double)r->c * (double)r->p2);
+	double x = (double) ((double)r->a * (double)input + (double)r->b * (double)r->p1 + (double)r->c * (double)r->p2);
 	r->p2 = (double)r->p1;
 	r->p1 = (double)x;
 
@@ -91,9 +87,7 @@ static double resonator(resonator_ptr r, double input)
 
 static double resonator2(resonator_ptr r, double input)
 {
-	double x;
-	
-	x = (double) ((double)r->a * (double)input + (double)r->b * (double)r->p1 + (double)r->c * (double)r->p2);
+	double x = (double) ((double)r->a * (double)input + (double)r->b * (double)r->p1 + (double)r->c * (double)r->p2);
 	r->p2 = (double)r->p1;
 	r->p1 = (double)x;
 	
@@ -153,18 +147,13 @@ slowly varying sine waves.
 static void flutter(klatt_frame_ptr frame)
 {
 	static int time_count;
-	double delta_f0;
-	double fla,flb,flc,fld,fle;
 	
-	fla = (double) kt_globals.f0_flutter / 50;
-	flb = (double) kt_globals.original_f0 / 100;
-//	flc = sin(2*PI*12.7*time_count);
-//	fld = sin(2*PI*7.1*time_count);
-//	fle = sin(2*PI*4.7*time_count);
-	flc = sin(PI*12.7*time_count);  // because we are calling flutter() more frequently, every 2.9mS
-	fld = sin(PI*7.1*time_count);
-	fle = sin(PI*4.7*time_count);
-	delta_f0 =  fla * flb * (flc + fld + fle) * 10;
+	double fla = (double) kt_globals.f0_flutter / 50;
+	double flb = (double) kt_globals.original_f0 / 100;
+	double flc = sin(PI*12.7*time_count);  // because we are calling flutter() more frequently, every 2.9mS
+	double fld = sin(PI*7.1*time_count);
+	double fle = sin(PI*4.7*time_count);
+	double delta_f0 =  fla * flb * (flc + fld + fle) * 10;
 	frame->F0hz10 = frame->F0hz10 + (long) delta_f0;
 	time_count++;
 }
@@ -180,27 +169,21 @@ voice.
 
 static double sampled_source()
 {
-	int itemp;
-	double ftemp;
 	double result;
-	double diff_value;
-	int current_value;
-	int next_value;
-	double temp_diff;
 	
 	if(kt_globals.T0!=0)
 	{
-		ftemp = (double) kt_globals.nper;
+		double ftemp = (double) kt_globals.nper;
 		ftemp = ftemp / kt_globals.T0;
 		ftemp = ftemp * kt_globals.num_samples;
-		itemp = (int) ftemp;
+		int itemp = (int) ftemp;
 	
-		temp_diff = ftemp - (double) itemp;
+		double temp_diff = ftemp - (double) itemp;
 	
-		current_value = kt_globals.natural_samples[itemp];
-		next_value = kt_globals.natural_samples[itemp+1];
+		int current_value = kt_globals.natural_samples[itemp];
+		int next_value = kt_globals.natural_samples[itemp+1];
 	
-		diff_value = (double) next_value - (double) current_value;
+		double diff_value = (double) next_value - (double) current_value;
 		diff_value = diff_value * temp_diff;
 	
 		result = kt_globals.natural_samples[itemp] + diff_value;
@@ -225,22 +208,13 @@ Converts synthesis parameters to a waveform.
 
 static int parwave(klatt_frame_ptr frame) 
 {
-	double temp;
-	int value;
 	double outbypas;
-	double out;
-	long n4;
-	double frics;
-	double glotout;
-	double aspiration;
 	double casc_next_in;
-	double par_glotout;
 	static double noise;
 	static double voice;
 	static double vlast;
 	static double glotlast;
 	static double sourc;
-	int ix;
 
 	flutter(frame);  /* add f0 flutter */
 
@@ -273,7 +247,7 @@ if(option_log_frames)
 		}
 	
 		/* Compute frication noise */
-		frics = kt_globals.amp_frica * noise;
+		double frics = kt_globals.amp_frica * noise;
 	
 		/*
 			Compute voicing waveform. Run glottal source simulation at 4 
@@ -281,7 +255,7 @@ if(option_log_frames)
 			period of female voice.
 		*/
 	
-		for (n4=0; n4<4; n4++) 
+		for (long n4=0; n4<4; n4++) 
 		{
 			switch(kt_globals.glsource)
 			{
@@ -335,11 +309,11 @@ if(option_log_frames)
 		}
 	
 		/* Set amplitude of voicing */
-		glotout = kt_globals.amp_voice * voice;
-		par_glotout = kt_globals.par_amp_voice * voice;
+		double glotout = kt_globals.amp_voice * voice;
+		double par_glotout = kt_globals.par_amp_voice * voice;
 	
 		/* Compute aspiration amplitude and add to voicing source */
-		aspiration = kt_globals.amp_aspir * noise;
+		double aspiration = kt_globals.amp_aspir * noise;
 		glotout += aspiration;
 	
 		par_glotout += aspiration;
@@ -349,7 +323,7 @@ if(option_log_frames)
 			Nasal antiresonator, then formants FNP, F5, F4, F3, F2, F1 
 		*/
 
-		out=0;
+		double out=0;
 		if(kt_globals.synthesis_model != ALL_PARALLEL)
 		{
 			casc_next_in = antiresonator2(&(kt_globals.rsn[Rnz]),glotout);
@@ -380,7 +354,7 @@ if(option_log_frames)
 		sourc = frics + par_glotout - glotlast;
 		glotlast = par_glotout;
 
-		for(ix=R2p; ix<=R6p; ix++)
+		for(int ix=R2p; ix<=R6p; ix++)
 		{
 			out = resonator(&(kt_globals.rsn[ix]),sourc) - out;
 		}
@@ -421,22 +395,20 @@ if(option_log_frames)
 #endif
 
 		out = resonator(&(kt_globals.rsn[Rout]),out);
-		temp = (int)(out * wdata.amplitude * kt_globals.amp_gain0) ;   /* Convert back to integer */
+		double temp = (int)(out * wdata.amplitude * kt_globals.amp_gain0) ;   /* Convert back to integer */
 
 
 		// mix with a recorded WAV if required for this phoneme
 		{
-			int z2;
-			signed char c;
 			int sample;
 	
-			z2 = 0;
+			int z2 = 0;
 			if(wdata.mix_wavefile_ix < wdata.n_mix_wavefile)
 			{
 				if(wdata.mix_wave_scale == 0)
 				{
 					// a 16 bit sample
-					c = wdata.mix_wavefile[wdata.mix_wavefile_ix+1];
+					signed char c = wdata.mix_wavefile[wdata.mix_wavefile_ix+1];
 					sample = wdata.mix_wavefile[wdata.mix_wavefile_ix] + (c * 256);
 					wdata.mix_wavefile_ix += 2;
 				}
@@ -458,7 +430,7 @@ if(option_log_frames)
 			temp = (temp * kt_globals.fadeout) / 64;
 		}
 
-		value = (int)temp + ((echo_buf[echo_tail++]*echo_amp) >> 8);
+		int value = (int)temp + ((echo_buf[echo_tail++]*echo_amp) >> 8);
 		if(echo_tail >= N_ECHO_BUF)
 			echo_tail=0;
 
@@ -494,8 +466,6 @@ if(option_log_frames)
 
 void KlattReset(int control)
 {
-	int r_ix;
-
 	if(control == 2)
 	{
 		//Full reset
@@ -514,7 +484,7 @@ void KlattReset(int control)
 		kt_globals.nopen = 0;
 		kt_globals.nmod = 0;
 
-		for(r_ix=RGL; r_ix < N_RSN; r_ix++)
+		for(int r_ix=RGL; r_ix < N_RSN; r_ix++)
 		{
 			kt_globals.rsn[r_ix].p1 = 0;
 			kt_globals.rsn[r_ix].p2 = 0;
@@ -522,7 +492,7 @@ void KlattReset(int control)
 
 	}
 
-	for(r_ix=0; r_ix <= R6p; r_ix++)
+	for(int r_ix=0; r_ix <= R6p; r_ix++)
 	{
 		kt_globals.rsn[r_ix].p1 = 0;
 		kt_globals.rsn[r_ix].p2 = 0;
@@ -540,8 +510,6 @@ static void frame_init(klatt_frame_ptr frame)
 {
 	double amp_par[7];
 	static double amp_par_factor[7] = {0.6, 0.4, 0.15, 0.06, 0.04, 0.022, 0.03};
-	long Gain0_tmp;
-	int ix;
 
 	kt_globals.original_f0 = frame->F0hz10 / 10;
 	
@@ -556,13 +524,13 @@ static void frame_init(klatt_frame_ptr frame)
 	kt_globals.par_amp_voice = DBtoLIN(frame->AVpdb);
 	kt_globals.amp_bypas = DBtoLIN(frame->AB) * 0.05;
 
-	for(ix=0; ix <= 6; ix++)
+	for(int ix=0; ix <= 6; ix++)
 	{
 		// parallel amplitudes F1 to F6, and parallel nasal pole
 		amp_par[ix] = DBtoLIN(frame->Ap[ix]) * amp_par_factor[ix];
 	}
 
-	Gain0_tmp = frame->Gain0 - 3;
+	long Gain0_tmp = frame->Gain0 - 3;
 	if (Gain0_tmp <= 0) 
 	{
 		Gain0_tmp = 57;
@@ -570,7 +538,7 @@ static void frame_init(klatt_frame_ptr frame)
 	kt_globals.amp_gain0 = DBtoLIN(Gain0_tmp) / kt_globals.scale_wav;
 	
 	/* Set coefficients of variable cascade resonators */
-	for(ix=1; ix<=9; ix++)
+	for(int ix=1; ix<=9; ix++)
 	{
 		// formants 1 to 8, plus nasal pole
 		setabc(frame->Fhz[ix],frame->Bhz[ix],&(kt_globals.rsn[ix]));
@@ -595,7 +563,7 @@ static void frame_init(klatt_frame_ptr frame)
 	
 	/* Set coefficients of parallel resonators, and amplitude of outputs */
 	
-	for(ix=0; ix<=6; ix++)
+	for(int ix=0; ix<=6; ix++)
 	{
 		setabc(frame->Fhz[ix],frame->Bphz[ix],&(kt_globals.rsn[Rparallel+ix]));
 		kt_globals.rsn[Rparallel+ix].a *= amp_par[ix];
@@ -647,16 +615,13 @@ spectral zero around 800 Hz, magic constants a,b reset pitch synchronously.
 
 static double natural_source() 
 {
-	double lgtemp;
 	static double vwave;
 	
 	if (kt_globals.nper < kt_globals.nopen) 
 	{
 		kt_globals.pulse_shape_a -= kt_globals.pulse_shape_b;
 		vwave += kt_globals.pulse_shape_a;
-		lgtemp=vwave * 0.028;
-	
-		return(lgtemp);
+		return vwave * 0.028;
 	}
 	else 
 	{
@@ -703,8 +668,6 @@ Assume voicing waveform V(t) has form: k1 t**2 - k2 t**3
 
 static void pitch_synch_par_reset(klatt_frame_ptr frame) 
 {
-	long temp;
-	double temp1;
 	static long skew;
 	static short B0[224] = 
 	{
@@ -776,13 +739,13 @@ static void pitch_synch_par_reset(klatt_frame_ptr frame)
 	
 		/* Reset width of "impulsive" glottal pulse */
 	
-		temp = kt_globals.samrate / kt_globals.nopen;
+		long temp = kt_globals.samrate / kt_globals.nopen;
 	
 		setabc((long)0,temp,&(kt_globals.rsn[RGL]));
 	
 		/* Make gain at F1 about constant */
 	
-		temp1 = kt_globals.nopen *.00833;
+		double temp1 = kt_globals.nopen *.00833;
 		kt_globals.rsn[RGL].a *= temp1 * temp1;
 		
 		/*
@@ -851,19 +814,14 @@ equation constants.
 
 static void setabc(long int f, long int bw, resonator_ptr rp)
 {
-	double r;
-	double arg;
-	
 	/* Let r  =  exp(-pi bw t) */
-	arg = kt_globals.minus_pi_t * bw;
-	r = exp(arg);
+	double r = exp(kt_globals.minus_pi_t * bw);
 	
 	/* Let c  =  -r**2 */
 	rp->c = -(r * r);
 	
 	/* Let b = r * 2*cos(2 pi f t) */
-	arg = kt_globals.two_pi_t * f;
-	rp->b = r * cos(arg) * 2.0;
+	rp->b = r * cos(kt_globals.two_pi_t * f) * 2.0;
 	
 	/* Let a = 1.0 - b - c */
 	rp->a = 1.0 - rp->b - rp->c;
@@ -879,9 +837,6 @@ equation constants.
 
 static void setzeroabc(long int f, long int bw, resonator_ptr rp)
 {
-	double r;
-	double arg;
-	
 	f = -f;
 	
 	if(f>=0)
@@ -891,15 +846,13 @@ static void setzeroabc(long int f, long int bw, resonator_ptr rp)
 	
 	/* First compute ordinary resonator coefficients */
 	/* Let r  =  exp(-pi bw t) */
-	arg = kt_globals.minus_pi_t * bw;
-	r = exp(arg);
+	double r = exp(kt_globals.minus_pi_t * bw);
 	
 	/* Let c  =  -r**2 */
 	rp->c = -(r * r);
 	
 	/* Let b = r * 2*cos(2 pi f t) */
-	arg = kt_globals.two_pi_t * f;
-	rp->b = r * cos(arg) * 2.;
+	rp->b = r * cos(kt_globals.two_pi_t * f) * 2.0;
 	
 	/* Let a = 1.0 - b - c */
 	rp->a = 1.0 - rp->b - rp->c;
@@ -922,16 +875,10 @@ the origin in the z-plane, i.e. output = input + (0.75 * lastoutput)
 
 static double gen_noise(double noise) 
 {
-	long temp;
 	static double nlast;
 	
-	temp = (long) getrandom(-8191,8191);
-	kt_globals.nrand = (long) temp;
-	
-	noise = kt_globals.nrand + (0.75 * nlast);
-	nlast = noise;
-	
-	return(noise);
+	kt_globals.nrand = (long) getrandom(-8191,8191);
+	return nlast = kt_globals.nrand + (0.75 * nlast);
 }
 
 
@@ -993,7 +940,6 @@ static int scale_wav_tab[] = {45,38,45,45};   // scale output from different voi
 
 int Wavegen_Klatt(int resume)
 {//==========================
-	int pk;
 	int x;
 	int ix;
 	int fade;
@@ -1034,7 +980,7 @@ int Wavegen_Klatt(int resume)
 		kt_frame.Kopen = klattp[KLATT_Kopen];
 
 		// advance formants
-		for(pk=0; pk<N_PEAKS; pk++)
+		for(int pk=0; pk<N_PEAKS; pk++)
 		{
 			peaks[pk].freq1 += peaks[pk].freq_inc;
 			peaks[pk].freq = (int)peaks[pk].freq1;
@@ -1112,11 +1058,7 @@ int Wavegen_Klatt(int resume)
 
 void SetSynth_Klatt(int length, int modn, frame_t *fr1, frame_t *fr2, voice_t *v, int control)
 {//===========================================================================================
-	int ix;
 	DOUBLEX next;
-	int qix;
-	int cmd;
-	frame_t *fr3;
 	static frame_t prev_fr;
 
 	if(wvoice != NULL)
@@ -1137,18 +1079,18 @@ void SetSynth_Klatt(int length, int modn, frame_t *fr1, frame_t *fr2, voice_t *v
 	if(control & 1)
 	{
 		end_wave = 1;
-		for(qix=wcmdq_head+1;;qix++)
+		for(int qix=wcmdq_head+1;;qix++)
 		{
 			if(qix >= N_WCMDQ) qix = 0;
 			if(qix == wcmdq_tail) break;
 	
-			cmd = wcmdq[qix][0];
+			int cmd = wcmdq[qix][0];
 			if(cmd==WCMD_KLATT)
 			{
 				end_wave = 0;  // next wave generation is from another spectrum
 
-				fr3 = (frame_t *)wcmdq[qix][2];
-				for(ix=1; ix<6; ix++)
+				frame_t *fr3 = (frame_t *)wcmdq[qix][2];
+				for(int ix=1; ix<6; ix++)
 				{
 					if(fr3->ffreq[ix] != fr2->ffreq[ix])
 					{
@@ -1190,7 +1132,7 @@ if(option_log_frames)
 
 	if(control & 1)
 	{
-		for(ix=1; ix<6; ix++)
+		for(int ix=1; ix<6; ix++)
 		{
 			if(prev_fr.ffreq[ix] != fr1->ffreq[ix])
 			{
@@ -1203,7 +1145,7 @@ if(option_log_frames)
 		memcpy(&prev_fr,fr2,sizeof(prev_fr));
 	}
 
-	for(ix=0; ix<N_KLATTP; ix++)
+	for(int ix=0; ix<N_KLATTP; ix++)
 	{
 		if((ix >= 5) && ((fr1->frflags & FRFLAG_KLATT) == 0))
 		{
@@ -1223,7 +1165,7 @@ if(option_log_frames)
 
 	nsamples = length;
 
-	for(ix=1; ix < 6; ix++)
+	for(int ix=1; ix < 6; ix++)
 	{
 		peaks[ix].freq1 = (fr1->ffreq[ix] * v->freq[ix] / 256.0) + v->freqadd[ix];
 		peaks[ix].freq = (int)peaks[ix].freq1;
@@ -1259,7 +1201,7 @@ if(option_log_frames)
 	if(fr1->frflags & FRFLAG_KLATT)
 	{
 		// the frame contains additional parameters for parallel resonators
-		for(ix=1; ix < 7; ix++)
+		for(int ix=1; ix < 7; ix++)
 		{
 			peaks[ix].bp1 = fr1->klatt_bp[ix] * 4;  // parallel bandwidth
 			peaks[ix].bp = (int)peaks[ix].bp1;
@@ -1304,8 +1246,6 @@ void KlattInit()
 	static short parallel_amp[10] = { 0,59,59,59,59,59,59,0,0,0};
 	static short parallel_bw[10] = {59,59,89,149,200,200,500,0,0,0};
 
-	int ix;
-
 	sample_count=0;
 
 	kt_globals.synthesis_model = CASCADE_PARALLEL;
@@ -1323,7 +1263,7 @@ void KlattInit()
 	KlattReset(2);
 
 	// set default values for frame parameters
-	for(ix=0; ix<=9; ix++)
+	for(int ix=0; ix<=9; ix++)
 	{
 		kt_frame.Fhz[ix] = formant_hz[ix];
 		kt_frame.Bhz[ix] = bandwidth[ix];
