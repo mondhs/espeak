@@ -1684,7 +1684,7 @@ espeak_ERROR SetVoiceByProperties(espeak_VOICE *voice_selector)
 }  //  end of SetVoiceByProperties
 
 void FreeVoiceList()
-{
+{//=================
 	for(int ix=0; ix<n_voices_list; ix++)
 	{
 		if(voices_list[ix] != NULL)
@@ -1695,7 +1695,6 @@ void FreeVoiceList()
 	}
 	n_voices_list = 0;
 }
-
 
 
 //=======================================================================
