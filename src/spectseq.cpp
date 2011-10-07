@@ -466,9 +466,9 @@ int SpectSeq::ImportSPC2(wxInputStream & stream)
 	/* count number of cycles */
 	while(!stream.Eof())
 	{
-stream.TellI();
+		stream.TellI();
 		stream.Read(&cy,44);
-stream.TellI();
+		stream.TellI();
 		if(stream.Eof()) break;
 		
 		n_cycles++;
