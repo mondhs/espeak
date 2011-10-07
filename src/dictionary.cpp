@@ -830,10 +830,7 @@ int Unpronouncable(Translator *tr, char *word, int posn)
 			break;
 		}
 
-		if(c == '\'')
-			;
-		else
-		if(!iswalpha(c))
+		if((c != '\'') && !iswalpha(c))
 			return(0);
 	}
 
@@ -2076,7 +2073,7 @@ static void MatchRule(Translator *tr, char *word[], char *word_start, int group_
 						// next 3 bytes are a (non-zero) ending type. 2 bytes of flags + suffix length
 						end_type = (rule[0] << 16) + ((rule[1] & 0x7f) << 8) + (rule[2] & 0x7f);
 
-						if((tr->word_vowel_count == 0) && !(end_type & SUFX_P))
+						if((tr->word_vowel_count == 0) && !(end_type & SUFX_P) && (tr->langopts.param[LOPT_SUFFIX] & 1))
 							failed = 1;	// don't match a suffix rule if there are no previous syllables (needed for lang=tr).
 						else
 						{

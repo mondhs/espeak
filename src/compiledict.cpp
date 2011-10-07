@@ -29,9 +29,6 @@
 #include "synthesize.h"
 #include "translate.h"
 
-//#define OPT_FORMAT         // format the text and write formatted copy to Log file 
-//#define OUTPUT_FORMAT
-
 extern void Write4Bytes(FILE *f, int value);
 int HashDictionary(const char *string);
 
@@ -377,9 +374,6 @@ static int compile_line(char *linebuf, char *dict_line, int *hash)
 	int text_not_phonemes;   // this word specifies replacement text, not phonemes
 	unsigned int  wc;
 	
-#ifdef OPT_FORMAT
-	char *comment = NULL;
-#endif
 	unsigned char flag_codes[100];
 	char encoded_ph[200];
 	unsigned char bad_phoneme[4];
@@ -481,9 +475,6 @@ static char nullstring[] = {0};
 		if((c == '/') && (p[1] == '/') && (multiple_words==0))
 		{
 			c = '\n';   /* "//" treat comment as end of line */
-#ifdef OPT_FORMAT
-			comment = p;
-#endif
 		}
 	
 		switch(step)
@@ -577,12 +568,6 @@ static char nullstring[] = {0};
 	
 	if(word[0] == 0)
 	{
-#ifdef OPT_FORMAT
-		if(comment != NULL)
-			fprintf(f_log,"%s",comment);
-		else
-			fputc('\n',f_log);
-#endif
 		return(0);   /* blank line */
 	}
 
@@ -732,36 +717,6 @@ static char nullstring[] = {0};
 		}
 	}
 	dict_line[0] = length;
-
-#ifdef OPT_FORMAT
-	spaces = 16;
-	for(unsigned int ix=0; ix<n_flag_codes; ix++)
-	{
-		if(flag_codes[ix] >= 100)
-		{
-			fprintf(f_log,"?%d ",flag_codes[ix]-100);
-			spaces -= 3;
-		}
-	}
-
-	fprintf(f_log,"%s",word);
-	spaces -= strlen(word);
-	DecodePhonemes(encoded_ph,decoded_ph);
-	while(spaces-- > 0) fputc(' ',f_log);
-	spaces += (14 - strlen(decoded_ph));
-	
-	fprintf(f_log," %s",decoded_ph);
-	while(spaces-- > 0) fputc(' ',f_log);
-	for(unsigned int ix=0; ix<n_flag_codes; ix++)
-	{
-		if(flag_codes[ix] < 100)
-			fprintf(f_log," %s",lookup_mnem(mnem_flags,flag_codes[ix]));
-	}
-	if(comment != NULL)
-		fprintf(f_log," %s",comment);
-	else
-		fputc('\n',f_log);
-#endif
 
 	return(length);
 }  /* end of compile_line */

@@ -838,7 +838,10 @@ equation constants.
 static void setzeroabc(long int f, long int bw, resonator_ptr rp)
 {
 	f = -f;
-	
+
+//NOTE, changes made 30.09.2011 for Reece Dunn <msclrhd@googlemail.com>
+// fix a sound spike when f=0
+
 	/* First compute ordinary resonator coefficients */
 	/* Let r  =  exp(-pi bw t) */
 	double r = exp(kt_globals.minus_pi_t * bw);
