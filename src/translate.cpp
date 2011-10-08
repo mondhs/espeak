@@ -835,6 +835,7 @@ int TranslateWord(Translator *tr, char *word_start, int next_pause, WORD_TAB *wt
 	if(word_copy_length >= N_WORD_BYTES)
 		word_copy_length = N_WORD_BYTES-1;
 	memcpy(word_copy2, word_start, word_copy_length);
+	word_copy2[word_copy_length] = 0;
 
 	int spell_word = 0;
 
@@ -862,6 +863,9 @@ int TranslateWord(Translator *tr, char *word_start, int next_pause, WORD_TAB *wt
 	{
 		if(!found)
 			found = LookupDictList(tr, &word1, phonemes, dictionary_flags, FLAG_ALLOW_TEXTMODE, wtab);   // the original word
+
+		if (!found)
+			fprintf(stderr, "word not found: %s\n", word_copy2);
 
 
 		if((dictionary_flags[0] & (FLAG_ALLOW_DOT || FLAG_NEEDS_DOT)) && (wordx[1] == '.'))
@@ -991,8 +995,8 @@ if((wmark > 0) && (wmark < 8))
 			return(0);
 		}
 	}
-	else
-	if(found == 0)
+	else if (0)
+	//if(found == 0)
 	{
 		int posn;
 		int non_initial;
