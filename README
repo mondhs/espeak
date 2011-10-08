@@ -1,7 +1,20 @@
-This branch contains changes to the eSpeak code to clean it up.
+This branch is used to improve the pronunciation of the English
+voice in eSpeak.
 
-The intent here is to:
-   1/  remove unused code;
-   2/  use more C++-like code/syntax (e.g. declaring variables
-       only where they are needed and the bool type);
-   3/  simplifying the code where possible.
+The pronunciation data for the English voice is stored in the
+cainteoir-english project. Running the:
+
+	make en
+
+command uses the data in cainteoir-english, along with the
+dictionary processing script in cainteoir-engine to build
+up the dictsource/en_extra file containing the words that
+eSpeak mispronounces.
+
+To run the `make en` command, you need both the
+cainteoir-engine and cainteoir-english sources at the same
+level as espeak:
+
+	cainteoir-engine
+	cainteoir-english
+	espeak
