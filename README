@@ -1,0 +1,21 @@
+Only rely on the cainteoir-english dictionary for pronunciations.
+    
+This is a special branch for testing the completeness of the
+cainteoir-english dictionary when used against a document. It
+is not meant for day-to-day use (use the english branch instead).
+    
+The idea here is that:
+   1/  en_rules contains no rules!
+   2/  en_list contains the words from the cainteoir-english
+       dictionary.
+   3/  en_extra is empty.
+   4/  espeak does not try to spell a word it cannot translate,
+       but instead prints out a message.
+    
+This means you can get the words not referenced in the
+cainteoir-english dictionary by running:
+    
+	cat file | espeak -q 2>&1 | \
+		grep -F "word not found" | \
+		sed -e "s/word not found: //" | \
+		sort | uniq
