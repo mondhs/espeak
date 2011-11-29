@@ -433,6 +433,8 @@ static void StopSpeak(int unused)
 	signal(SIGINT,StopSpeak);
 }  //  end of StopSpeak()
 
+
+
 #ifdef NEED_GETOPT
 	struct option {
 		char *name;
@@ -472,6 +474,7 @@ int main (int argc, char **argv)
 		{"phonout", required_argument, 0, 0x108},
 		{"pho",     no_argument,       0, 0x109},
 		{"ipa",     no_argument,       0, 0x10a},
+		{"version", no_argument,       0, 0x10b},
 		{0, 0, 0, 0}
 		};
 
@@ -590,7 +593,6 @@ int main (int argc, char **argv)
 			init_path(argv[0],data_path);
 			printf("\nspeak text-to-speech: %s   Data at: %s\n%s",version_string,path_home,help_text);
 			exit(0);
-			break;
 
 		case 'k':
 			option_capitals = atoi(optarg2);
@@ -710,6 +712,11 @@ int main (int argc, char **argv)
 		case 0x10a:  // --ipa
 			option_phonemes = 3;
 			break;
+
+		case 0x10b:  // --version
+			init_path(argv[0],data_path);
+			printf("speak text-to-speech: %s   Data at: %s\n",version_string,path_home);
+			exit(0);
 
 		default:
 			exit(0);
