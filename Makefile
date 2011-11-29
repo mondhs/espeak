@@ -51,6 +51,6 @@ en: dictsource/en_rules dictsource/en_list
 	make all
 	../cainteoir-engine/tests/dictionary.py ../cainteoir-english/data/reece --exception-dictionary > dictsource/en_extra
 	make espeak-data
-	../cainteoir-engine/tests/dictionary.py ../cainteoir-english/data/reece | grep -F fail
+	../cainteoir-engine/tests/dictionary.py ../cainteoir-english/data/reece | grep -F "... fail"
 	wc -l dictsource/en_extra
 
