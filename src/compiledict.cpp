@@ -855,12 +855,24 @@ static int group3_ix;
 
 
 
+int isHexDigit(int c)
+{
+	if((c >= '0') && (c <= '9'))
+		return(c - '0');
+	if((c >= 'a') && (c <= 'f'))
+		return(c - 'a' + 10);
+	if((c >= 'A') && (c <= 'F'))
+		return(c - 'A' + 10);
+	return(-1);
+}
+
+
 static void copy_rule_string(char *string, int &state)
 {//===================================================
 // state 0: conditional, 1=pre, 2=match, 3=post, 4=phonemes
 	static char *outbuf[5] = {rule_cond, rule_pre, rule_match, rule_post, rule_phonemes};
 	static int next_state[5] = {2,2,4,4,4};
-	int  value;
+	int  hexdigit_input = 0;
 
 	if(string[0] == 0) return;
 
@@ -881,24 +893,46 @@ static void copy_rule_string(char *string, int &state)
 	{
 		int literal = 0;
 		char c = *p++;
+		if((c == '0') && (p[0] == 'x') && (isHexDigit(p[1]) >= 0) && (isHexDigit(p[2]) >= 0))
+		{
+			hexdigit_input = 1;
+			c = p[1];
+			p+= 2;
+		}
 		if(c == '\\')
 		{
 			c = *p++;   // treat next character literally
+//#ifdef deleted
 			if((c >= '0') && (c <= '3') && (p[0] >= '0') && (p[0] <= '7') && (p[1] >= '0') && (p[1] <= '7'))
 			{
 				// character code given by 3 digit octal value;
 				c = (c-'0')*64 + (p[0]-'0')*8 + (p[1]-'0');
 				p += 2;
 			}
+//endif
 			literal = 1;
 		}
-
+		if(hexdigit_input)
+		{
+			int c2, c3;
+			if(((c2 = isHexDigit(c)) >= 0) && ((c3 = isHexDigit(p[0])) >= 0))
+			{
+				c = c2 * 16 + c3;
+				literal = 1;
+				p++;
+			}
+			else
+			{
+				hexdigit_input = 0;
+			}
+		}
 		if((state==1) || (state==3))
 		{
 			// replace special characters (note: 'E' is reserved for a replaced silent 'e')
 			if(literal == 0)
 			{
 				static const char lettergp_letters[9] = {LETTERGP_A,LETTERGP_B,LETTERGP_C,0,0,LETTERGP_F,LETTERGP_G,LETTERGP_H,LETTERGP_Y};
+				int value;
 				switch(c)
 				{
 				case '_':
