@@ -397,7 +397,7 @@ static int initialise(int control)
 }
 
 
-static espeak_ERROR Synthesize(unsigned int unique_identifier, const void *text, int flags)
+static espeak_ERROR Synthesize(const void *text, int flags)
 {//========================================================================================
 	// Fill the buffer with output sound
 	int length;
@@ -411,7 +411,7 @@ static espeak_ERROR Synthesize(unsigned int unique_identifier, const void *text,
 	ENTER("Synthesize");
 	if (text)
 	{
-	SHOW("Synthesize > uid=%d, flags=%d, >>>text=%s<<<\n", unique_identifier, flags, text);
+	SHOW("Synthesize > flags=%d, >>>text=%s<<<\n", flags, text);
 	}
 #endif
 
@@ -609,7 +609,7 @@ espeak_ERROR sync_espeak_Synth(unsigned int unique_identifier, const void *text,
 	
 	end_character_position = end_position;
 	
-	espeak_ERROR aStatus = Synthesize(unique_identifier, text, flags);
+	espeak_ERROR aStatus = Synthesize(text, flags);
 	#ifdef USE_ASYNC
 	wave_flush(my_audio);
 	#endif
@@ -639,7 +639,7 @@ espeak_ERROR sync_espeak_Synth_Mark(unsigned int unique_identifier, const void *
 	end_character_position = end_position;
 	
 	
-	espeak_ERROR aStatus = Synthesize(unique_identifier, text, flags | espeakSSML);
+	espeak_ERROR aStatus = Synthesize(text, flags | espeakSSML);
 	SHOW_TIME("LEAVE sync_espeak_Synth_Mark");
 	
 	return (aStatus);
@@ -662,7 +662,7 @@ void sync_espeak_Key(const char *key)
 
 	my_unique_identifier = 0;
 	my_user_data = NULL;
-	Synthesize(0, key,0);   // speak key as a text string
+	Synthesize(key,0);   // speak key as a text string
 }
 
 
@@ -674,7 +674,7 @@ void sync_espeak_Char(wchar_t character)
 	my_user_data = NULL;
 	
 	sprintf(buf,"<say-as interpret-as=\"tts:char\">&#%d;</say-as>",character);
-	Synthesize(0, buf,espeakSSML);
+	Synthesize(buf,espeakSSML);
 }
 
 
