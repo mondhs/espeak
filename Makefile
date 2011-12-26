@@ -201,8 +201,12 @@ espeak-data/el_dict: dictsource/el_list dictsource/el_rules dictsource/el_extra
 	cd dictsource && ../src/espeak --compile=el && cd ..
 
 en: espeak-data/en_dict
-dictsource/en_extra:
-	touch dictsource/en_extra
+	../cainteoir-engine/tests/dictionary.py ../cainteoir-english/data/reece | grep -F "... fail"
+	wc -l dictsource/en_extra
+dictsource/en_extra: ../cainteoir-english/data/reece/*.dict
+	rm -f dictsource/en_extra
+	cd dictsource && ../src/espeak --compile=en && cd ..
+	../cainteoir-engine/tests/dictionary.py ../cainteoir-english/data/reece --exception-dictionary > dictsource/en_extra
 espeak-data/en_dict: dictsource/en_list dictsource/en_rules dictsource/en_extra
 	cd dictsource && ../src/espeak --compile=en && cd ..
 
