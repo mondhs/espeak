@@ -1236,10 +1236,6 @@ int Wavegen()
 		}
 
 		// apply main peaks, formants 0 to 5
-#ifdef USE_ASSEMBLER_1
-		// use an optimised routine for this loop, if available
-		total += AddSineWaves(waveph, h_switch_sign, maxh, harmspect);  // call an assembler code routine
-#else
 		unsigned short theta = waveph;
 
 		for(h=1; h<=h_switch_sign; h++)
@@ -1253,7 +1249,6 @@ int Wavegen()
 			theta += waveph;
 			h++;
 		}
-#endif
 
 		if(voicing != 64)
 		{
