@@ -1,14 +1,14 @@
-PREFIX=/usr
+REFIX=/usr
 BINDIR=$(PREFIX)/bin
 DATADIR=$(PREFIX)/share/espeak-data
 
 PLATFORM=big_endian
 
-.PHONY: all clean distclean espeak espeakedit espeak-phoneme-data espeak-data
+.PHONY: all clean distclean espeak-phoneme-data
 
 ##### standard build actions:
 
-all: speak libespeak.so libespeak.a espeak espeakedit espeak-data dictionaries
+all: src/speak src/libespeak.so src/libespeak.a src/espeak src/espeakedit espeak-data/phontab dictionaries
 
 install: all
 	cd src && make DESTDIR=$(DESTDIR) PREFIX=$(PREFIX) install && cd ..
@@ -25,32 +25,84 @@ distclean: clean
 
 ##### build targets:
 
-libespeak.a:
+common_SOURCES = \
+	src/compiledict.cpp \
+	src/dictionary.cpp \
+	src/intonation.cpp \
+	src/klatt.cpp \
+	src/mbrowrap.cpp \
+	src/numbers.cpp \
+	src/readclause.cpp \
+	src/phonemelist.cpp \
+	src/setlengths.cpp \
+	src/sonic.cpp \
+	src/synthdata.cpp \
+	src/synthesize.cpp \
+	src/synth_mbrola.cpp \
+	src/translate.cpp \
+	src/tr_languages.cpp \
+	src/voices.cpp \
+	src/wavegen.cpp 
+
+libespeak_SOURCES = \
+	src/speak_lib.cpp \
+	src/espeak_command.cpp \
+	src/event.cpp \
+	src/fifo.cpp \
+	src/wave.cpp \
+	src/wave_pulse.cpp \
+	src/wave_sada.cpp \
+	src/debug.cpp
+
+espeakedit_SOURCES = \
+	src/compiledata.cpp \
+	src/espeakedit.cpp \
+	src/extras.cpp \
+	src/formantdlg.cpp \
+	src/menus.cpp \
+	src/options.cpp \
+	src/prosodydisplay.cpp \
+	src/spect.cpp \
+	src/spectdisplay.cpp \
+	src/spectseq.cpp \
+	src/transldlg.cpp \
+	src/voicedlg.cpp \
+	src/vowelchart.cpp
+
+src/libespeak.a: $(common_SOURCES) $(libespeak_SOURCES)
 	cd src && make libespeak.a PREFIX=$(PREFIX) && cd ..
 
-libespeak.so:
+src/libespeak.so: $(common_SOURCES) $(libespeak_SOURCES)
 	cd src && make libespeak.so PREFIX=$(PREFIX) && cd ..
 
-speak:
+src/speak: $(common_SOURCES) src/speak.cpp
 	cd src && make speak PREFIX=$(PREFIX) && cd ..
 
-espeak: libespeak.so
+src/espeak: src/libespeak.so src/espeak.cpp
 	cd src && make espeak PREFIX=$(PREFIX) && cd ..
 
-espeakedit:
+src/espeakedit: $(common_SOURCES) $(libespeak_SOURCES) $(espeakedit_SOURCES)
 	cd src && make espeakedit PREFIX=$(PREFIX) && cd ..
 
 espeak-phoneme-data:
 	cd platforms/$(PLATFORM) && make PREFIX=$(PREFIX) && cd ../..
 
-espeak-data-dir:
-	rm -rf espeak-data/dictsource espeak-data/phsource espeak-data/phondata-manifest
-	cp -a phsource espeak-data/phsource
-	cp -a dictsource espeak-data/dictsource
-
-espeak-data: espeakedit espeak-data-dir
+espeak-data/dir.stamp:
 	rm -rf $(HOME)/espeak-data
 	ln -sv $(PWD)/espeak-data $(HOME)/espeak-data
+	touch espeak-data/dir.stamp
+
+espeak-data/dictsource/dir.stamp: dictsource/*
+	rm -rf espeak-data/dictsource
+	./shadowdir $(PWD)/dictsource $(PWD)/espeak-data/dictsource
+	touch espeak-data/dictsource/dir.stamp
+
+espeak-data/phsource/dir.stamp: phsource/ph_* phsource/phonemes phsource/intonation
+	rm -rf espeak-data/phsource
+	./shadowdir $(PWD)/phsource $(PWD)/espeak-data/phsource
+	touch espeak-data/phsource/dir.stamp
+
+espeak-data/phontab: src/espeakedit espeak-data/dir.stamp espeak-data/dictsource/dir.stamp espeak-data/phsource/dir.stamp
 	src/espeakedit --compile
 
 ##### dictionaries:
