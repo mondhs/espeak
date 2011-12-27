@@ -1565,22 +1565,6 @@ int LoadSpect(const char *path, int control)
 	float total = 0;	
 	for(int frame=0; frame < spectseq->numframes; frame++)
 	{
-
-#ifdef deleted
-for(int ix=0; ix<8; ix++)
-{
-	// find which files have certain markers set
-	if(spectseq->frames[frame]->markers & (1<<ix))
-	{
-		markers_used[ix]++;
-		if((ix==3) || (ix==4))
-		{
-			fprintf(f_errors,"Marker %d: %s\n",ix,path);
-		}
-	}
-}
-#endif
-
 		if(spectseq->frames[frame]->keyframe)
 		{
 			if(seq_out.n_frames == 1)
@@ -3397,9 +3381,7 @@ fprintf(f_errors,"\nRefs %d,  Reused %d\n",count_references,duplicate_references
 
 	CompileReport();
 	report_dict = CompileAllDictionaries();
-//#ifdef deleted
 	DrawEnvelopes();
-//#endif
 
 	if(gui_flag)
 	{
