@@ -36,8 +36,6 @@
 #include "synthesize.h"
 #include "voice.h"
 
-#ifdef INCLUDE_KLATT    // conditional compilation for the whole file
-
 extern unsigned char *out_ptr;   // **JSD
 extern unsigned char *out_start;
 extern unsigned char *out_end;
@@ -1237,5 +1235,3 @@ void KlattInit()
 	kt_frame.AVpdb = 0;
 	kt_frame.Gain0 = 62;   // 60
 }  // end of KlattInit
-
-#endif  // INCLUDE_KLATT

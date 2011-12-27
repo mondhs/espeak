@@ -34,8 +34,6 @@
 #include "voice.h"
 #include "sonic.h"
 
-//#undef INCLUDE_KLATT
-
 #ifdef USE_PORTAUDIO
 #include "portaudio.h"
 #undef USE_PORTAUDIO
@@ -709,9 +707,7 @@ void WavegenInit(int rate, int wavemult_fact)
 
 	pk_shape = pk_shape2;         // pk_shape2
 
-#ifdef INCLUDE_KLATT
 	KlattInit();
-#endif
 
 #ifdef LOG_FRAMES
 remove("log-espeakedit");
@@ -1817,14 +1813,12 @@ int WavegenFill2(int fill_zeros)
 			result = Wavegen2(length & 0xffff,q[1] >> 16,resume,(frame_t *)q[2],(frame_t *)q[3]);
 			break;
 
-#ifdef INCLUDE_KLATT
 		case WCMD_KLATT2:   // as WCMD_SPECT but stop any concurrent wave file
 			wdata.n_mix_wavefile = 0;   // ... and drop through to WCMD_SPECT case
 		case WCMD_KLATT:
 			echo_complete = echo_length;
 			result = Wavegen_Klatt2(length & 0xffff,q[1] >> 16,resume,(frame_t *)q[2],(frame_t *)q[3]);
 			break;
-#endif
 
 		case WCMD_MARKER:
 			MarkerEvent(q[1],q[2],q[3],out_ptr);
