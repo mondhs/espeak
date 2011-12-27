@@ -3083,14 +3083,10 @@ static const char *LookupDict2(Translator *tr, const char *word, const char *wor
 		if(option_phonemes == 2)
 		{
 			char ph_decoded[N_WORD_PHONEMES];
-			int textmode;
 
 			DecodePhonemes(phonetic,ph_decoded);
 
-			if((dictionary_flags & FLAG_TEXTMODE) == 0)
-				textmode = 0;
-			else
-				textmode = 1;
+			int textmode = (dictionary_flags & FLAG_TEXTMODE) != 0;
 
 			if(textmode == translator->langopts.textmode)
 			{
