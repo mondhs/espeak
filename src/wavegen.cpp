@@ -34,8 +34,6 @@
 #include "voice.h"
 #include "sonic.h"
 
-//#undef INCLUDE_KLATT
-
 #ifdef USE_PORTAUDIO
 #include "portaudio.h"
 #undef USE_PORTAUDIO
@@ -374,38 +372,6 @@ static unsigned char pk_shape2[PEAKSHAPEW+1] = {
 static unsigned char *pk_shape;
 
 
-static void WavegenInitPkData(int which)
-{//=====================================
-// this is only needed to set up the presets for pk_shape1 and pk_shape2
-// These have already been pre-calculated and preset
-#ifdef deleted
-	float y[PEAKSHAPEW];
-	float maxy=0;
-
-	if(which==0)
-		pk_shape = pk_shape1;
-	else
-		pk_shape = pk_shape2;
-
-	int p = 0;
-	for(int ix=0;ix<PEAKSHAPEW;ix++)
-	{
-		float x = (4.5*ix)/PEAKSHAPEW;
-		if(x >= pk_shape_x[which][p+3]) p++;
-		y[ix] = polint(&pk_shape_x[which][p],&pk_shape_y[which][p],3,x);
-		if(y[ix] > maxy) maxy = y[ix];
-	}
-	for(int ix=0;ix<PEAKSHAPEW;ix++)
-	{
-		p = (int)(y[ix]*255/maxy);
-      pk_shape[ix] = (p >= 0) ? p : 0;
-	}
-	pk_shape[PEAKSHAPEW]=0;
-#endif
-}  //  end of WavegenInitPkData
-
-
-
 #ifdef USE_PORTAUDIO
 // PortAudio interface
 
@@ -739,13 +705,9 @@ void WavegenInit(int rate, int wavemult_fact)
 		}
 	}
 
-	WavegenInitPkData(1);
-	WavegenInitPkData(0);
 	pk_shape = pk_shape2;         // pk_shape2
 
-#ifdef INCLUDE_KLATT
 	KlattInit();
-#endif
 
 #ifdef LOG_FRAMES
 remove("log-espeakedit");
@@ -785,15 +747,6 @@ static void WavegenSetEcho(void)
 		amp = embedded_value[EMBED_H];
 		delay = 130;
 	}
-#ifdef deleted
-	if(embedded_value[EMBED_T] > 0)
-	{
-		// announcing punctuation, add a small echo
-// This seems unpopular
-		amp = embedded_value[EMBED_T] * 8;
-		delay = 60;
-	}
-#endif
 
 	if(delay == 0)
 		amp = 0;
@@ -1283,10 +1236,6 @@ int Wavegen()
 		}
 
 		// apply main peaks, formants 0 to 5
-#ifdef USE_ASSEMBLER_1
-		// use an optimised routine for this loop, if available
-		total += AddSineWaves(waveph, h_switch_sign, maxh, harmspect);  // call an assembler code routine
-#else
 		unsigned short theta = waveph;
 
 		for(h=1; h<=h_switch_sign; h++)
@@ -1300,7 +1249,6 @@ int Wavegen()
 			theta += waveph;
 			h++;
 		}
-#endif
 
 		if(voicing != 64)
 		{
@@ -1860,14 +1808,12 @@ int WavegenFill2(int fill_zeros)
 			result = Wavegen2(length & 0xffff,q[1] >> 16,resume,(frame_t *)q[2],(frame_t *)q[3]);
 			break;
 
-#ifdef INCLUDE_KLATT
 		case WCMD_KLATT2:   // as WCMD_SPECT but stop any concurrent wave file
 			wdata.n_mix_wavefile = 0;   // ... and drop through to WCMD_SPECT case
 		case WCMD_KLATT:
 			echo_complete = echo_length;
 			result = Wavegen_Klatt2(length & 0xffff,q[1] >> 16,resume,(frame_t *)q[2],(frame_t *)q[3]);
 			break;
-#endif
 
 		case WCMD_MARKER:
 			MarkerEvent(q[1],q[2],q[3],out_ptr);
