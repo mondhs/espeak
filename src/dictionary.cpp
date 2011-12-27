@@ -1500,15 +1500,6 @@ void SetWordStress(Translator *tr, char *output, unsigned int *dictionary_flags,
 		if(ph->type == phSTRESS)
 			ph = phoneme_tab[p[1]];
 
-#ifdef deleted
-		int gap = tr->langopts.word_gap & 0x700;
-		if((gap) && (vowel_stress[1] >= 4) && (prev_stress >= 4))
-		{
-			/* two primary stresses together, insert a short pause */
-			*output++ = pause_phonemes[gap >> 8];
-		}
-		else
-#endif
 		if((tr->langopts.vowel_pause & 0x30) && (ph->type == phVOWEL))
 		{
 			// word starts with a vowel
@@ -2486,15 +2477,6 @@ int TranslateRules(Translator *tr, char *p_start, char *phonemes, int ph_size, c
 								return(0);
 							}
 						}
-#ifdef deleted
-// can't switch to a tone language, because the tone-phoneme numbers are not valid for the original language
-						if((letter >= 0x4e00) && (letter < 0xa000) && (tr->langopts.ideographs != 1))
-						{
-							// Chinese ideogram
-							sprintf(phonemes,"%czh",phonSWITCH);
-							return(0);
-						}
-#endif
 
 						// is it a bracket ?
 						if(letter == 0xe000+'(')
@@ -2679,20 +2661,6 @@ void ApplySpecialAttribute(Translator *tr, char *phonemes, int dict_flags)
 
 	switch(tr->translator_name)
 	{
-#ifdef deleted
-// this is now done in de_rules
-	case L('d','e'):
-		if(p_end[0] == PhonemeCode2('i',':'))
-		{
-			// words ends in ['i:], change to [=I@]
-			p_end[-1] = phonSTRESS_PREV;
-			p_end[0] = PhonemeCode('I');
-			p_end[1] = phonSCHWA;
-			p_end[2] = 0;
-		}
-		break;
-#endif
-
 	case L('r','o'):
 		if(p_end[0] == PhonemeCode('j'))
 		{
@@ -3083,14 +3051,10 @@ static const char *LookupDict2(Translator *tr, const char *word, const char *wor
 		if(option_phonemes == 2)
 		{
 			char ph_decoded[N_WORD_PHONEMES];
-			int textmode;
 
 			DecodePhonemes(phonetic,ph_decoded);
 
-			if((dictionary_flags & FLAG_TEXTMODE) == 0)
-				textmode = 0;
-			else
-				textmode = 1;
+			int textmode = (dictionary_flags & FLAG_TEXTMODE) != 0;
 
 			if(textmode == translator->langopts.textmode)
 			{

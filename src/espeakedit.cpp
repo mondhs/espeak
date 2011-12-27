@@ -44,12 +44,6 @@
 #include "prosodydisplay.h"
 
 
-#ifdef deleted
-static const char *about_string = "espeakedit: %s\nAuthor: Jonathan Duddington (c) 2009\n\n"
-"Licensed under GNU General Public License version 3\n"
-"http://espeak.sourceforge.net/";
-#endif
-
 static const char *about_string = "<font size=0><b>espeakedit </b> %s<br>Author: Jonathan Duddington (c) 2009<br>"
 "<a href=\"http://espeak.sourceforge.net/\">http://espeak.sourceforge.net</a><br>"
 "Licensed under <a href=\"http://espeak.sourceforge.net/license.html\">GNU General Public License version 3</a></font>";

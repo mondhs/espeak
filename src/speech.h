@@ -23,7 +23,6 @@
 #include <sys/types.h>
 
 // conditional compilation options
-#define INCLUDE_KLATT
 #define INCLUDE_MBROLA
 
 #if defined(BYTE_ORDER) && BYTE_ORDER == BIG_ENDIAN

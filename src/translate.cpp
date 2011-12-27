@@ -1036,17 +1036,6 @@ if((wmark > 0) && (wmark < 8))
 				return(0);
 			}
 
-#ifdef deleted
-			p = &wordx[word_length-3];    // this looks wrong.  Doesn't consider multi-byte chars.
-			if(memcmp(p,"'s ",3) == 0)
-			{
-				// remove a 's suffix and pronounce this separately (not as an individual letter)
-				add_plural_suffix = 1;
-				p[0] = ' ';
-				p[1] = ' ';
-				last_char = p[-1];
-			}
-#endif
 			length=0;
 			while(wordx[length] != ' ') length++;
 		}
@@ -1404,21 +1393,6 @@ if(dictionary_flags2[0] & FLAG_ABBREV)
 		// (but allow it for emphasis, see below
 		dictionary_flags[0] &= ~FLAG_PAUSE1;
 	}
-
-#ifdef deleted
-// but it causes problems if these are not a person name
-	if(tr->translator_name == L('h','u'))
-	{
-		// lang=hu, If the last two words of a clause have capital letters (eg. a person name), unstress the last word.
-		if((wflags & (FLAG_LAST_WORD | FLAG_FIRST_UPPER | FLAG_ALL_UPPER | FLAG_FIRST_WORD)) == (FLAG_LAST_WORD | FLAG_FIRST_UPPER))
-		{
-			if((wtab[-1].flags & (FLAG_FIRST_UPPER | FLAG_ALL_UPPER)) == FLAG_FIRST_UPPER)
-			{
-				ChangeWordStress(tr,word_phonemes,3);
-			}
-		}
-	}
-#endif
 
 	if((wflags & FLAG_HYPHEN) && (tr->langopts.stress_flags & S_HYPEN_UNSTRESS))
 	{
@@ -2583,15 +2557,6 @@ p = source;
 		{
 			// speak as words
 
-#ifdef deleted
-if((c == '/') && (tr->langopts.testing & 2) && IsDigit09(next_in) && IsAlpha(prev_out))
-{
-	// TESTING, explicit indication of stressed syllable by /2 after the word
-	word_mark = next_in-'0';
-	source_index++;
-	c = ' ';
-}
-#endif
 			if((c == 0x92) || (c == 0xb4) || (c == 0x2019) || (c == 0x2032))
 				c = '\'';    // 'microsoft' quote or sexed closing single quote, or prime - possibly used as apostrophe 
 
@@ -2857,15 +2822,6 @@ if((c == '/') && (tr->langopts.testing & 2) && IsDigit09(next_in) && IsAlpha(pre
 				}
 			}
 			else
-#ifdef deleted
-// Brackets are now recognised in TranslateRules()
-			if(IsBracket(c))
-			{
-				pre_pause_add = 4;
-				c = ' ';
-			}
-			else
-#endif
 			if(lookupwchar(breaks,c) != 0)
 			{
 				c = ' ';  // various characters to treat as space
