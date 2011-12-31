@@ -32,7 +32,7 @@
 #include "translate.h"
 #include "wave.h"
 
-const char *version_string = "1.46.10  21.Dec.11";
+const char *version_string = "1.46.11  24.Dec.11";
 const int version_phdata  = 0x014600;
 
 int option_device_number = -1;
@@ -638,7 +638,7 @@ static bool InterpretCondition(Translator *tr, int control, PHONEME_LIST *plist,
 
 		if(control & 0x100)
 		{
-			// change phonemes pass
+			// "change phonemes" pass
 			plist->ph = phoneme_tab[plist->phcode];
 		}
 		PHONEME_TAB *ph = plist->ph;
