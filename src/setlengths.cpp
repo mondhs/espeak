@@ -30,6 +30,7 @@
 
 extern int GetAmplitude(void);
 extern void DoSonicSpeed(int value);
+extern int saved_parameters[];
 
 
 // convert from words-per-minute to internal speed factor
@@ -317,6 +318,7 @@ void SetParameter(int parameter, int value, int relative)
 		}
 	}
 	param_stack[0].parameter[parameter] = value;
+	saved_parameters[parameter] = value;
 
 	switch(parameter)
 	{
