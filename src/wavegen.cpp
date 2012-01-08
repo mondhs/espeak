@@ -1086,11 +1086,8 @@ int Wavegen()
 	// continue until the output buffer is full, or
 	// the required number of samples have been produced
 
-	for(;;)
+	while(end_wave!=0 || samplecount!=nsamples)
 	{
-		if((end_wave==0) && (samplecount==nsamples))
-			return(0);
-
 		if((samplecount & 0x3f) == 0)
 		{
 			// every 64 samples, adjust the parameters
