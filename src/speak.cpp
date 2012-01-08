@@ -289,7 +289,7 @@ static int WavegenFile(void)
 	out_ptr = out_start = wav_outbuf;
 	out_end = wav_outbuf + sizeof(wav_outbuf);
 
-	int finished = WavegenFill(0);
+	int finished = WavegenFill();
 
 	if(quiet)
 		return(finished);
