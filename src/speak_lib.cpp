@@ -570,7 +570,7 @@ void MarkerEvent(int type, unsigned int char_position, int value, int value2, un
 	if((type == espeakEVENT_MARK) || (type == espeakEVENT_PLAY))
 		ep->id.name = &namedata[value];
 	else
-#ifdef deleted
+//#ifdef deleted
 // temporarily removed, don't introduce until after eSpeak version 1.46.02
 	if(type == espeakEVENT_PHONEME)
 	{
@@ -580,7 +580,7 @@ void MarkerEvent(int type, unsigned int char_position, int value, int value2, un
 		p[1] = value2;
 	}
 	else
-#endif
+//#endif
 	{
 		ep->id.number = value;
 	}
