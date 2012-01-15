@@ -126,7 +126,7 @@ unsigned char *out_end;
 int outbuf_size = 0;
 
 // the queue of operations passed to wavegen from sythesize
-long wcmdq[N_WCMDQ][4];
+long64 wcmdq[N_WCMDQ][4];
 int wcmdq_head=0;
 int wcmdq_tail=0;
 
@@ -1759,7 +1759,7 @@ int WavegenFill2()
 		}
 
 		int result = 0;
-		long *q = wcmdq[wcmdq_head];
+		long64 *q = wcmdq[wcmdq_head];
 		int length = q[1];
 
 		switch(q[0] & 0xff)
@@ -1833,8 +1833,8 @@ int WavegenFill2()
 			break;
 
 		case WCMD_VOICE:
-			WavegenSetVoice((voice_t *)q[1]);
-			free((voice_t *)q[1]);
+			WavegenSetVoice((voice_t *)q[2]);
+			free((voice_t *)q[2]);
 			break;
 
 		case WCMD_EMBEDDED:
