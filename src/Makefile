@@ -156,11 +156,9 @@ distclean: clean
 
 install: all
 	# Create directories
-	rm -rf $(DESTDIR)$(DATADIR)
 	$(MKDIR) $(DESTDIR)$(BINDIR)
 	$(MKDIR) $(DESTDIR)$(LIBDIR)
 	$(MKDIR) $(DESTDIR)$(INCDIR)
-	$(MKDIR) $(DESTDIR)$(DATADIR)
 	# Install espeak executable
 	$(INSTALL) -m 755 $(ESPEAK) $(DESTDIR)$(BINDIR)
 	# Should we install espeakedit executable?
@@ -173,6 +171,3 @@ install: all
 	$(LN_SF) $(LIBESPEAK).$(LIB_VERSION) $(DESTDIR)$(LIBDIR)/$(LIBESPEAK)
 	# Install development headers
 	$(INSTALL) -pm 644 speak_lib.h $(DESTDIR)$(INCDIR)
-	# Install data files
-	cp -prf ../espeak-data/* $(DESTDIR)$(DATADIR)
-
