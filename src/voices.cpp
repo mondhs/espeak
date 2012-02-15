@@ -1701,9 +1701,9 @@ void FreeVoiceList()
 //=======================================================================
 //  Library Interface Functions
 //=======================================================================
+
+
 #pragma GCC visibility push(default)
-
-
 ESPEAK_API const espeak_VOICE **espeak_ListVoices(espeak_VOICE *voice_spec)
 {//========================================================================
 #ifndef PLATFORM_RISCOS
@@ -1747,12 +1747,12 @@ ESPEAK_API const espeak_VOICE **espeak_ListVoices(espeak_VOICE *voice_spec)
 #endif
 	return((const espeak_VOICE **)voices_list);
 }  //  end of espeak_ListVoices
+#pragma GCC visibility pop
 
 
-
+#pragma GCC visibility push(default)
 ESPEAK_API espeak_VOICE *espeak_GetCurrentVoice(void)
 {//==================================================
 	return(&current_voice_selected);
 }
-
 #pragma GCC visibility pop

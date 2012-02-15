@@ -466,24 +466,28 @@ void sync_espeak_SetPunctuationList(const wchar_t *punctlist)
 
 
 #pragma GCC visibility push(default)
-
-
 ESPEAK_API void espeak_SetSynthCallback(t_espeak_callback* SynthCallback)
 {//======================================================================
 	synth_callback = SynthCallback;
 }
+#pragma GCC visibility pop
 
+#pragma GCC visibility push(default)
 ESPEAK_API void espeak_SetUriCallback(int (* UriCallback)(int, const char*, const char *))
 {//=======================================================================================
 	uri_callback = UriCallback;
 }
+#pragma GCC visibility pop
 
 
+#pragma GCC visibility push(default)
 ESPEAK_API void espeak_SetPhonemeCallback(int (* PhonemeCallback)(const char*))
 {//===========================================================================
 	phoneme_callback = PhonemeCallback;
 }
+#pragma GCC visibility pop
 
+#pragma GCC visibility push(default)
 ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output_type, int buf_length, const char *path, int options)
 {//=============================================================================================================
 	// It seems that the wctype functions don't work until the locale has been set
@@ -536,9 +540,10 @@ ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output_type, int buf_length
 	
   return(samplerate);
 }
+#pragma GCC visibility pop
 
 
-
+#pragma GCC visibility push(default)
 ESPEAK_API espeak_ERROR espeak_Synth(const void *text, size_t size, 
 				     unsigned int position, 
 				     espeak_POSITION_TYPE position_type,
@@ -562,9 +567,10 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text, size_t size,
 
 	return a_error;
 }  //  end of espeak_Synth
+#pragma GCC visibility pop
 
 
-
+#pragma GCC visibility push(default)
 ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size, 
 					  const char *index_mark, 
 					  unsigned int end_position, 
@@ -589,9 +595,10 @@ ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size,
 
 	return a_error;
 }  //  end of espeak_Synth_Mark
+#pragma GCC visibility pop
 
 
-
+#pragma GCC visibility push(default)
 ESPEAK_API espeak_ERROR espeak_Key(const char *key)
 {//================================================
 	// symbolic name, symbolicname_character  - is there a system resource of symbolicnames per language
@@ -599,8 +606,10 @@ ESPEAK_API espeak_ERROR espeak_Key(const char *key)
 	sync_espeak_Key(key);
 	return(EE_OK);
 }
+#pragma GCC visibility pop
 
 
+#pragma GCC visibility push(default)
 ESPEAK_API espeak_ERROR espeak_Char(wchar_t character)
 {//===========================================
   // is there a system resource of character names per language?
@@ -608,21 +617,26 @@ ESPEAK_API espeak_ERROR espeak_Char(wchar_t character)
 	sync_espeak_Char(character);
 	return(EE_OK);
 }
+#pragma GCC visibility pop
 
 
+#pragma GCC visibility push(default)
 ESPEAK_API espeak_ERROR espeak_SetVoiceByName(const char *name)
 {//============================================================
 	return(SetVoiceByName(name));
 }  // end of espeak_SetVoiceByName
+#pragma GCC visibility pop
 
 
-
+#pragma GCC visibility push(default)
 ESPEAK_API espeak_ERROR espeak_SetVoiceByProperties(espeak_VOICE *voice_selector)
 {//==============================================================================
 	return(SetVoiceByProperties(voice_selector));
 }  // end of espeak_SetVoiceByProperties
+#pragma GCC visibility pop
 
 
+#pragma GCC visibility push(default)
 ESPEAK_API int espeak_GetParameter(espeak_PARAMETER parameter, int current)
 {//========================================================================
 	// current: 0=default value, 1=current value
@@ -635,15 +649,19 @@ ESPEAK_API int espeak_GetParameter(espeak_PARAMETER parameter, int current)
 		return(param_defaults[parameter]);
 	}
 }  //  end of espeak_GetParameter
+#pragma GCC visibility pop
 
 
+#pragma GCC visibility push(default)
 ESPEAK_API espeak_ERROR espeak_SetParameter(espeak_PARAMETER parameter, int value, int relative)
 {//=============================================================================================
 	SetParameter(parameter,value,relative);
 	return(EE_OK);
 }
+#pragma GCC visibility pop
 
 
+#pragma GCC visibility push(default)
 ESPEAK_API espeak_ERROR espeak_SetPunctuationList(const wchar_t *punctlist)
 {//================================================================
   // Set the list of punctuation which are spoken for "some".
@@ -651,8 +669,10 @@ ESPEAK_API espeak_ERROR espeak_SetPunctuationList(const wchar_t *punctlist)
 	sync_espeak_SetPunctuationList(punctlist);
 	return(EE_OK);
 }  //  end of espeak_SetPunctuationList
+#pragma GCC visibility pop
 
 
+#pragma GCC visibility push(default)
 ESPEAK_API void espeak_SetPhonemeTrace(int value, FILE *stream)
 {//============================================================
 	/* Controls the output of phoneme symbols for the text
@@ -670,14 +690,18 @@ ESPEAK_API void espeak_SetPhonemeTrace(int value, FILE *stream)
 		f_trans = stderr;
 	
 }   //  end of espeak_SetPhonemes
+#pragma GCC visibility pop
 
 
+#pragma GCC visibility push(default)
 ESPEAK_API void espeak_CompileDictionary(const char *path, FILE *log, int flags)
 {//=============================================================================
 	CompileDictionary(path, dictionary_name, log, NULL, flags);
 }   //  end of espeak_CompileDirectory
+#pragma GCC visibility pop
 
 
+#pragma GCC visibility push(default)
 ESPEAK_API espeak_ERROR espeak_Cancel(void)
 {//===============================
 	embedded_value[EMBED_T] = 0;    // reset echo for pronunciation announcements
@@ -687,23 +711,29 @@ ESPEAK_API espeak_ERROR espeak_Cancel(void)
 
 	return EE_OK;
 }   //  end of espeak_Cancel
+#pragma GCC visibility pop
 
 
+#pragma GCC visibility push(default)
 ESPEAK_API int espeak_IsPlaying(void)
 {//==================================
 	return(0);
 }   //  end of espeak_IsPlaying
+#pragma GCC visibility pop
 
 
+#pragma GCC visibility push(default)
 ESPEAK_API espeak_ERROR espeak_Synchronize(void)
 {//=============================================
 	return EE_OK;
 }   //  end of espeak_Synchronize
+#pragma GCC visibility pop
 
 
 extern void FreePhData(void);
 extern void FreeVoiceList(void);
 
+#pragma GCC visibility push(default)
 ESPEAK_API espeak_ERROR espeak_Terminate(void)
 {//===========================================
 	Free(event_list);
@@ -715,7 +745,9 @@ ESPEAK_API espeak_ERROR espeak_Terminate(void)
 
 	return EE_OK;
 }   //  end of espeak_Terminate
+#pragma GCC visibility pop
 
+#pragma GCC visibility push(default)
 ESPEAK_API const char *espeak_Info(const char **ptr)
 {//=================================================
 	if(ptr != NULL)
@@ -724,7 +756,4 @@ ESPEAK_API const char *espeak_Info(const char **ptr)
 	}
 	return(version_string);
 }
-
 #pragma GCC visibility pop
-
-  
