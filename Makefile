@@ -41,12 +41,6 @@ common_SOURCES = \
 
 libespeak_SOURCES = \
 	src/speak_lib.cpp \
-	src/espeak_command.cpp \
-	src/event.cpp \
-	src/fifo.cpp \
-	src/wave.cpp \
-	src/wave_pulse.cpp \
-	src/wave_sada.cpp \
 	src/debug.cpp
 
 docs/speak_lib.h: src/speak_lib.h

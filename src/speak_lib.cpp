@@ -40,9 +40,7 @@
 #include "translate.h"
 #include "debug.h"
 
-#include "fifo.h"
-#include "event.h"
-#include "wave.h"
+void sync_espeak_Char(wchar_t character);
 
 unsigned char *outbuf=NULL;
 
@@ -72,180 +70,6 @@ void WVoiceChanged(voice_t *wvoice)
 // Voice change in wavegen
 	voice_samplerate = wvoice->samplerate;
 }
-
-
-#ifdef USE_ASYNC
-
-static int dispatch_audio(short* outbuf, int length, espeak_EVENT* event)
-{//======================================================================
-	ENTER("dispatch_audio");
-	
-	int a_wave_can_be_played = fifo_is_command_enabled();
-	
-#ifdef DEBUG_ENABLED
-	SHOW("*** dispatch_audio > uid=%d, [write=%p (%d bytes)], sample=%d, a_wave_can_be_played = %d\n", 
-			(event) ? event->unique_identifier : 0, wave_test_get_write_buffer(), 2*length, 
-			(event) ? event->sample : 0,
-			a_wave_can_be_played);
-#endif
-
-	switch(my_mode)
-	{
-	case AUDIO_OUTPUT_PLAYBACK:
-	{
-		int event_type=0;
-		if(event)
-		{
-			event_type = event->type;
-		}
-
-		if(event_type == espeakEVENT_SAMPLERATE)
-		{
-			voice_samplerate = event->id.number;
-
-			if(out_samplerate != voice_samplerate)
-			{
-				if(out_samplerate != 0)
-				{
-					// sound was previously open with a different sample rate
-					wave_close(my_audio);
-					sleep(1);
-				}
-				out_samplerate = voice_samplerate;
-				wave_init(voice_samplerate);
-				wave_set_callback_is_output_enabled( fifo_is_command_enabled);
-				my_audio = wave_open("alsa");
-				event_init();
-			}
-		}
-
-		if (outbuf && length && a_wave_can_be_played)
-		{
-			wave_write (my_audio, (char*)outbuf, 2*length);
-		}
-
-		while(a_wave_can_be_played) {
-			// TBD: some event are filtered here but some insight might be given
-			// TBD: in synthesise.cpp for avoiding to create WORDs with size=0.
-			// TBD: For example sentence "or ALT)." returns three words 
-			// "or", "ALT" and "". 
-			// TBD: the last one has its size=0.
-			if (event && (event->type == espeakEVENT_WORD) && (event->length==0))
-			{
-				break;
-			}
-			espeak_ERROR a_error = event_declare(event);
-			if (a_error != EE_BUFFER_FULL)
-			{
-				break;
-			}
-			SHOW_TIME("dispatch_audio > EE_BUFFER_FULL\n");
-			usleep(10000);
-			a_wave_can_be_played = fifo_is_command_enabled();
-		}
-	}
-	break;
-
-	case AUDIO_OUTPUT_RETRIEVAL:
-		if (synth_callback)
-		{
-			synth_callback(outbuf, length, event);
-		}
-		break;
-
-	case AUDIO_OUTPUT_SYNCHRONOUS:
-	case AUDIO_OUTPUT_SYNCH_PLAYBACK:
-		break;
-	}
-
-	if (!a_wave_can_be_played)
-	{
-		SHOW_TIME("dispatch_audio > synth must be stopped!\n");
-	}
-
-	SHOW_TIME("LEAVE dispatch_audio\n");
-
-	return (a_wave_can_be_played==0); // 1 = stop synthesis
-}
-
-
-
-static int create_events(short* outbuf, int length, espeak_EVENT* event, uint32_t the_write_pos)
-{//=====================================================================
-	int finished;
-	int i=0;
-
-	// The audio data are written to the output device.
-	// The list of events in event_list (index: event_list_ix) is read:  
-	// Each event is declared to the "event" object which stores them internally.
-	// The event object is responsible of calling the external callback
-	// as soon as the relevant audio sample is played.
-
-	do 
-	{ // for each event
-		espeak_EVENT* event;
-		if (event_list_ix == 0)
-		{
-			event = NULL;
-		}
-      else
-		{
-			event = event_list + i;
-#ifdef DEBUG_ENABLED
-			SHOW("Synthesize: event->sample(%d) + %d = %d\n", event->sample, the_write_pos, event->sample + the_write_pos);
-#endif
-			event->sample += the_write_pos;
-		}
-#ifdef DEBUG_ENABLED
-		SHOW("*** Synthesize: i=%d (event_list_ix=%d), length=%d\n",i,event_list_ix,length);
-#endif
-		finished = dispatch_audio((short *)outbuf, length, event);
-		length = 0; // the wave data are played once.
-		i++;
-	} while((i < event_list_ix) && !finished);
-	return finished;
-}
-
-
-int sync_espeak_terminated_msg( uint32_t unique_identifier, void* user_data)
-{//=====================================================================
-	ENTER("sync_espeak_terminated_msg");
-
-	int finished=0;
-
-	memset(event_list, 0, 2*sizeof(espeak_EVENT));
-
-	event_list[0].type = espeakEVENT_MSG_TERMINATED;
-	event_list[0].unique_identifier = unique_identifier;
-	event_list[0].user_data = user_data;
-	event_list[1].type = espeakEVENT_LIST_TERMINATED;
-	event_list[1].unique_identifier = unique_identifier;
-	event_list[1].user_data = user_data;
-
-	if (my_mode==AUDIO_OUTPUT_PLAYBACK)
-	{
-		while(1) 
-		{
-			espeak_ERROR a_error = event_declare(event_list);
-			if (a_error != EE_BUFFER_FULL)
-			{
-		 		break;
-			}
-			SHOW_TIME("sync_espeak_terminated_msg > EE_BUFFER_FULL\n");
-			usleep(10000);
-		}
-	}
-	else
-	{
-		if (synth_callback)
-		{
-			finished=synth_callback(NULL,0,event_list);
-		}
-	}
-	return finished;
-}
-
-#endif
 
 
 static void select_output(espeak_AUDIO_OUTPUT output_type)
@@ -404,9 +228,6 @@ static espeak_ERROR Synthesize(const void *text, int flags)
 	int length;
 	int finished = 0;
 	int count_buffers = 0;
-#ifdef USE_ASYNC
-	uint32_t a_write_pos=0;
-#endif
 
 #ifdef DEBUG_ENABLED
 	ENTER("Synthesize");
@@ -425,13 +246,6 @@ static espeak_ERROR Synthesize(const void *text, int flags)
 	option_endpause = flags & espeakENDPAUSE;
 
 	count_samples = 0;
-
-#ifdef USE_ASYNC
-	if(my_mode == AUDIO_OUTPUT_PLAYBACK)
-	{
-		a_write_pos = wave_get_write_position(my_audio);
-	}
-#endif
 
 	if(translator == NULL)
 	{
@@ -480,14 +294,7 @@ static espeak_ERROR Synthesize(const void *text, int flags)
 		event_list[event_list_ix].user_data = my_user_data;
 
 		count_buffers++;
-		if (my_mode==AUDIO_OUTPUT_PLAYBACK)
-		{
-#ifdef USE_ASYNC
-			finished = create_events((short *)outbuf, length, event_list, a_write_pos);
-			length = 0; // the wave data are played once.
-#endif
-		}
-		else
+		if (my_mode!=AUDIO_OUTPUT_PLAYBACK)
 		{
 			finished = synth_callback((short *)outbuf, length, event_list);
 		}
@@ -510,18 +317,7 @@ static espeak_ERROR Synthesize(const void *text, int flags)
 
 				if(SpeakNextClause(NULL,NULL,1)==0)
 				{
-#ifdef USE_ASYNC
-					if (my_mode==AUDIO_OUTPUT_PLAYBACK)
-					{
-						dispatch_audio(NULL, 0, NULL); // TBD: test case
-					}
-					else
-					{
-						synth_callback(NULL, 0, event_list);  // NULL buffer ptr indicates end of data
-					}
-#else
 					synth_callback(NULL, 0, event_list);  // NULL buffer ptr indicates end of data
-#endif
 					break;
 				}
 			}
@@ -627,9 +423,6 @@ espeak_ERROR sync_espeak_Synth(unsigned int unique_identifier, const void *text,
 	end_character_position = end_position;
 	
 	espeak_ERROR aStatus = Synthesize(text, flags);
-	#ifdef USE_ASYNC
-	wave_flush(my_audio);
-	#endif
 	
 	SHOW_TIME("LEAVE sync_espeak_Synth");
 	return aStatus;
@@ -716,9 +509,6 @@ ESPEAK_API void espeak_SetSynthCallback(t_espeak_callback* SynthCallback)
 {//======================================================================
 	ENTER("espeak_SetSynthCallback");
 	synth_callback = SynthCallback;
-#ifdef USE_ASYNC
-	event_set_callback(synth_callback);
-#endif
 }
 
 ESPEAK_API void espeak_SetUriCallback(int (* UriCallback)(int, const char*, const char *))
@@ -789,10 +579,6 @@ ENTER("espeak_Initialize");
 	SetParameter(espeakWORDGAP,0,0);
 //	DoVoiceChange(voice);
 	
-#ifdef USE_ASYNC
-	fifo_init();
-#endif
-
   return(samplerate);
 }
 
@@ -829,34 +615,6 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text, size_t size,
 		return(sync_espeak_Synth(0,text,size,position,position_type,end_position,flags,user_data));
 	}
 
-#ifdef USE_ASYNC
-	// Create the text command
-	t_espeak_command* c1 = create_espeak_text(text, size, position, position_type, end_position, flags, user_data);
-
-	// Retrieve the unique identifier
-	*unique_identifier = c1->u.my_text.unique_identifier;
-
-	// Create the "terminated msg" command (same uid)
-	t_espeak_command* c2 = create_espeak_terminated_msg(*unique_identifier, user_data);
-
-	// Try to add these 2 commands (single transaction)
-	if (c1 && c2)
-	{
-		a_error = fifo_add_commands(c1, c2);
-		if (a_error != EE_OK)
-		{
-			delete_espeak_command(c1);
-			delete_espeak_command(c2);
-			c1=c2=NULL;
-		}
-	}
-	else
-	{
-		delete_espeak_command(c1);
-		delete_espeak_command(c2);
-	}
-
-#endif
 	return a_error;
 }  //  end of espeak_Synth
 
@@ -894,35 +652,6 @@ ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size,
 		return(sync_espeak_Synth_Mark(0,text,size,index_mark,end_position,flags,user_data));
 	}
 
-#ifdef USE_ASYNC
-	// Create the mark command
-	t_espeak_command* c1 = create_espeak_mark(text, size, index_mark, end_position, 
-						flags, user_data);
-	
-	// Retrieve the unique identifier
-	*unique_identifier = c1->u.my_mark.unique_identifier;
-	
-	// Create the "terminated msg" command (same uid)
-	t_espeak_command* c2 = create_espeak_terminated_msg(*unique_identifier, user_data);
-	
-	// Try to add these 2 commands (single transaction)
-	if (c1 && c2)
-	{
-		a_error = fifo_add_commands(c1, c2);
-		if (a_error != EE_OK)
-		{
-			delete_espeak_command(c1);
-			delete_espeak_command(c2);
-			c1=c2=NULL;
-		}
-	}
-	else
-	{
-		delete_espeak_command(c1);
-		delete_espeak_command(c2);
-	}
-
-#endif
 	return a_error;
 }  //  end of espeak_Synth_Mark
 
@@ -938,24 +667,8 @@ ESPEAK_API espeak_ERROR espeak_Key(const char *key)
 		fprintf(f_logespeak,"\nKEY %s\n",key);
 	}
 
-#ifdef USE_ASYNC
-	if(synchronous_mode)
-	{
-#endif
-		sync_espeak_Key(key);
-		return(EE_OK);
-#ifdef USE_ASYNC
-	}
-
-	t_espeak_command* c = create_espeak_key( key, NULL);
-	espeak_ERROR a_error = fifo_add_command(c);
-	if (a_error != EE_OK)
-	{
-		delete_espeak_command(c);
-	}
-
-	return a_error;
-#endif
+	sync_espeak_Key(key);
+	return(EE_OK);
 }
 
 
@@ -969,23 +682,8 @@ ESPEAK_API espeak_ERROR espeak_Char(wchar_t character)
 		fprintf(f_logespeak,"\nCHAR U+%x\n",character);
 	}
 
-#ifdef USE_ASYNC
-	if(synchronous_mode)
-	{
-#endif
-		sync_espeak_Char(character);
-		return(EE_OK);
-#ifdef USE_ASYNC
-	}
-
-	t_espeak_command* c = create_espeak_char( character, NULL);
-	espeak_ERROR a_error = fifo_add_command(c);
-	if (a_error != EE_OK)
-	{
-		delete_espeak_command(c);
-	}
-	return a_error;
-#endif
+	sync_espeak_Char(character);
+	return(EE_OK);
 }
 
 
@@ -1029,24 +727,8 @@ ESPEAK_API espeak_ERROR espeak_SetParameter(espeak_PARAMETER parameter, int valu
 	{
 		fprintf(f_logespeak,"SETPARAM %d %d %d\n",parameter,value,relative);
 	}
-#ifdef USE_ASYNC
-	if(synchronous_mode)
-	{
-#endif
-		SetParameter(parameter,value,relative);
-		return(EE_OK);
-#ifdef USE_ASYNC
-	}
-
-	t_espeak_command* c = create_espeak_parameter(parameter, value, relative);
-
-	espeak_ERROR a_error = fifo_add_command(c);
-	if (a_error != EE_OK)
-	{
-		delete_espeak_command(c);
-	}
-	return a_error;
-#endif
+	SetParameter(parameter,value,relative);
+	return(EE_OK);
 }
 
 
@@ -1055,23 +737,8 @@ ESPEAK_API espeak_ERROR espeak_SetPunctuationList(const wchar_t *punctlist)
   ENTER("espeak_SetPunctuationList");
   // Set the list of punctuation which are spoken for "some".
 
-#ifdef USE_ASYNC
-	if(synchronous_mode)
-	{
-#endif
-		sync_espeak_SetPunctuationList(punctlist);
-		return(EE_OK);
-#ifdef USE_ASYNC
-	}
-
-	t_espeak_command* c = create_espeak_punctuation_list( punctlist);
-	espeak_ERROR a_error = fifo_add_command(c);
-	if (a_error != EE_OK)
-	{
-		delete_espeak_command(c);
-	}
-	return a_error;
-#endif
+	sync_espeak_SetPunctuationList(punctlist);
+	return(EE_OK);
 }  //  end of espeak_SetPunctuationList
 
 
@@ -1104,17 +771,6 @@ ESPEAK_API void espeak_CompileDictionary(const char *path, FILE *log, int flags)
 
 ESPEAK_API espeak_ERROR espeak_Cancel(void)
 {//===============================
-#ifdef USE_ASYNC
-	ENTER("espeak_Cancel");
-	fifo_stop();
-	event_clear_all();
-
-	if(my_mode == AUDIO_OUTPUT_PLAYBACK)
-	{
-		wave_close(my_audio);
-	}
-	SHOW_TIME("espeak_Cancel > LEAVE");
-#endif
 	embedded_value[EMBED_T] = 0;    // reset echo for pronunciation announcements
 
 	for (int i=0; i < N_SPEECH_PARAM; i++)
@@ -1127,26 +783,12 @@ ESPEAK_API espeak_ERROR espeak_Cancel(void)
 ESPEAK_API int espeak_IsPlaying(void)
 {//==================================
 //	ENTER("espeak_IsPlaying");
-#ifdef USE_ASYNC
-	if((my_mode == AUDIO_OUTPUT_PLAYBACK) && wave_is_busy(my_audio))
-		return(1);
-
-	return(fifo_is_busy());
-#else
 	return(0);
-#endif
 }   //  end of espeak_IsPlaying
 
 
 ESPEAK_API espeak_ERROR espeak_Synchronize(void)
 {//=============================================
-#ifdef USE_ASYNC
-	SHOW_TIME("espeak_Synchronize > ENTER");
-	while (espeak_IsPlaying())
-	{
-		usleep(20000);
-	}
-#endif
 	SHOW_TIME("espeak_Synchronize > LEAVE");
 	return EE_OK;
 }   //  end of espeak_Synchronize
@@ -1158,19 +800,6 @@ extern void FreeVoiceList(void);
 ESPEAK_API espeak_ERROR espeak_Terminate(void)
 {//===========================================
 	ENTER("espeak_Terminate");
-#ifdef USE_ASYNC
-	fifo_stop();
-	fifo_terminate();
-	event_terminate();
-
-	if(my_mode == AUDIO_OUTPUT_PLAYBACK)
-	{
-		wave_close(my_audio);
-		wave_terminate();
-		out_samplerate = 0;
-	}
-
-#endif
 	Free(event_list);
 	event_list = NULL;
 	Free(outbuf);

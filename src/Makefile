@@ -23,51 +23,6 @@ INSTALL = install
 LN_SF = /bin/ln -sf
 MKDIR = mkdir -p
 
-# 'runtime' uses pulseaudio if it is running, else uses portaudio
-#AUDIO = runtime
-AUDIO = portaudio
-#AUDIO = portaudio0
-#AUDIO = portaudio2
-#AUDIO = pulseaudio
-#AUDIO = sada
-
-ifeq ($(AUDIO),runtime)
-WAVE=wave.cpp wave_pulse.cpp
-LIB_AUDIO=-lpulse -lpulse-simple -lportaudio
-USE_AUDIO=-DUSE_PULSEAUDIO -DUSE_PORTAUDIO
-else
-ifeq ($(AUDIO),pulseaudio)
-WAVE=wave_pulse.cpp
-LIB_AUDIO=-lpulse
-USE_AUDIO=-DUSE_PULSEAUDIO
-else
-ifeq ($(AUDIO),portaudio)
-WAVE=wave.cpp
-LIB_AUDIO=-lportaudio
-USE_AUDIO=-DUSE_PORTAUDIO
-else
-ifeq ($(AUDIO),portaudio0)
-WAVE=wave.cpp
-LIB_AUDIO=/usr/lib/libportaudio.so.0
-USE_AUDIO=-DUSE_PORTAUDIO
-else
-ifeq ($(AUDIO),portaudio2)
-WAVE=wave.cpp
-LIB_AUDIO=/usr/lib/libportaudio.so.2
-USE_AUDIO=-DUSE_PORTAUDIO
-else
-ifeq ($(AUDIO),sada)
-WAVE=wave_sada.cpp
-USE_AUDIO=-DUSE_SADA
-else
-WAVE=wave.cpp
-endif
-endif
-endif
-endif
-endif
-endif
-
 CXXFLAGS = -O2 -Wall -c
 CPPFLAGS = -pedantic -fno-exceptions -D PATH_ESPEAK_DATA=\"$(DATADIR)\"
 
@@ -88,10 +43,9 @@ common_SOURCES = compiledict.cpp dictionary.cpp intonation.cpp \
 	synthdata.cpp synthesize.cpp synth_mbrola.cpp \
 	translate.cpp tr_languages.cpp voices.cpp wavegen.cpp 
 
-libespeak_SOURCES = speak_lib.cpp $(common_SOURCES) \
-	espeak_command.cpp event.cpp fifo.cpp $(WAVE) debug.cpp
+libespeak_SOURCES = speak_lib.cpp $(common_SOURCES) debug.cpp
 libespeak_OBJS = $(patsubst %.cpp,x_%.o,$(libespeak_SOURCES))
-libespeak_LIBS = -lstdc++ $(LIB_AUDIO) -lpthread
+libespeak_LIBS = -lstdc++ -lpthread
 $(LIBESPEAK): $(libespeak_OBJS)
 	# Linking $@
 	$(CXX) $(LDFLAGS) -shared $(SONAME_OPT)$(LIBESPEAK).$(LIB_VERSION) -o $@ \
