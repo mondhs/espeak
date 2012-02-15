@@ -240,7 +240,7 @@ static espeak_ERROR Synthesize(const void *text, int flags)
 
 	if(translator == NULL)
 	{
-		SetVoiceByName("default");
+		espeak_SetVoiceByName("default");
 	}
 
 	SpeakNextClause(NULL,text,0);
@@ -529,7 +529,6 @@ ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output_type, int buf_length
 	option_phoneme_events = (options & (espeakINITIALIZE_PHONEME_EVENTS | espeakINITIALIZE_PHONEME_IPA));
 
 	VoiceReset(0);
-//	SetVoiceByName("default");
 	
 	for(int param=0; param<N_SPEECH_PARAM; param++)
 		param_stack[0].parameter[param] = saved_parameters[param] = param_defaults[param];
@@ -598,14 +597,6 @@ ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size,
 
 	return a_error;
 }  //  end of espeak_Synth_Mark
-#pragma GCC visibility pop
-
-
-#pragma GCC visibility push(default)
-ESPEAK_API espeak_ERROR espeak_SetVoiceByName(const char *name)
-{//============================================================
-	return(SetVoiceByName(name));
-}  // end of espeak_SetVoiceByName
 #pragma GCC visibility pop
 
 

@@ -2,6 +2,8 @@
  *   Copyright (C) 2005 to 2010 by Jonathan Duddington                     *
  *   email: jonsd@users.sourceforge.net                                    *
  *                                                                         *
+ *   Copyright (C) 2012 Reece H. Dunn                                      *
+ *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
  *   the Free Software Foundation; either version 3 of the License, or     *
@@ -1618,8 +1620,8 @@ static void GetVoices(const char *path)
 }   // end of GetVoices
 
 
-
-espeak_ERROR SetVoiceByName(const char *name)
+#pragma GCC visibility push(default)
+espeak_ERROR espeak_SetVoiceByName(const char *name)
 {//=========================================
 	espeak_VOICE *v;
 	espeak_VOICE voice_selector;
@@ -1665,6 +1667,7 @@ espeak_ERROR SetVoiceByName(const char *name)
 	}
 	return(EE_INTERNAL_ERROR);   // voice name not found
 }  // end of SetVoiceByName
+#pragma GCC visibility pop
 
 
 
