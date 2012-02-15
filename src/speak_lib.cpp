@@ -518,11 +518,11 @@ ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output_type, int buf_length
 	for(int param=0; param<N_SPEECH_PARAM; param++)
 		param_stack[0].parameter[param] = saved_parameters[param] = param_defaults[param];
 	
-	SetParameter(espeakRATE,175,0);
-	SetParameter(espeakVOLUME,100,0);
-	SetParameter(espeakCAPITALS,option_capitals,0);
-	SetParameter(espeakPUNCTUATION,option_punctuation,0);
-	SetParameter(espeakWORDGAP,0,0);
+	espeak_SetParameter(espeakRATE,175,0);
+	espeak_SetParameter(espeakVOLUME,100,0);
+	espeak_SetParameter(espeakCAPITALS,option_capitals,0);
+	espeak_SetParameter(espeakPUNCTUATION,option_punctuation,0);
+	espeak_SetParameter(espeakWORDGAP,0,0);
 //	DoVoiceChange(voice);
 	
   return(samplerate);
@@ -590,15 +590,6 @@ ESPEAK_API int espeak_GetParameter(espeak_PARAMETER parameter, int current)
 
 
 #pragma GCC visibility push(default)
-ESPEAK_API espeak_ERROR espeak_SetParameter(espeak_PARAMETER parameter, int value, int relative)
-{//=============================================================================================
-	SetParameter(parameter,value,relative);
-	return(EE_OK);
-}
-#pragma GCC visibility pop
-
-
-#pragma GCC visibility push(default)
 ESPEAK_API espeak_ERROR espeak_SetPunctuationList(const wchar_t *punctlist)
 {//================================================================
   // Set the list of punctuation which are spoken for "some".
@@ -644,7 +635,7 @@ ESPEAK_API espeak_ERROR espeak_Cancel(void)
 	embedded_value[EMBED_T] = 0;    // reset echo for pronunciation announcements
 
 	for (int i=0; i < N_SPEECH_PARAM; i++)
-		SetParameter(i, saved_parameters[i], 0);
+		espeak_SetParameter((espeak_PARAMETER)i, saved_parameters[i], 0);
 
 	return EE_OK;
 }   //  end of espeak_Cancel

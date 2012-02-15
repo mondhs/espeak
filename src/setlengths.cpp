@@ -304,7 +304,8 @@ printf("%3d: speedf %d %d %d   pause=%d %d   wav=%d  lenmod=%d %d\n",wpm,speed1,
 }  //  end of SetSpeed
 
 
-void SetParameter(int parameter, int value, int relative)
+#pragma GCC visibility push(default)
+ESPEAK_API espeak_ERROR espeak_SetParameter(int parameter, int value, int relative)
 {//======================================================
 // parameter: reset-all, amp, pitch, speed, linelength, expression, capitals, number grouping
 // relative 0=absolute  1=relative
@@ -361,8 +362,9 @@ void SetParameter(int parameter, int value, int relative)
 	default:
 		break;
 	}
+	return(EE_OK);
 }  // end of SetParameter
-
+#pragma GCC visibility pop
 
 
 static void DoEmbedded2(int *embix)

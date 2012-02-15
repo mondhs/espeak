@@ -121,8 +121,7 @@ espeak_ERROR LoadMbrolaTable(const char *mbrola_voice, const char *phtrans, int 
 	if(mbrola_voice == NULL)
 	{
 		samplerate = samplerate_native;
-		SetParameter(espeakVOICETYPE,0,0);
-		return(EE_OK);
+		return espeak_SetParameter(espeakVOICETYPE,0,0);
 	}
 
 	sprintf(path,"%s/mbrola/%s",path_home,mbrola_voice);
@@ -186,9 +185,9 @@ espeak_ERROR LoadMbrolaTable(const char *mbrola_voice, const char *phtrans, int 
 //	srate = getFreq_MBR(); 
 	samplerate = srate;
 	if(srate == 22050)
-		SetParameter(espeakVOICETYPE,0,0);
+		espeak_SetParameter(espeakVOICETYPE,0,0);
 	else
-		SetParameter(espeakVOICETYPE,1,0);
+		espeak_SetParameter(espeakVOICETYPE,1,0);
 	strcpy(mbrola_name,mbrola_voice);
 //	mbrola_delay = 3800;  // improve synchronization of events
 	mbrola_delay = 1000;  // improve synchronization of events

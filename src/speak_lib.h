@@ -443,7 +443,7 @@ extern "C"
 #endif
 ESPEAK_API int espeak_GetParameter(espeak_PARAMETER parameter, int current);
 /* current=0  Returns the default value of the specified parameter.
-   current=1  Returns the current value of the specified parameter, as set by SetParameter()
+   current=1  Returns the current value of the specified parameter, as set by espeak_SetParameter()
 */
 
 #ifdef __cplusplus
