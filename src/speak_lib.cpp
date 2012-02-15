@@ -384,7 +384,6 @@ espeak_ERROR sync_espeak_Synth(const void *text, size_t size,
 		skipping_text = 1;
 	
 	end_character_position = end_position;
-	
 	return Synthesize(text, flags);
 }  //  end of sync_espeak_Synth
 
@@ -424,8 +423,7 @@ ESPEAK_API espeak_ERROR espeak_Key(const char *key)
 	}
 
 	my_user_data = NULL;
-	Synthesize(key,0);   // speak key as a text string
-	return(EE_OK);
+	return Synthesize(key,0);   // speak key as a text string
 }
 #pragma GCC visibility pop
 
@@ -438,8 +436,7 @@ ESPEAK_API espeak_ERROR espeak_Char(wchar_t character)
 	my_user_data = NULL;
 	
 	sprintf(buf,"<say-as interpret-as=\"tts:char\">&#%d;</say-as>",character);
-	Synthesize(buf,espeakSSML);
-	return(EE_OK);
+	return Synthesize(buf,espeakSSML);
 }
 #pragma GCC visibility pop
 
