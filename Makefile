@@ -10,13 +10,12 @@ all: src/libespeak.so src/libespeak.a docs/speak_lib.h
 
 install: all
 	cd src && make DESTDIR=$(DESTDIR) PREFIX=$(PREFIX) install && cd ..
-	install -m 755 src/espeakedit $(DESTDIR)$(BINDIR)
 
 clean:
 	cd src && rm -f *.o *~ && cd ..
 
 distclean: clean
-	cd src && rm -f libespeak.a libespeak.so.* speak espeak espeakedit && cd ..
+	cd src && rm -f libespeak.a libespeak.so.* && cd ..
 
 ##### build targets:
 
