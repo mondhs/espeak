@@ -49,7 +49,6 @@ int n_event_list;
 long count_samples;
 void* my_audio=NULL;
 
-static unsigned int my_unique_identifier=0;
 static void* my_user_data=NULL;
 static espeak_AUDIO_OUTPUT my_mode=AUDIO_OUTPUT_SYNCHRONOUS;
 static int synchronous_mode = 1;
@@ -278,7 +277,7 @@ static espeak_ERROR Synthesize(const void *text, int flags)
 		length = (out_ptr - outbuf)/2;
 		count_samples += length;
 		event_list[event_list_ix].type = espeakEVENT_LIST_TERMINATED; // indicates end of event list
-		event_list[event_list_ix].unique_identifier = my_unique_identifier;
+		event_list[event_list_ix].unique_identifier = 0;
 		event_list[event_list_ix].user_data = my_user_data;
 
 		count_buffers++;
@@ -300,7 +299,7 @@ static espeak_ERROR Synthesize(const void *text, int flags)
 				// This ensures that <audio> tag (which causes end-of-clause) is at a sound buffer boundary
 
 				event_list[0].type = espeakEVENT_LIST_TERMINATED;
-				event_list[0].unique_identifier = my_unique_identifier;
+				event_list[0].unique_identifier = 0;
 				event_list[0].user_data = my_user_data;
 
 				if(SpeakNextClause(NULL,NULL,1)==0)
@@ -324,7 +323,7 @@ void MarkerEvent(int type, unsigned int char_position, int value, int value2, un
 	
 	espeak_EVENT *ep = &event_list[event_list_ix++];
 	ep->type = (espeak_EVENT_TYPE)type;
-	ep->unique_identifier = my_unique_identifier;
+	ep->unique_identifier = 0;
 	ep->user_data = my_user_data;
 	ep->text_position = char_position & 0xffffff;
 	ep->length = char_position >> 24;
@@ -430,7 +429,6 @@ ESPEAK_API espeak_ERROR espeak_Key(const char *key)
 		return espeak_Char(letter);
 	}
 
-	my_unique_identifier = 0;
 	my_user_data = NULL;
 	Synthesize(key,0);   // speak key as a text string
 	return(EE_OK);
@@ -443,7 +441,6 @@ ESPEAK_API espeak_ERROR espeak_Char(wchar_t character)
 {//=====================================
 	// is there a system resource of character names per language?
 	char buf[80];
-	my_unique_identifier = 0;
 	my_user_data = NULL;
 	
 	sprintf(buf,"<say-as interpret-as=\"tts:char\">&#%d;</say-as>",character);
@@ -456,7 +453,6 @@ ESPEAK_API espeak_ERROR espeak_Char(wchar_t character)
 void sync_espeak_SetPunctuationList(const wchar_t *punctlist)
 {//==========================================================
 	// Set the list of punctuation which are spoken for "some".
-	my_unique_identifier = 0;
 	my_user_data = NULL;
 	
 	wcsncpy(option_punctlist, punctlist, N_PUNCTLIST);
