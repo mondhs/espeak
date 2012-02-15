@@ -554,13 +554,9 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text, size_t size,
 {//=====================================================================================
 
 	espeak_ERROR a_error=EE_INTERNAL_ERROR;
-	static unsigned int temp_identifier;
 
-	if (unique_identifier == NULL)
-	{
-		unique_identifier = &temp_identifier;
-	}
-	*unique_identifier = 0;
+	if (unique_identifier != NULL)
+		*unique_identifier = 0;
 
 	if(synchronous_mode)
 	{
@@ -582,13 +578,9 @@ ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size,
 {//=========================================================================
 
 	espeak_ERROR a_error=EE_OK;
-	static unsigned int temp_identifier;
 
-	if (unique_identifier == NULL)
-	{
-		unique_identifier = &temp_identifier;
-	}
-	*unique_identifier = 0;
+	if (unique_identifier != NULL)
+		*unique_identifier = 0;
 
 	if(synchronous_mode)
 	{
