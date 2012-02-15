@@ -1595,17 +1595,6 @@ static int TranslateWord2(Translator *tr, char *word, WORD_TAB *wtab, int pre_pa
 	char word_copy[N_WORD_BYTES+1];
 	char old_dictionary_name[40];
 
-	if((f_logespeak != NULL) && (logging_type & 8))
-	{
-		fprintf(f_logespeak,"WORD: flg=%.5x len=%d  '",wtab->flags,wtab->length);
-		for(int ix=0; ix<40; ix++)
-		{
-			if(word[ix]==0) break;
-			fputc(word[ix], f_logespeak);
-		}
-		fprintf(f_logespeak,"'\n");
-	}
-
 	int len = wtab->length;
 	if(len > 31) len = 31;
 	int source_ix = (wtab->sourceix & 0x7ff) | (len << 11); // bits 0-10 sourceix, bits 11-15 word length
@@ -2344,14 +2333,6 @@ void *TranslateClause(Translator *tr, FILE *f_text, const void *vp_input, int *t
 		charix[ix] = 0;
 	terminator = ReadClause(tr, f_text, source, charix, &charix_top, N_TR_SOURCE, &tone2, voice_change_name);
 
-	if((f_logespeak != NULL) && (logging_type & 4))
-	{
-		fprintf(f_logespeak,"CLAUSE %x:\n",terminator);
-		for(p=source; *p != 0; p++)
-			fputc(*p, f_logespeak);
-		fprintf(f_logespeak,"ENDCLAUSE\n");
-		fflush(f_logespeak);
-	}
 p = source;
 
 	charix[charix_top+1] = 0;

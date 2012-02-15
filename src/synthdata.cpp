@@ -35,7 +35,6 @@ const char *version_string = "1.46.13  14.Jan.12";
 const int version_phdata  = 0x014600;
 
 int option_device_number = -1;
-FILE *f_logespeak = NULL;
 int logging_type;
 
 // copy the current phoneme table into here
@@ -454,12 +453,6 @@ void LoadConfig(void)
 	{
 		if(buf[0] == '/')  continue;
 
-		if(memcmp(buf,"log",3)==0)
-		{
-			if(sscanf(&buf[4],"%d %s",&logging_type,string)==2)
-				f_logespeak = fopen(string,"w");
-		}
-		else
 		if(memcmp(buf,"tone",4)==0)
 		{
 			ReadTonePoints(&buf[5],tone_points);

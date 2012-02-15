@@ -503,11 +503,6 @@ ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output_type, int buf_length
 	initialise(options);
 	select_output(output_type);
 
-	if(f_logespeak)
-	{
-		fprintf(f_logespeak,"INIT mode %d options 0x%x\n",output_type,options);
-	}
-
 	// buflength is in mS, allocate 2 bytes per sample
 	if(buf_length == 0)
 		buf_length = 200;
@@ -551,12 +546,6 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text, size_t size,
 				     unsigned int* unique_identifier, void* user_data)
 {//=====================================================================================
 
-	if(f_logespeak)
-	{
-		fprintf(f_logespeak,"\nSYNTH posn %d %d %d flags 0x%x\n%s\n",position,end_position,position_type,flags, (const char *)text);
-		fflush(f_logespeak);
-	}
-
 	espeak_ERROR a_error=EE_INTERNAL_ERROR;
 	static unsigned int temp_identifier;
 
@@ -587,12 +576,6 @@ ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size,
 	espeak_ERROR a_error=EE_OK;
 	static unsigned int temp_identifier;
 
-	if(f_logespeak)
-	{
-		fprintf(f_logespeak,"\nSYNTH MARK %s posn %d flags 0x%x\n%s\n",index_mark,end_position,flags, (const char *)text);
-	}
-
-
 	if (unique_identifier == NULL)
 	{
 		unique_identifier = &temp_identifier;
@@ -613,11 +596,6 @@ ESPEAK_API espeak_ERROR espeak_Key(const char *key)
 {//================================================
 	// symbolic name, symbolicname_character  - is there a system resource of symbolicnames per language
 
-	if(f_logespeak)
-	{
-		fprintf(f_logespeak,"\nKEY %s\n",key);
-	}
-
 	sync_espeak_Key(key);
 	return(EE_OK);
 }
@@ -626,11 +604,6 @@ ESPEAK_API espeak_ERROR espeak_Key(const char *key)
 ESPEAK_API espeak_ERROR espeak_Char(wchar_t character)
 {//===========================================
   // is there a system resource of character names per language?
-
-	if(f_logespeak)
-	{
-		fprintf(f_logespeak,"\nCHAR U+%x\n",character);
-	}
 
 	sync_espeak_Char(character);
 	return(EE_OK);
@@ -666,10 +639,6 @@ ESPEAK_API int espeak_GetParameter(espeak_PARAMETER parameter, int current)
 
 ESPEAK_API espeak_ERROR espeak_SetParameter(espeak_PARAMETER parameter, int value, int relative)
 {//=============================================================================================
-	if(f_logespeak)
-	{
-		fprintf(f_logespeak,"SETPARAM %d %d %d\n",parameter,value,relative);
-	}
 	SetParameter(parameter,value,relative);
 	return(EE_OK);
 }
@@ -743,12 +712,6 @@ ESPEAK_API espeak_ERROR espeak_Terminate(void)
 	outbuf = NULL;
 	FreePhData();
 	FreeVoiceList();
-
-	if(f_logespeak)
-	{
-		fclose(f_logespeak);
-		f_logespeak = NULL;
-	}
 
 	return EE_OK;
 }   //  end of espeak_Terminate
