@@ -1670,8 +1670,8 @@ espeak_ERROR espeak_SetVoiceByName(const char *name)
 #pragma GCC visibility pop
 
 
-
-espeak_ERROR SetVoiceByProperties(espeak_VOICE *voice_selector)
+#pragma GCC visibility push(default)
+espeak_ERROR espeak_SetVoiceByProperties(espeak_VOICE *voice_selector)
 {//============================================================
 	int voice_found;
 	const char *voice_id = SelectVoice(voice_selector, &voice_found);
@@ -1685,6 +1685,7 @@ espeak_ERROR SetVoiceByProperties(espeak_VOICE *voice_selector)
 
 	return(EE_OK);
 }  //  end of SetVoiceByProperties
+#pragma GCC visibility pop
 
 
 void FreeVoiceList()
@@ -1699,11 +1700,6 @@ void FreeVoiceList()
 	}
 	n_voices_list = 0;
 }
-
-
-//=======================================================================
-//  Library Interface Functions
-//=======================================================================
 
 
 #pragma GCC visibility push(default)

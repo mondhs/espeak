@@ -601,14 +601,6 @@ ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size,
 
 
 #pragma GCC visibility push(default)
-ESPEAK_API espeak_ERROR espeak_SetVoiceByProperties(espeak_VOICE *voice_selector)
-{//==============================================================================
-	return(SetVoiceByProperties(voice_selector));
-}  // end of espeak_SetVoiceByProperties
-#pragma GCC visibility pop
-
-
-#pragma GCC visibility push(default)
 ESPEAK_API int espeak_GetParameter(espeak_PARAMETER parameter, int current)
 {//========================================================================
 	// current: 0=default value, 1=current value
