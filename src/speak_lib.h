@@ -147,18 +147,8 @@ typedef enum {
 
 
 typedef enum {
-	/* PLAYBACK mode: plays the audio data, supplies events to the calling program*/
-	AUDIO_OUTPUT_PLAYBACK, 
-
-	/* RETRIEVAL mode: supplies audio data and events to the calling program */
-	AUDIO_OUTPUT_RETRIEVAL,
- 
-	/* SYNCHRONOUS mode: as RETRIEVAL but doesn't return until synthesis is completed */
-	AUDIO_OUTPUT_SYNCHRONOUS,
-
-	/* Synchronous playback */
-	AUDIO_OUTPUT_SYNCH_PLAYBACK
-
+	/* supplies audio data and events to the calling program; doesn't return until synthesis is completed */
+	AUDIO_OUTPUT_SYNCHRONOUS
 } espeak_AUDIO_OUTPUT;
 
 

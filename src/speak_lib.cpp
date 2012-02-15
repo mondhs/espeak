@@ -51,7 +51,6 @@ void* my_audio=NULL;
 
 static void* my_user_data=NULL;
 static espeak_AUDIO_OUTPUT my_mode=AUDIO_OUTPUT_SYNCHRONOUS;
-static int synchronous_mode = 1;
 static int out_samplerate = 0;
 static int voice_samplerate = 22050;
 
@@ -68,38 +67,6 @@ void WVoiceChanged(voice_t *wvoice)
 // Voice change in wavegen
 	voice_samplerate = wvoice->samplerate;
 }
-
-
-static void select_output(espeak_AUDIO_OUTPUT output_type)
-{//=======================================================
-	my_mode = output_type;
-	my_audio = NULL;
-	synchronous_mode = 1;
- 	option_waveout = 1;   // inhibit portaudio callback from wavegen.cpp
-	out_samplerate = 0;
-
-	switch(my_mode)
-	{
-	case AUDIO_OUTPUT_PLAYBACK:
-		// wave_init() is now called just before the first wave_write()
-		synchronous_mode = 0;
-		break;
-
-	case AUDIO_OUTPUT_RETRIEVAL:
-		synchronous_mode = 0;
-		break;
-
-	case AUDIO_OUTPUT_SYNCHRONOUS:
-		break;
-
-	case AUDIO_OUTPUT_SYNCH_PLAYBACK:
-		option_waveout = 0;
-		WavegenInitSound();
-		break;
-	}
-}   // end of select_output
-
-
 
 
 int GetFileLength(const char *filename)
@@ -224,7 +191,6 @@ static espeak_ERROR Synthesize(const void *text, int flags)
 {//========================================================================================
 	// Fill the buffer with output sound
 	int length;
-	int finished = 0;
 	int count_buffers = 0;
 
 	if((outbuf==NULL) || (event_list==NULL))
@@ -244,29 +210,6 @@ static espeak_ERROR Synthesize(const void *text, int flags)
 
 	SpeakNextClause(NULL,text,0);
 
-	if(my_mode == AUDIO_OUTPUT_SYNCH_PLAYBACK)
-	{
-		for(;;)
-		{
-#ifdef PLATFORM_WINDOWS
-			Sleep(300);   // 0.3s
-#else
-#ifdef USE_NANOSLEEP
-			struct timespec period;
-			struct timespec remaining;
-			period.tv_sec = 0;
-			period.tv_nsec = 300000000;  // 0.3 sec
-			nanosleep(&period,&remaining);
-#else
-			sleep(1);
-#endif
-#endif
-			if(SynthOnTimer() != 0)
-				break;
-		}
-		return(EE_OK);
-	}
-
 	for(;;)
 	{
 		out_ptr = outbuf;
@@ -281,11 +224,7 @@ static espeak_ERROR Synthesize(const void *text, int flags)
 		event_list[event_list_ix].user_data = my_user_data;
 
 		count_buffers++;
-		if (my_mode!=AUDIO_OUTPUT_PLAYBACK)
-		{
-			finished = synth_callback((short *)outbuf, length, event_list);
-		}
-		if(finished)
+		if(synth_callback((short *)outbuf, length, event_list))
 		{
 			SpeakNextClause(NULL,0,2);  // stop
 			break;
@@ -493,7 +432,8 @@ ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output_type, int buf_length
 	
 	init_path(path);
 	initialise(options);
-	select_output(output_type);
+	my_mode = output_type;
+ 	option_waveout = 1;   // inhibit portaudio callback from wavegen.cpp
 
 	// buflength is in mS, allocate 2 bytes per sample
 	if(buf_length == 0)
@@ -541,12 +481,7 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text, size_t size,
 	if (unique_identifier != NULL)
 		*unique_identifier = 0;
 
-	if(synchronous_mode)
-	{
-		return(sync_espeak_Synth(text,size,position,position_type,end_position,flags,user_data));
-	}
-
-	return EE_INTERNAL_ERROR;
+	return(sync_espeak_Synth(text,size,position,position_type,end_position,flags,user_data));
 }  //  end of espeak_Synth
 #pragma GCC visibility pop
 
@@ -563,12 +498,7 @@ ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size,
 	if (unique_identifier != NULL)
 		*unique_identifier = 0;
 
-	if(synchronous_mode)
-	{
-		return(sync_espeak_Synth_Mark(text,size,index_mark,end_position,flags,user_data));
-	}
-
-	return EE_OK;
+	return(sync_espeak_Synth_Mark(text,size,index_mark,end_position,flags,user_data));
 }  //  end of espeak_Synth_Mark
 #pragma GCC visibility pop
 
