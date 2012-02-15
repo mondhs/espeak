@@ -40,7 +40,6 @@ common_SOURCES = \
 
 libespeak_SOURCES = \
 	src/speak_lib.cpp \
-	src/debug.cpp
 
 docs/speak_lib.h: src/speak_lib.h
 	cp $< $@

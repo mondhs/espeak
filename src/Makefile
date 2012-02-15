@@ -43,7 +43,7 @@ common_SOURCES = compiledict.cpp dictionary.cpp intonation.cpp \
 	synthdata.cpp synthesize.cpp synth_mbrola.cpp \
 	translate.cpp tr_languages.cpp voices.cpp wavegen.cpp 
 
-libespeak_SOURCES = speak_lib.cpp $(common_SOURCES) debug.cpp
+libespeak_SOURCES = speak_lib.cpp $(common_SOURCES)
 libespeak_OBJS = $(patsubst %.cpp,x_%.o,$(libespeak_SOURCES))
 libespeak_LIBS = -lstdc++ -lpthread
 $(LIBESPEAK): $(libespeak_OBJS)

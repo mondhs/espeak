@@ -38,7 +38,6 @@
 #include "synthesize.h"
 #include "voice.h"
 #include "translate.h"
-#include "debug.h"
 
 void sync_espeak_Char(wchar_t character);
 
@@ -229,14 +228,6 @@ static espeak_ERROR Synthesize(const void *text, int flags)
 	int finished = 0;
 	int count_buffers = 0;
 
-#ifdef DEBUG_ENABLED
-	ENTER("Synthesize");
-	if (text)
-	{
-	SHOW("Synthesize > flags=%d, >>>text=%s<<<\n", flags, text);
-	}
-#endif
-
 	if((outbuf==NULL) || (event_list==NULL))
 		return(EE_INTERNAL_ERROR);  // espeak_Initialize()  has not been called
 
@@ -279,9 +270,6 @@ static espeak_ERROR Synthesize(const void *text, int flags)
 
 	for(;;)
 	{
-#ifdef DEBUG_ENABLED
-		SHOW("Synthesize > %s\n","for (next)");
-#endif
 		out_ptr = outbuf;
 		out_end = &outbuf[outbuf_size];
 		event_list_ix = 0;
@@ -326,21 +314,10 @@ static espeak_ERROR Synthesize(const void *text, int flags)
 	return(EE_OK);
 }  //  end of Synthesize
 
-#ifdef DEBUG_ENABLED
-static const char* label[] = {
-  "END_OF_EVENT_LIST",
-  "WORD",
-  "SENTENCE",
-  "MARK",
-  "PLAY",
-  "END"};
-#endif
-
 
 void MarkerEvent(int type, unsigned int char_position, int value, int value2, unsigned char *out_ptr)
 {//==================================================================================================
 	// type: 1=word, 2=sentence, 3=named mark, 4=play audio, 5=end, 7=phoneme
-	ENTER("MarkerEvent");
 	
 	if((event_list == NULL) || (event_list_ix >= (n_event_list-2)))
 		return;
@@ -356,13 +333,6 @@ void MarkerEvent(int type, unsigned int char_position, int value, int value2, un
 	ep->audio_position = int(time);
 	ep->sample = (count_samples + mbrola_delay + (out_ptr - out_start)/2);
 	
-#ifdef DEBUG_ENABLED
-	SHOW("MarkerEvent > count_samples=%d, out_ptr=%x, out_start=0x%x\n",count_samples, out_ptr, out_start);
-	SHOW("*** MarkerEvent > type=%s, uid=%d, text_pos=%d, length=%d, audio_position=%d, sample=%d\n",
-			label[ep->type], ep->unique_identifier, ep->text_position, ep->length,
-			ep->audio_position, ep->sample);
-#endif
-
 	if((type == espeakEVENT_MARK) || (type == espeakEVENT_PLAY))
 		ep->id.name = &namedata[value];
 	else
@@ -390,11 +360,6 @@ espeak_ERROR sync_espeak_Synth(unsigned int unique_identifier, const void *text,
 		      unsigned int end_position, unsigned int flags, void* user_data)
 {//===========================================================================
 	
-#ifdef DEBUG_ENABLED
-	ENTER("sync_espeak_Synth");
-	SHOW("sync_espeak_Synth > position=%d, position_type=%d, end_position=%d, flags=%d, user_data=0x%x, text=%s\n", position, position_type, end_position, flags, user_data, text);
-#endif
-
 	InitText(flags);
 	my_unique_identifier = unique_identifier;
 	my_user_data = user_data;
@@ -424,7 +389,6 @@ espeak_ERROR sync_espeak_Synth(unsigned int unique_identifier, const void *text,
 	
 	espeak_ERROR aStatus = Synthesize(text, flags);
 	
-	SHOW_TIME("LEAVE sync_espeak_Synth");
 	return aStatus;
 }  //  end of sync_espeak_Synth
 
@@ -450,7 +414,6 @@ espeak_ERROR sync_espeak_Synth_Mark(unsigned int unique_identifier, const void *
 	
 	
 	espeak_ERROR aStatus = Synthesize(text, flags | espeakSSML);
-	SHOW_TIME("LEAVE sync_espeak_Synth_Mark");
 	
 	return (aStatus);
 }  //  end of sync_espeak_Synth_Mark
@@ -507,13 +470,11 @@ void sync_espeak_SetPunctuationList(const wchar_t *punctlist)
 
 ESPEAK_API void espeak_SetSynthCallback(t_espeak_callback* SynthCallback)
 {//======================================================================
-	ENTER("espeak_SetSynthCallback");
 	synth_callback = SynthCallback;
 }
 
 ESPEAK_API void espeak_SetUriCallback(int (* UriCallback)(int, const char*, const char *))
 {//=======================================================================================
-	ENTER("espeak_SetUriCallback");
 	uri_callback = UriCallback;
 }
 
@@ -525,7 +486,6 @@ ESPEAK_API void espeak_SetPhonemeCallback(int (* PhonemeCallback)(const char*))
 
 ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output_type, int buf_length, const char *path, int options)
 {//=============================================================================================================
-ENTER("espeak_Initialize");
 	// It seems that the wctype functions don't work until the locale has been set
 	// to something other than the default "C".  Then, not only Latin1 but also the
 	// other characters give the correct results with iswalpha() etc.
@@ -590,10 +550,6 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text, size_t size,
 				     unsigned int end_position, unsigned int flags, 
 				     unsigned int* unique_identifier, void* user_data)
 {//=====================================================================================
-#ifdef DEBUG_ENABLED
-	ENTER("espeak_Synth");
-	SHOW("espeak_Synth > position=%d, position_type=%d, end_position=%d, flags=%d, user_data=0x%x, text=%s\n", position, position_type, end_position, flags, user_data, text);
-#endif
 
 	if(f_logespeak)
 	{
@@ -627,10 +583,6 @@ ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size,
 					  unsigned int* unique_identifier,
 					  void* user_data)
 {//=========================================================================
-#ifdef DEBUG_ENABLED
-  ENTER("espeak_Synth_Mark");
-  SHOW("espeak_Synth_Mark > index_mark=%s, end_position=%d, flags=%d, text=%s\n", index_mark, end_position, flags, text);
-#endif
 
 	espeak_ERROR a_error=EE_OK;
 	static unsigned int temp_identifier;
@@ -659,7 +611,6 @@ ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size,
 
 ESPEAK_API espeak_ERROR espeak_Key(const char *key)
 {//================================================
-	ENTER("espeak_Key");
 	// symbolic name, symbolicname_character  - is there a system resource of symbolicnames per language
 
 	if(f_logespeak)
@@ -674,7 +625,6 @@ ESPEAK_API espeak_ERROR espeak_Key(const char *key)
 
 ESPEAK_API espeak_ERROR espeak_Char(wchar_t character)
 {//===========================================
-  ENTER("espeak_Char");
   // is there a system resource of character names per language?
 
 	if(f_logespeak)
@@ -689,8 +639,6 @@ ESPEAK_API espeak_ERROR espeak_Char(wchar_t character)
 
 ESPEAK_API espeak_ERROR espeak_SetVoiceByName(const char *name)
 {//============================================================
-  ENTER("espeak_SetVoiceByName");
-
 	return(SetVoiceByName(name));
 }  // end of espeak_SetVoiceByName
 
@@ -698,15 +646,12 @@ ESPEAK_API espeak_ERROR espeak_SetVoiceByName(const char *name)
 
 ESPEAK_API espeak_ERROR espeak_SetVoiceByProperties(espeak_VOICE *voice_selector)
 {//==============================================================================
-  ENTER("espeak_SetVoiceByProperties");
-
 	return(SetVoiceByProperties(voice_selector));
 }  // end of espeak_SetVoiceByProperties
 
 
 ESPEAK_API int espeak_GetParameter(espeak_PARAMETER parameter, int current)
 {//========================================================================
-	ENTER("espeak_GetParameter");
 	// current: 0=default value, 1=current value
 	if(current)
 	{
@@ -721,8 +666,6 @@ ESPEAK_API int espeak_GetParameter(espeak_PARAMETER parameter, int current)
 
 ESPEAK_API espeak_ERROR espeak_SetParameter(espeak_PARAMETER parameter, int value, int relative)
 {//=============================================================================================
-  ENTER("espeak_SetParameter");
-
 	if(f_logespeak)
 	{
 		fprintf(f_logespeak,"SETPARAM %d %d %d\n",parameter,value,relative);
@@ -734,7 +677,6 @@ ESPEAK_API espeak_ERROR espeak_SetParameter(espeak_PARAMETER parameter, int valu
 
 ESPEAK_API espeak_ERROR espeak_SetPunctuationList(const wchar_t *punctlist)
 {//================================================================
-  ENTER("espeak_SetPunctuationList");
   // Set the list of punctuation which are spoken for "some".
 
 	sync_espeak_SetPunctuationList(punctlist);
@@ -744,7 +686,6 @@ ESPEAK_API espeak_ERROR espeak_SetPunctuationList(const wchar_t *punctlist)
 
 ESPEAK_API void espeak_SetPhonemeTrace(int value, FILE *stream)
 {//============================================================
-	ENTER("espeak_SetPhonemes");
 	/* Controls the output of phoneme symbols for the text
 		bits 0-3:
 		 value=0  No phoneme output (default)
@@ -764,7 +705,6 @@ ESPEAK_API void espeak_SetPhonemeTrace(int value, FILE *stream)
 
 ESPEAK_API void espeak_CompileDictionary(const char *path, FILE *log, int flags)
 {//=============================================================================
-	ENTER("espeak_CompileDictionary");
 	CompileDictionary(path, dictionary_name, log, NULL, flags);
 }   //  end of espeak_CompileDirectory
 
@@ -782,14 +722,12 @@ ESPEAK_API espeak_ERROR espeak_Cancel(void)
 
 ESPEAK_API int espeak_IsPlaying(void)
 {//==================================
-//	ENTER("espeak_IsPlaying");
 	return(0);
 }   //  end of espeak_IsPlaying
 
 
 ESPEAK_API espeak_ERROR espeak_Synchronize(void)
 {//=============================================
-	SHOW_TIME("espeak_Synchronize > LEAVE");
 	return EE_OK;
 }   //  end of espeak_Synchronize
 
@@ -799,7 +737,6 @@ extern void FreeVoiceList(void);
 
 ESPEAK_API espeak_ERROR espeak_Terminate(void)
 {//===========================================
-	ENTER("espeak_Terminate");
 	Free(event_list);
 	event_list = NULL;
 	Free(outbuf);
