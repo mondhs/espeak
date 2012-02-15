@@ -1,4 +1,4 @@
-REFIX=/usr
+PREFIX=/usr
 BINDIR=$(PREFIX)/bin
 DATADIR=$(PREFIX)/share/espeak-data
 
@@ -6,7 +6,7 @@ DATADIR=$(PREFIX)/share/espeak-data
 
 ##### standard build actions:
 
-all: src/libespeak.so src/libespeak.a src/espeakedit docs/speak_lib.h
+all: src/libespeak.so src/libespeak.a docs/speak_lib.h
 
 install: all
 	cd src && make DESTDIR=$(DESTDIR) PREFIX=$(PREFIX) install && cd ..
@@ -49,21 +49,6 @@ libespeak_SOURCES = \
 	src/wave_sada.cpp \
 	src/debug.cpp
 
-espeakedit_SOURCES = \
-	src/compiledata.cpp \
-	src/espeakedit.cpp \
-	src/extras.cpp \
-	src/formantdlg.cpp \
-	src/menus.cpp \
-	src/options.cpp \
-	src/prosodydisplay.cpp \
-	src/spect.cpp \
-	src/spectdisplay.cpp \
-	src/spectseq.cpp \
-	src/transldlg.cpp \
-	src/voicedlg.cpp \
-	src/vowelchart.cpp
-
 docs/speak_lib.h: src/speak_lib.h
 	cp $< $@
 
@@ -72,6 +57,3 @@ src/libespeak.a: $(common_SOURCES) $(libespeak_SOURCES)
 
 src/libespeak.so: $(common_SOURCES) $(libespeak_SOURCES)
 	cd src && make libespeak.so PREFIX=$(PREFIX) && cd ..
-
-src/espeakedit: $(common_SOURCES) $(libespeak_SOURCES) $(espeakedit_SOURCES)
-	cd src && make espeakedit PREFIX=$(PREFIX) && cd ..
