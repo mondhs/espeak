@@ -355,13 +355,12 @@ void MarkerEvent(int type, unsigned int char_position, int value, int value2, un
 
 
 
-espeak_ERROR sync_espeak_Synth(unsigned int unique_identifier, const void *text, size_t size, 
+espeak_ERROR sync_espeak_Synth(const void *text, size_t size, 
 		      unsigned int position, espeak_POSITION_TYPE position_type, 
 		      unsigned int end_position, unsigned int flags, void* user_data)
 {//===========================================================================
 	
 	InitText(flags);
-	my_unique_identifier = unique_identifier;
 	my_user_data = user_data;
 	
 	for (int i=0; i < N_SPEECH_PARAM; i++)
@@ -395,13 +394,12 @@ espeak_ERROR sync_espeak_Synth(unsigned int unique_identifier, const void *text,
 
 
 
-espeak_ERROR sync_espeak_Synth_Mark(unsigned int unique_identifier, const void *text, size_t size, 
+espeak_ERROR sync_espeak_Synth_Mark(const void *text, size_t size, 
 			   const char *index_mark, unsigned int end_position, 
 			   unsigned int flags, void* user_data)
 {//=========================================================================
 	InitText(flags);
 	
-	my_unique_identifier = unique_identifier;
 	my_user_data = user_data;
 	
 	if(index_mark != NULL)
@@ -558,7 +556,7 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text, size_t size,
 
 	if(synchronous_mode)
 	{
-		return(sync_espeak_Synth(0,text,size,position,position_type,end_position,flags,user_data));
+		return(sync_espeak_Synth(text,size,position,position_type,end_position,flags,user_data));
 	}
 
 	return EE_INTERNAL_ERROR;
@@ -580,7 +578,7 @@ ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size,
 
 	if(synchronous_mode)
 	{
-		return(sync_espeak_Synth_Mark(0,text,size,index_mark,end_position,flags,user_data));
+		return(sync_espeak_Synth_Mark(text,size,index_mark,end_position,flags,user_data));
 	}
 
 	return EE_OK;
