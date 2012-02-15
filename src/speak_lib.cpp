@@ -39,8 +39,6 @@
 #include "voice.h"
 #include "translate.h"
 
-void sync_espeak_Char(wchar_t character);
-
 unsigned char *outbuf=NULL;
 
 espeak_EVENT *event_list=NULL;
@@ -419,8 +417,8 @@ espeak_ERROR sync_espeak_Synth_Mark(unsigned int unique_identifier, const void *
 }  //  end of sync_espeak_Synth_Mark
 
 
-
-void sync_espeak_Key(const char *key)
+#pragma GCC visibility push(default)
+ESPEAK_API espeak_ERROR espeak_Key(const char *key)
 {//==================================
 	// symbolic name, symbolicname_character  - is there a system resource of symbolic names per language?
 	int letter;
@@ -429,14 +427,15 @@ void sync_espeak_Key(const char *key)
 	if(key[ix] == 0)
 	{
 		// a single character
-		sync_espeak_Char(letter);
-		return;
+		return espeak_Char(letter);
 	}
 
 	my_unique_identifier = 0;
 	my_user_data = NULL;
 	Synthesize(key,0);   // speak key as a text string
+	return(EE_OK);
 }
+#pragma GCC visibility pop
 
 
 void sync_espeak_Char(wchar_t character)
@@ -595,17 +594,6 @@ ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size,
 
 	return a_error;
 }  //  end of espeak_Synth_Mark
-#pragma GCC visibility pop
-
-
-#pragma GCC visibility push(default)
-ESPEAK_API espeak_ERROR espeak_Key(const char *key)
-{//================================================
-	// symbolic name, symbolicname_character  - is there a system resource of symbolicnames per language
-
-	sync_espeak_Key(key);
-	return(EE_OK);
-}
 #pragma GCC visibility pop
 
 
