@@ -2,6 +2,8 @@
  *   Copyright (C) 2005 to 2011 by Jonathan Duddington                     *
  *   email: jonsd@users.sourceforge.net                                    *
  *                                                                         *
+ *   Copyright (C) 2012 Reece H. Dunn                                      *
+ *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
  *   the Free Software Foundation; either version 3 of the License, or     *
@@ -438,7 +440,8 @@ ESPEAK_API espeak_ERROR espeak_Key(const char *key)
 #pragma GCC visibility pop
 
 
-void sync_espeak_Char(wchar_t character)
+#pragma GCC visibility push(default)
+ESPEAK_API espeak_ERROR espeak_Char(wchar_t character)
 {//=====================================
 	// is there a system resource of character names per language?
 	char buf[80];
@@ -447,8 +450,9 @@ void sync_espeak_Char(wchar_t character)
 	
 	sprintf(buf,"<say-as interpret-as=\"tts:char\">&#%d;</say-as>",character);
 	Synthesize(buf,espeakSSML);
+	return(EE_OK);
 }
-
+#pragma GCC visibility pop
 
 
 void sync_espeak_SetPunctuationList(const wchar_t *punctlist)
@@ -594,17 +598,6 @@ ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size,
 
 	return a_error;
 }  //  end of espeak_Synth_Mark
-#pragma GCC visibility pop
-
-
-#pragma GCC visibility push(default)
-ESPEAK_API espeak_ERROR espeak_Char(wchar_t character)
-{//===========================================
-  // is there a system resource of character names per language?
-
-	sync_espeak_Char(character);
-	return(EE_OK);
-}
 #pragma GCC visibility pop
 
 
