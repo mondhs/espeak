@@ -553,8 +553,6 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text, size_t size,
 				     unsigned int* unique_identifier, void* user_data)
 {//=====================================================================================
 
-	espeak_ERROR a_error=EE_INTERNAL_ERROR;
-
 	if (unique_identifier != NULL)
 		*unique_identifier = 0;
 
@@ -563,7 +561,7 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text, size_t size,
 		return(sync_espeak_Synth(0,text,size,position,position_type,end_position,flags,user_data));
 	}
 
-	return a_error;
+	return EE_INTERNAL_ERROR;
 }  //  end of espeak_Synth
 #pragma GCC visibility pop
 
@@ -577,8 +575,6 @@ ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size,
 					  void* user_data)
 {//=========================================================================
 
-	espeak_ERROR a_error=EE_OK;
-
 	if (unique_identifier != NULL)
 		*unique_identifier = 0;
 
@@ -587,7 +583,7 @@ ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size,
 		return(sync_espeak_Synth_Mark(0,text,size,index_mark,end_position,flags,user_data));
 	}
 
-	return a_error;
+	return EE_OK;
 }  //  end of espeak_Synth_Mark
 #pragma GCC visibility pop
 
