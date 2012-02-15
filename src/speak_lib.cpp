@@ -385,9 +385,7 @@ espeak_ERROR sync_espeak_Synth(const void *text, size_t size,
 	
 	end_character_position = end_position;
 	
-	espeak_ERROR aStatus = Synthesize(text, flags);
-	
-	return aStatus;
+	return Synthesize(text, flags);
 }  //  end of sync_espeak_Synth
 
 
@@ -408,11 +406,7 @@ espeak_ERROR sync_espeak_Synth_Mark(const void *text, size_t size,
 		}
 	
 	end_character_position = end_position;
-	
-	
-	espeak_ERROR aStatus = Synthesize(text, flags | espeakSSML);
-	
-	return (aStatus);
+	return Synthesize(text, flags | espeakSSML);
 }  //  end of sync_espeak_Synth_Mark
 
 
