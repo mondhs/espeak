@@ -8,8 +8,6 @@ INCDIR=$(PREFIX)/include/espeak
 LIBDIR=$(PREFIX)/lib
 
 RELEASE = 1.46
-SPEAK = speak
-ESPEAK = espeak
 ESPEAKEDIT = espeakedit
 LIBESPEAK = libespeak.so
 STATIC_LIBESPEAK = libespeak.a
@@ -87,27 +85,13 @@ x_%.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(USE_AUDIO) -fpic -fvisibility=hidden \
 	-I. -D LIBRARY $(CPPFLAGS) $< -o x_$*.o
 
-all: $(SPEAK) $(LIBESPEAK) $(STATIC_LIBESPEAK) $(ESPEAK) $(ESPEAKEDIT)
+all: $(LIBESPEAK) $(STATIC_LIBESPEAK) $(ESPEAKEDIT)
 
 common_SOURCES = compiledict.cpp dictionary.cpp intonation.cpp \
 	klatt.cpp mbrowrap.cpp numbers.cpp readclause.cpp \
 	phonemelist.cpp setlengths.cpp sonic.cpp \
 	synthdata.cpp synthesize.cpp synth_mbrola.cpp \
 	translate.cpp tr_languages.cpp voices.cpp wavegen.cpp 
-
-speak_SOURCES = speak.cpp $(common_SOURCES)
-speak_OBJS = $(patsubst %.cpp,%.o,$(speak_SOURCES))
-speak_LIBS = -lstdc++ $(LIB_AUDIO) -lpthread $(EXTRA_LIBS)
-$(SPEAK): $(speak_OBJS)
-	# Linking $@
-	$(CXX) $(LDFLAGS) -o $@ $(speak_OBJS) $(speak_LIBS)
-
-espeak_SOURCES = espeak.cpp
-espeak_OBJS = $(patsubst %.cpp,%.o,$(espeak_SOURCES))
-espeak_LIBS = -lstdc++ -L . -lespeak
-$(ESPEAK): $(espeak_OBJS) $(LIB_NAME)
-	# Linking $@
-	$(CXX) $(LDFLAGS) -o $@ $(espeak_OBJS) $(espeak_LIBS)
 
 libespeak_SOURCES = speak_lib.cpp $(common_SOURCES) \
 	espeak_command.cpp event.cpp fifo.cpp $(WAVE) debug.cpp
@@ -148,8 +132,6 @@ clean:
 	rm -f *.o *.a *~
 
 distclean: clean
-	rm -f $(SPEAK)
-	rm -f $(ESPEAK)
 	rm -f $(LIBESPEAK)*
 	rm -f $(STATIC_LIBESPEAK)
 	rm -f $(ESPEAKEDIT)
@@ -159,8 +141,6 @@ install: all
 	$(MKDIR) $(DESTDIR)$(BINDIR)
 	$(MKDIR) $(DESTDIR)$(LIBDIR)
 	$(MKDIR) $(DESTDIR)$(INCDIR)
-	# Install espeak executable
-	$(INSTALL) -m 755 $(ESPEAK) $(DESTDIR)$(BINDIR)
 	# Should we install espeakedit executable?
 	# $(INSTALL) -m 755 $(ESPEAKEDIT) $(DESTDIR)$(BINDIR)
 	# Install shared library

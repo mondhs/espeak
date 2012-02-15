@@ -6,7 +6,7 @@ DATADIR=$(PREFIX)/share/espeak-data
 
 ##### standard build actions:
 
-all: src/speak src/libespeak.so src/libespeak.a src/espeak src/espeakedit docs/speak_lib.h
+all: src/libespeak.so src/libespeak.a src/espeakedit docs/speak_lib.h
 
 install: all
 	cd src && make DESTDIR=$(DESTDIR) PREFIX=$(PREFIX) install && cd ..
@@ -72,12 +72,6 @@ src/libespeak.a: $(common_SOURCES) $(libespeak_SOURCES)
 
 src/libespeak.so: $(common_SOURCES) $(libespeak_SOURCES)
 	cd src && make libespeak.so PREFIX=$(PREFIX) && cd ..
-
-src/speak: $(common_SOURCES) src/speak.cpp
-	cd src && make speak PREFIX=$(PREFIX) && cd ..
-
-src/espeak: src/libespeak.so src/espeak.cpp
-	cd src && make espeak PREFIX=$(PREFIX) && cd ..
 
 src/espeakedit: $(common_SOURCES) $(libespeak_SOURCES) $(espeakedit_SOURCES)
 	cd src && make espeakedit PREFIX=$(PREFIX) && cd ..
