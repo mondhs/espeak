@@ -23,8 +23,10 @@ INSTALL = install
 LN_SF = /bin/ln -sf
 MKDIR = mkdir -p
 
+COMMITID = $(shell git rev-parse HEAD)
+
 CXXFLAGS = -O2 -Wall -c
-CPPFLAGS = -pedantic -fno-exceptions -D PATH_ESPEAK_DATA=\"$(DATADIR)\"
+CPPFLAGS = -pedantic -fno-exceptions -D PATH_ESPEAK_DATA=\"$(DATADIR)\" -D COMMITID=\"$(COMMITID)\"
 
 .cpp.o:
 	# Compiling $@
