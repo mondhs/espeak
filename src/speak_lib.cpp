@@ -332,12 +332,17 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text, size_t size,
 #pragma GCC visibility pop
 
 
-
-
-espeak_ERROR sync_espeak_Synth_Mark(const void *text, size_t size, 
-			   const char *index_mark, unsigned int end_position, 
-			   unsigned int flags, void* user_data)
+#pragma GCC visibility push(default)
+ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size, 
+					  const char *index_mark, 
+					  unsigned int end_position, 
+					  unsigned int flags, 
+					  unsigned int* unique_identifier,
+					  void* user_data)
 {//=========================================================================
+	if (unique_identifier != NULL)
+		*unique_identifier = 0;
+
 	InitText(flags);
 	
 	my_user_data = user_data;
@@ -351,6 +356,7 @@ espeak_ERROR sync_espeak_Synth_Mark(const void *text, size_t size,
 	end_character_position = end_position;
 	return Synthesize(text, flags | espeakSSML);
 }  //  end of sync_espeak_Synth_Mark
+#pragma GCC visibility pop
 
 
 #pragma GCC visibility push(default)
@@ -472,23 +478,6 @@ ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output_type, int buf_length
 	
   return(samplerate);
 }
-#pragma GCC visibility pop
-
-
-#pragma GCC visibility push(default)
-ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text, size_t size, 
-					  const char *index_mark, 
-					  unsigned int end_position, 
-					  unsigned int flags, 
-					  unsigned int* unique_identifier,
-					  void* user_data)
-{//=========================================================================
-
-	if (unique_identifier != NULL)
-		*unique_identifier = 0;
-
-	return(sync_espeak_Synth_Mark(text,size,index_mark,end_position,flags,user_data));
-}  //  end of espeak_Synth_Mark
 #pragma GCC visibility pop
 
 
