@@ -530,14 +530,6 @@ ESPEAK_API void espeak_SetPhonemeTrace(int value, FILE *stream)
 
 
 #pragma GCC visibility push(default)
-ESPEAK_API void espeak_CompileDictionary(const char *path, FILE *log, int flags)
-{//=============================================================================
-	CompileDictionary(path, dictionary_name, log, NULL, flags);
-}   //  end of espeak_CompileDirectory
-#pragma GCC visibility pop
-
-
-#pragma GCC visibility push(default)
 ESPEAK_API espeak_ERROR espeak_Cancel(void)
 {//===============================
 	embedded_value[EMBED_T] = 0;    // reset echo for pronunciation announcements

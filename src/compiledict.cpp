@@ -1755,8 +1755,8 @@ static int compile_dictrules(FILE *f_in, FILE *f_out, char *fname_temp)
 }  //  end of compile_dictrules
 
 
-
-int CompileDictionary(const char *dsource, const char *dict_name, FILE *log, char *fname_err, int flags)
+#pragma GCC visibility push(default)
+ESPEAK_API void espeak_CompileDictionary(const char *dsource, FILE *log, int flags)
 {//=====================================================================================================
 // fname:  space to write the filename in case of error
 // flags: bit 0:  include source line number information, for debug purposes.
@@ -1784,26 +1784,18 @@ int CompileDictionary(const char *dsource, const char *dict_name, FILE *log, cha
 		f_log = stderr;
 
 	// try with and without '.txt' extension
-	sprintf(path,"%s%s_",dsource,dict_name);
+	sprintf(path,"%s%s_",dsource,dictionary_name);
 	sprintf(fname_in,"%srules.txt",path);
 	if((f_in = fopen(fname_in,"r")) == NULL)
 	{
 		sprintf(fname_in,"%srules",path);
 		if((f_in = fopen_log(fname_in,"r")) == NULL)
-		{
-			if(fname_err)
-				strcpy(fname_err,fname_in);
-			return(-1);
-		}
+			return;
 	}
 
-	sprintf(fname_out,"%s%c%s_dict",path_home,PATHSEP,dict_name);
+	sprintf(fname_out,"%s%c%s_dict",path_home,PATHSEP,dictionary_name);
 	if((f_out = fopen_log(fname_out,"wb+")) == NULL)
-	{
-		if(fname_err)
-			strcpy(fname_err,fname_in);
-		return(-1);
-	}
+		return;
 	sprintf(fname_temp,"%s%ctemp",path_home,PATHSEP);
 
 	int value = N_HASH_DICT;
@@ -1838,8 +1830,7 @@ int CompileDictionary(const char *dsource, const char *dict_name, FILE *log, cha
 	Write4Bytes(f_out,offset_rules);
 	fclose(f_out);
 
-	LoadDictionary(translator, dict_name, 0);
-
-	return(error_count);
+	LoadDictionary(translator, dictionary_name, 0);
 }  //  end of compile_dictionary
+#pragma GCC visibility pop
 
