@@ -305,7 +305,7 @@ printf("%3d: speedf %d %d %d   pause=%d %d   wav=%d  lenmod=%d %d\n",wpm,speed1,
 
 
 #pragma GCC visibility push(default)
-ESPEAK_API espeak_ERROR espeak_SetParameter(int parameter, int value, int relative)
+ESPEAK_API espeak_ERROR espeak_SetParameter(espeak_PARAMETER parameter, int value, int relative)
 {//======================================================
 // parameter: reset-all, amp, pitch, speed, linelength, expression, capitals, number grouping
 // relative 0=absolute  1=relative
