@@ -1318,14 +1318,6 @@ static void output_rule_group(FILE *f_out, int n_rules, char **rules, char *name
 			fwrite(p,len1,1,f_out);
 		}
 	}
-
-#ifdef LIST_GROUP_INFO
-	for(int ix=32; ix<256; ix++)
-	{
-		if(nextchar_count[ix] > 30)
-			printf("Group %s   %c  %d\n",name,ix,nextchar_count[ix]);
-	}
-#endif
 }  //  end of output_rule_group
 
 
