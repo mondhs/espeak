@@ -358,20 +358,6 @@ static unsigned char pk_shape2[PEAKSHAPEW+1] = {
 static unsigned char *pk_shape;
 
 
-int WavegenOpenSound()
-{//===================
-	return(0);
-}
-int WavegenCloseSound()
-{//====================
-	return(0);
-}
-int WavegenInitSound()
-{//===================
-	return(0);
-}
-
-
 void WavegenInit(int rate, int wavemult_fact)
 {//==========================================
 	if(wavemult_fact == 0)
