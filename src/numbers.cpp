@@ -459,11 +459,6 @@ void LookupAccentedLetter(Translator *tr, unsigned int letter, char *ph_buf)
 			{
 				if(accent2 != 0)
 				{
-					if(Lookup(tr, accents_tab[accent2].name, ph_accent2) == 0)
-					{
-//						break;
-					}
-
 					if(accents_tab[accent2].flags & 1)
 					{
 						strcpy(ph_buf,ph_accent2);
@@ -1378,7 +1373,6 @@ static int LookupNum3(Translator *tr, int value, char *ph_out, int suppress_null
 		if(((tr->langopts.numbers & NUM_1900) != 0) && (hundreds == 19))
 		{
 			// speak numbers such as 1984 as years: nineteen-eighty-four
-//			ph_100[0] = 0;   // don't say "hundred", we also need to surpess "and"
 		}
 		else
 		if(hundreds >= 10)

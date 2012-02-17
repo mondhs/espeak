@@ -95,7 +95,6 @@ void SynthesizeInit()
 	syllable_centre = -1;
 
 	// initialise next_pause, a dummy phoneme_list entry
-//	next_pause.ph = phoneme_tab[phonPAUSE];   // this must be done after voice selection
 	next_pause.type = phPAUSE;
 	next_pause.newword = 0;
 }
@@ -252,13 +251,6 @@ static int DoSample2(int index, int which, int std_length, int control, int leng
 
 	if(wav_scale==0)
 		min_length *= 2;  // 16 bit samples
-	else
-	{
-		// increase consonant amplitude at high speeds, depending on the peak consonant amplitude
-//		x = ((35 - wav_scale) * speed.loud_consonants);
-//		if(x < 0) x = 0;
-//		wav_scale = (wav_scale * (x+256))/256;
-	}
 
 	if(std_length > 0)
 	{
@@ -291,11 +283,6 @@ static int DoSample2(int index, int which, int std_length, int control, int leng
 		{
 			// don't let length exceed std_length
 			length = std_length;
-		}
-		else
-		{
-			// reduce the reduction in length
-//			length = (length + std_length)/2;
 		}
 	}
 
@@ -615,9 +602,6 @@ static short vcolouring[N_VCOLOUR][5] = {
 	int f1 = ((data2 >> 26) & 0x7);
 	int vcolour = (data2 >> 29);
 
-//	fprintf(stderr,"FMT%d %3s  %3d-%3d f1=%d  f2=%4d %4d %4d  f3=%4d %3d\n",
-//		which,WordToString(other_ph->mnemonic),len,rms,f1,f2,f2_min,f2_max,f3_adj,f3_amp);
-
 	if((other_ph != NULL) && (other_ph->mnemonic == '?'))
 		flags |= 8;
 
@@ -636,7 +620,6 @@ static short vcolouring[N_VCOLOUR][5] = {
 
 if(voice->klattv[0])
 {
-//	fr->klattp[KLATT_AV] = 53;   // reduce the amplituide of the start of a vowel
    fr->klattp[KLATT_AV] = seq[1].frame->klattp[KLATT_AV] - 4;
 }
 		if(f2 != 0)
@@ -662,7 +645,6 @@ if(voice->klattv[0])
 
 		if(flags & 8)
 		{
-//			set_frame_rms(fr,next_rms - 5);
 			modn_flags = 0x800 + (VowelCloseness(fr) << 8);
 		}
 	}
@@ -1341,9 +1323,6 @@ int Generate(PHONEME_LIST *phoneme_list, int *n_ph, int resume)
 			if(p->newword & 4)
 				DoMarker(espeakEVENT_SENTENCE, sourceix, 0, count_sentences);  // start of sentence
 
-//			if(p->newword & 2)
-//				DoMarker(espeakEVENT_END, count_characters, 0, count_sentences);  // end of clause
-
 			if(p->newword & 1)
 				DoMarker(espeakEVENT_WORD, sourceix, p->sourceix >> 11, clause_start_word + word_count++);  // NOTE, this count doesn't include multiple-word pronunciations in *_list. eg (of a)
 		}
@@ -1384,7 +1363,6 @@ int Generate(PHONEME_LIST *phoneme_list, int *n_ph, int resume)
 			if(!next->newword)
 			{
 				if(next->type==phLIQUID) released = 1;
-//				if(((p->ph->phflags & phPLACE) == phPLACE_blb) && (next->ph->phflags & phSIBILANT)) released = 1;
 			}
 			if(released == 0)
 				p->synthflags |= SFLAG_NEXT_PAUSE;

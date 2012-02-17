@@ -76,7 +76,6 @@ int GetFileLength(const char *filename)
 		return(0);
 	
 	if((statbuf.st_mode & S_IFMT) == S_IFDIR)
-		//	if(S_ISDIR(statbuf.st_mode))
 		return(-2);  // a directory
 	
 	return(statbuf.st_size);
@@ -273,8 +272,6 @@ void MarkerEvent(int type, unsigned int char_position, int value, int value2, un
 	if((type == espeakEVENT_MARK) || (type == espeakEVENT_PLAY))
 		ep->id.name = &namedata[value];
 	else
-//#ifdef deleted
-// temporarily removed, don't introduce until after eSpeak version 1.46.02
 	if(type == espeakEVENT_PHONEME)
 	{
 		int *p;
@@ -283,7 +280,6 @@ void MarkerEvent(int type, unsigned int char_position, int value, int value2, un
 		p[1] = value2;
 	}
 	else
-//#endif
 	{
 		ep->id.number = value;
 	}
@@ -473,7 +469,6 @@ ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output_type, int buf_length
 	espeak_SetParameter(espeakCAPITALS,option_capitals,0);
 	espeak_SetParameter(espeakPUNCTUATION,option_punctuation,0);
 	espeak_SetParameter(espeakWORDGAP,0,0);
-//	DoVoiceChange(voice);
 	
   return(samplerate);
 }

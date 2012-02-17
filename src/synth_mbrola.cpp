@@ -182,14 +182,12 @@ espeak_ERROR LoadMbrolaTable(const char *mbrola_voice, const char *phtrans, int 
 	fclose(f_in);
 
 	setVolumeRatio_MBR((float)(mbrola_control & 0xff) /16.0f);
-//	srate = getFreq_MBR(); 
 	samplerate = srate;
 	if(srate == 22050)
 		espeak_SetParameter(espeakVOICETYPE,0,0);
 	else
 		espeak_SetParameter(espeakVOICETYPE,1,0);
 	strcpy(mbrola_name,mbrola_voice);
-//	mbrola_delay = 3800;  // improve synchronization of events
 	mbrola_delay = 1000;  // improve synchronization of events
 	return(EE_OK);
 }  // end of LoadMbrolaTable
@@ -454,7 +452,6 @@ int MbrolaTranslate(PHONEME_LIST *plist, int n_phonemes, int resume, FILE *f_mbr
 			// a pause phoneme, which has not been changed by the translation
 			name = '_';
 			len = (p->length * speed.pause_factor)/256;
-//			if(len == 0) continue;
 			if(len == 0)
 				len = 1;
 		}
@@ -543,7 +540,6 @@ int MbrolaTranslate(PHONEME_LIST *plist, int n_phonemes, int resume, FILE *f_mbr
 				InterpretPhoneme(NULL, 0, p, &phdata);
 				fmtp.fmt_addr = phdata.sound_addr[pd_FMT];
 				len = DoSpect2(p->ph, 0, &fmtp,  p, -1);
-//				len = DoSpect(p->ph,prev->ph,phoneme_tab[phonPAUSE],2,p,-1);
 				len = (len * 1000)/samplerate;
 				if(next->type == phPAUSE)
 					len += 50;

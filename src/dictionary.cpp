@@ -39,7 +39,6 @@ extern char *print_dictionary_flags(unsigned int *flags);
 extern char *DecodeRule(const char *group_chars, int group_length, char *rule, int control);
 
 // accented characters which indicate (in some languages) the start of a separate syllable
-//static const unsigned short diereses_list[7] = {L'ä',L'ë',L'ï',L'ö',L'ü',L'ÿ',0};
 static const unsigned short diereses_list[7] = {0xe4,0xeb,0xef,0xf6,0xfc,0xff,0};
 
 // convert characters to an approximate 7 bit ascii equivalent
@@ -1522,9 +1521,6 @@ void SetWordStress(Translator *tr, char *output, unsigned int *dictionary_flags,
 	{
 		if((ph = phoneme_tab[phcode]) == NULL)
 			continue;
-
-//		if(ph->type == phSTRESS)
-//			continue;
 
 		if(ph->type == phPAUSE)
 		{
@@ -3225,10 +3221,6 @@ int LookupDictList(Translator *tr, char **wordptr, char *ph_out, unsigned int *f
 					fprintf(f_trans,"Replace: %s  %s\n",word,*wordptr);
 				}
 			}
-			else
-			{
-//				flags[0] &= ~FLAG_SKIPWORDS;  // check lang=hu  január 21.-ig  (error: suffix repeated ??)
-			}
 
 			ph_out[0] = 0;
 			return(0);
@@ -3283,7 +3275,6 @@ int RemoveEnding(Translator *tr, char *word, int end_type, char *word_copy)
 		"ion", NULL };
 
 	static const char *add_e_additions[] = {
-//		"c", "rs", "ir", "ur", "ath", "ns", "lu", NULL };
 		"c", "rs", "ir", "ur", "ath", "ns", "u", NULL };
 
 	for(word_end = word; *word_end != ' '; word_end++)
@@ -3396,7 +3387,6 @@ int RemoveEnding(Translator *tr, char *word, int end_type, char *word_copy)
 	if((strcmp(ending,"s")==0) || (strcmp(ending,"es")==0))
 		end_flags |= FLAG_SUFX_S;
 
-//	if(strcmp(ending,"'s")==0)
 	if(ending[0] == '\'')
 		end_flags &= ~FLAG_SUFX;  // don't consider 's as an added suffix
 

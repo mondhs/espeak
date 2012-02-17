@@ -500,14 +500,6 @@ void MakePhonemeList(Translator *tr, int post_pause, int start_sentence)
 			insert_ph = phdata.pd_param[pd_APPENDPHONEME];
 		}
 
-		if(ph->phflags & phVOICED)
-		{
-			// check that a voiced consonant is preceded or followed by a vowel or liquid
-			// and if not, add a short schwa
-
-			// not yet implemented
-		}
-
 		phlist[ix].ph = ph;
 		phlist[ix].type = ph->type;
 		phlist[ix].env = PITCHfall;          // default, can be changed in the "intonation" module
@@ -534,7 +526,6 @@ void MakePhonemeList(Translator *tr, int post_pause, int start_sentence)
 			phlist[ix].newword = 0;
 		}
 
-//		phlist[ix].length = ph->std_length;
 		phlist[ix].length = phdata.pd_param[i_SET_LENGTH]*2;
 		if((ph->code == phonPAUSE_LONG) && (option_wordgap > 0))
 		{

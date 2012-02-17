@@ -50,11 +50,8 @@ MNEM_TAB genders [] = {
 	{NULL, 0 }};
 
 int tone_points[12] = {600,170, 1200,135, 2000,110, 3000,110, -1,0};
-//int tone_points[12] = {250,200,  400,170, 600,170, 1200,135, 2000,110, -1,0};
 
 // limit the rate of change for each formant number
-//static int formant_rate_22050[9] = {50, 104, 165, 230, 220, 220, 220, 220, 220};  // values for 22kHz sample rate
-//static int formant_rate_22050[9] = {240, 180, 180, 180, 180, 180, 180, 180, 180};  // values for 22kHz sample rate
 static int formant_rate_22050[9] = {240, 170, 170, 170, 170, 170, 170, 170, 170};  // values for 22kHz sample rate
 int formant_rate[9];         // values adjusted for actual sample rate
 
@@ -157,7 +154,6 @@ static MNEM_TAB keyword_tab[] = {
 
 	// these just set a value in langopts.param[]
 	{"l_dieresis", 0x100+LOPT_DIERESES},
-//	{"l_lengthen", 0x100+LOPT_IT_LENGTHEN},
 	{"l_prefix",   0x100+LOPT_PREFIXES},
 	{"l_regressive_v", 0x100+LOPT_REGRESSIVE_VOICING},
 	{"l_unpronouncable", 0x100+LOPT_UNPRONOUNCABLE},
@@ -374,10 +370,6 @@ void VoiceReset(int tone_only)
 	voice->pitch_base = 0x47000;
 	voice->pitch_range = 4104;
 
-//	default is:  pitch 80,117
-//	voice->pitch_base = 0x47000;
-//	voice->pitch_range = 3996;
-
 	voice->formant_factor = 256;
 
 	voice->speed_percent = 100;
@@ -420,7 +412,6 @@ void VoiceReset(int tone_only)
 	// This table provides the opportunity for tone control.
 	// Adjustment of harmonic amplitudes, steps of 8Hz
 	// value of 128 means no change
-//	memset(voice->tone_adjust,128,sizeof(voice->tone_adjust));
 SetToneAdjust(voice,tone_points);
 
 	// default values of speed factors
@@ -1631,7 +1622,6 @@ espeak_ERROR espeak_SetVoiceByName(const char *name)
 	char *variant_name = ExtractVoiceVariantName(buf, 0, 1);
 
 	memset(&voice_selector,0,sizeof(voice_selector));
-//	voice_selector.name = buf;
 	voice_selector.name = (char *)name;  // include variant name in voice stack ??
 
 	// first check for a voice with this filename

@@ -805,7 +805,6 @@ int PeaksToHarmspect(wavegen_peaks_t *peaks, int pitch, int *htab, int control)
 
 	// restrict highest harmonic to half the samplerate
 	int hmax_samplerate = (((samplerate * 19)/40) << 16)/pitch; // highest harmonic allowed for the samplerate (only 95% of Nyquist freq)
-//	hmax_samplerate = (samplerate << 16)/(pitch*2);
 
 	if(hmax > hmax_samplerate)
 		hmax = hmax_samplerate;
@@ -1098,7 +1097,6 @@ int Wavegen()
 				maxh2 = PeaksToHarmspect(peaks, wdata.pitch<<4, hspect[0], 0);
 
 				// adjust amplitude to compensate for fewer harmonics at higher pitch
-//				amplitude2 = (wdata.amplitude * wdata.pitch)/(100 << 11);
 				amplitude2 = (wdata.amplitude * (wdata.pitch >> 8) * wdata.amplitude_fmt)/(10000 << 3);
 
             // switch sign of harmonics above about 900Hz, to reduce max peak amplitude
@@ -1152,7 +1150,6 @@ int Wavegen()
 				}
 
 				// adjust amplitude to compensate for fewer harmonics at higher pitch
-//				amplitude2 = (wdata.amplitude * wdata.pitch)/(100 << 11);
 				amplitude2 = (wdata.amplitude * (wdata.pitch >> 8) * wdata.amplitude_fmt)/(10000 << 3);
 
 				if(glottal_flag > 0)
@@ -1187,8 +1184,6 @@ int Wavegen()
 					if((ix = amp_ix>>8) > 127) ix = 127;
 					amp = amplitude_env[ix];
 					amplitude2 = (amplitude2 * amp)/128;
-//					if(amp < 255)
-//						modulation_type = 7;
 				}
 
 				// introduce roughness into the sound by reducing the amplitude of
@@ -1523,7 +1518,6 @@ void WavegenSetVoice(voice_t *v)
 	WavegenSetEcho();
 	SetPitchFormants();
 	MarkerEvent(espeakEVENT_SAMPLERATE, 0, wvoice->samplerate, 0, out_ptr);
-//	WVoiceChanged(wvoice);
 }
 
 
@@ -1610,7 +1604,6 @@ if(option_log_frames)
 void SetSynth(int length, int modn, frame_t *fr1, frame_t *fr2, voice_t *v)
 {//========================================================================
 	static int glottal_reduce_tab1[4] = {0x30, 0x30, 0x40, 0x50};  // vowel before [?], amp * 1/256
-//	static int glottal_reduce_tab1[4] = {0x30, 0x40, 0x50, 0x60};  // vowel before [?], amp * 1/256
 	static int glottal_reduce_tab2[4] = {0x90, 0xa0, 0xb0, 0xc0};  // vowel after [?], amp * 1/256
 
 #ifdef LOG_FRAMES

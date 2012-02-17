@@ -119,10 +119,6 @@ static const unsigned short brackets[] = {
 // other characters which break a word, but don't produce a pause
 static const unsigned short breaks[] = {'_', 0};
 
-// treat these characters as spaces, in addition to iswspace()
-// static const wchar_t chars_space[] = {0x2500,0x2501,0};  // box drawing horiz
-
-
 // Translate character codes 0xA0 to 0xFF into their unicode values
 // ISO_8859_1 is set as default
 static const unsigned short ISO_8859_1[0x60] = {
@@ -435,8 +431,6 @@ int IsSpace(unsigned int c)
 		return(0);
 	if((c >= 0x2500) && (c < 0x25a0))
 		return(1);  // box drawing characters
-//	if(wcschr(chars_space,c))
-//		return(1);
 	return(iswspace(c));
 }
 
@@ -1244,11 +1238,6 @@ strcpy(phonemes2,phonemes);
 						return(0);
 					}
 
-if(dictionary_flags2[0] & FLAG_ABBREV)
-{
-	// Removing the suffix leaves a word which should be spoken as individual letters
-	// Not yet implemented
-}
 					if(dictionary_flags[0]==0)
 					{
 						dictionary_flags[0] = dictionary_flags2[0];
@@ -1788,7 +1777,6 @@ static int TranslateWord2(Translator *tr, char *word, WORD_TAB *wtab, int pre_pa
 			{
 				// re-translate the word using the new translator
 				flags = TranslateWord(translator2, word, next_pause, wtab);
-//				strcpy((char *)p,translator2->word_phonemes);
 				if(p[0] == phonSWITCH)
 				{
 					// the second translator doesn't want to process this word
@@ -2425,7 +2413,7 @@ p = source;
 	while(!finished && (ix < (int)sizeof(sbuf))&& (n_ph_list2 < N_PHONEME_LIST-4))
 	{
 		int prev_out2 = prev_out;
-		utf8_in2(&prev_out,&sbuf[ix-1],1);   // prev_out = sbuf[ix-1];
+		utf8_in2(&prev_out,&sbuf[ix-1],1);
 
 		if(tr->langopts.tone_numbers && IsDigit09(prev_out) && IsAlpha(prev_out2))
 		{
@@ -2441,7 +2429,7 @@ p = source;
 		else
 		if(source_index > 0)
 		{
-			utf8_in2(&prev_in,&source[source_index-1],1);  //  prev_in = source[source_index-1];
+			utf8_in2(&prev_in,&source[source_index-1],1);
 		}
 
 		unsigned int prev_source_index = source_index;
@@ -2453,7 +2441,7 @@ p = source;
 		}
 		else
 		{
-			source_index += utf8_in(&cc,&source[source_index]);   // cc = source[source_index++];
+			source_index += utf8_in(&cc,&source[source_index]);
 			c = cc;
 		}
 		int next_in_nbytes = utf8_in(&next_in,&source[source_index]);
@@ -2662,7 +2650,6 @@ p = source;
 							c = ' ';      // lower case followed by upper case, treat as new word
 							space_inserted = 1;
 							prev_in_save = c;
-//							next_word_flags |= FLAG_NOSPACE;  // problem: prevents FLAG_HAS_DOT being set
 						}
 						else
 						if((c != ' ') && iswupper(prev_in) && iswlower(next_in))

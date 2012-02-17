@@ -132,8 +132,6 @@ static int speed3 = 118;
 
 
 
-//#define TEST_SPEED
-
 void SetSpeed(int control)
 {//=======================
 	speed.loud_consonants = 0;
@@ -186,15 +184,6 @@ void SetSpeed(int control)
 		return;
 	}
 
-
-#ifdef TEST_SPEED
-	if(wpm > 1000)
-	{
-		// TESTING
-//		test = wpm / 1000;
-		wpm = wpm % 1000;
-	}
-#endif
 
 	if(wpm > 450)
 		wpm = 450;
@@ -270,13 +259,11 @@ void SetSpeed(int control)
 		if(wpm > 430)
 		{
 			speed.pause_factor = 12;
-//			speed.clause_pause_factor = 15;
 		}
 		else
 		if(wpm > 400)
 		{
 			speed.pause_factor = 13;
-//			speed.clause_pause_factor = 15;
 		}
 		else
 		if(wpm > 374)
@@ -296,11 +283,6 @@ void SetSpeed(int control)
 				speed.clause_pause_factor = 16;
 		}
 	}
-
-#ifdef TEST_SPEED
-//if(control==3)
-printf("%3d: speedf %d %d %d   pause=%d %d   wav=%d  lenmod=%d %d\n",wpm,speed1,speed2,speed3, speed.pause_factor,speed.clause_pause_factor, speed.wav_factor,speed.lenmod_factor,speed.lenmod2_factor);
-#endif
 }  //  end of SetSpeed
 
 
@@ -802,7 +784,6 @@ if(p->type != phVOWEL)
 					if(next->ph->mnemonic == ('/'*256+'r'))
 					{
 						next->synthflags &= ~SFLAG_SEQCONTINUE;
-//						min_drop = 15;
 					}
 				}
 			}

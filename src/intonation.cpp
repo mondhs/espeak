@@ -625,9 +625,6 @@ static int calc_pitch_segment(int ix, int end_ix, TONE_HEAD *th, TONE_NUCLEUS *t
 		SYLLABLE *syl = &syllable_tab[ix];
 		int stress = syl->stress;
 
-//		if(stress == PRIMARY_MARKED)
-//			initial = 1;    // reset the intonation pattern
-
 		if(initial || (stress >= min_stress))
 		{
 			// a primary stress
@@ -773,11 +770,6 @@ static int calc_pitches2(int start, int end,  int tune_number)
 	/* tonic syllable */
 	/******************/
 	
-//	if(tn->flags & T_EMPH)
-//	{
-//		syllable_tab[ix].flags |= SYL_EMPHASIS;
-//	}
-
 	if(number_tail == 0)
 	{
 		tone_pitch_env = tune->nucleus0_env;
@@ -836,7 +828,6 @@ static int calc_pitches(int control, int start, int end,  int tune_number)
 		tone_posn = tone_posn2;  // put tone on the penultimate stressed word 
 	}
 	ix = calc_pitch_segment(ix,tone_posn, th, tn, PRIMARY, continuing);
-// ix = SetBodyIntonation(&tunes[0], ix, tone_posn, 0);
 
 	if(no_tonic)
 		return(0);
