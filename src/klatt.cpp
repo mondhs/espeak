@@ -44,11 +44,7 @@ static int nsamples;
 static int sample_count;
 
 
-#ifdef _MSC_VER
-#define getrandom(min,max) ((rand()%(int)(((max)+1)-(min)))+(min))
-#else
 #define getrandom(min,max) ((rand()%(long)(((max)+1)-(min)))+(min))
-#endif
 
 
 /* function prototypes for functions private to this file */
