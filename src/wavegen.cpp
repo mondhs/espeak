@@ -486,11 +486,6 @@ int PeaksToHarmspect(wavegen_peaks_t *peaks, int pitch, int *htab, int control)
 	int pk;
 	int ix;
 
-#ifdef SPECT_EDITOR
-	if(harm_sqrt_n > 0)
-		return(HarmToHarmspect(pitch,htab));
-#endif
-
 	// initialise as much of *out as we will need
 	if(wvoice == NULL)
 		return(1);
@@ -652,14 +647,6 @@ static void AdvanceParameters()
 			peaks[ix].height = 0;
 	}
 
-#ifdef SPECT_EDITOR
-	if(harm_sqrt_n != 0)
-	{
-		// We are generating from a harmonic spectrum at a given pitch, not from formant peaks
-		for(ix=0; ix<harm_sqrt_n; ix++)
-			harm_sqrt[ix] += harm_sqrt_inc[ix];
-	}
-#endif
 }  //  end of AdvanceParameters
 
 
