@@ -667,7 +667,6 @@ static void AdvanceParameters()
 }  //  end of AdvanceParameters
 
 
-#ifndef PLATFORM_RISCOS
 static double resonator(RESONATOR *r, double input)
 {//================================================
 	double x;
@@ -708,12 +707,10 @@ static void setresonator(RESONATOR *rp, int freq, int bwidth, int init)
 	// a = 1.0 - b - c
 	rp->a = 1.0 - rp->b - rp->c;
 }  // end if setresonator
-#endif
 
 
 void InitBreath(void)
 {//==================
-#ifndef PLATFORM_RISCOS
 	minus_pi_t = -PI / samplerate;
 	two_pi_t = -2.0 * minus_pi_t;
 
@@ -721,14 +718,12 @@ void InitBreath(void)
 	{
 		setresonator(&rbreath[ix],2000,200,1);
 	}
-#endif
 }  // end of InitBreath
 
 
 
 static void SetBreath()
 {//====================
-#ifndef PLATFORM_RISCOS
 	if(wvoice->breath[0] == 0)
 		return;
 
@@ -741,14 +736,12 @@ static void SetBreath()
 			setresonator(&rbreath[pk], peaks[pk].freq >> 16, wvoice->breathw[pk],0);
 		}
 	}
-#endif
 }  // end of SetBreath
 
 
 static int ApplyBreath(void)
 {//=========================
 	int value = 0;
-#ifndef PLATFORM_RISCOS
 	int amp;
 
 	// use two random numbers, for alternate formants
@@ -762,7 +755,6 @@ static int ApplyBreath(void)
 			value += int(resonator(&rbreath[ix],noise) * amp);
 		}
 	}
-#endif
 	return (value);
 }
 
@@ -955,12 +947,10 @@ int Wavegen()
 			total = (total >> 6) * voicing;
 		}
 
-#ifndef PLATFORM_RISCOS
 		if(wvoice->breath[0])
 		{
 			total +=  ApplyBreath();
 		}
-#endif
 
 		// mix with sampled wave if required
 		int z2 = 0;

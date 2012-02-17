@@ -31,9 +31,7 @@
 #include "speech.h"
 
 #include <sys/stat.h>
-#ifndef PLATFORM_WINDOWS
 #include <unistd.h>
-#endif
 
 #include "speak_lib.h"
 #include "phoneme.h"
@@ -100,35 +98,6 @@ void Free(void *ptr)
 
 static void init_path(const char *path)
 {//====================================
-#ifdef PLATFORM_WINDOWS
-	HKEY RegKey;
-	unsigned long size;
-	unsigned long var_type;
-	char *env;
-	unsigned char buf[sizeof(path_home)-13];
-
-	if(path != NULL)
-	{
-		sprintf(path_home,"%s/espeak-data",path);
-		return;
-	}
-
-	if((env = getenv("ESPEAK_DATA_PATH")) != NULL)
-	{
-		sprintf(path_home,"%s/espeak-data",env);
-		if(GetFileLength(path_home) == -2)
-			return;   // an espeak-data directory exists 
-	}
-
-	buf[0] = 0;
-	RegOpenKeyExA(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Speech\\Voices\\Tokens\\eSpeak", 0, KEY_READ, &RegKey);
-	size = sizeof(buf);
-	var_type = REG_SZ;
-	RegQueryValueExA(RegKey, "path", 0, &var_type, buf, &size);
-
-	sprintf(path_home,"%s\\espeak-data",buf);
-
-#else
 	char *env;
 
 	if(path != NULL)
@@ -150,7 +119,6 @@ static void init_path(const char *path)
 	{
 		strcpy(path_home,PATH_ESPEAK_DATA);
 	}
-#endif
 }
 
 static int initialise(int control)
@@ -426,15 +394,11 @@ ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output_type, int buf_length
 	// It seems that the wctype functions don't work until the locale has been set
 	// to something other than the default "C".  Then, not only Latin1 but also the
 	// other characters give the correct results with iswalpha() etc.
-#ifdef PLATFORM_RISCOS
-	setlocale(LC_CTYPE,"ISO8859-1");
-#else
 	if(setlocale(LC_CTYPE,"en_US.UTF-8") == NULL)
 	{
 		if(setlocale(LC_CTYPE,"UTF-8") == NULL)
 			setlocale(LC_CTYPE,"");
 	}
-#endif
 	
 	init_path(path);
 	initialise(options);

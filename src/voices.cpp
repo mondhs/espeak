@@ -26,15 +26,7 @@
 #include "stdlib.h"
 #include "speech.h"
 
-#ifdef PLATFORM_WINDOWS
-#include "windows.h"
-#else
-#ifdef PLATFORM_RISCOS
-#include "kernel.h"
-#else
 #include "dirent.h"
-#endif
-#endif
 
 #include "speak_lib.h"
 #include "phoneme.h"
@@ -265,20 +257,6 @@ static espeak_VOICE *ReadVoiceFile(FILE *f_in, const char *fname, const char*lea
 	int n_languages = 0;
 	int n_variants = 3;    // default, number of variants of this voice before using another voice
 
-#ifdef PLATFORM_WINDOWS
-	char fname_buf[sizeof(path_home)+15];
-	if(memcmp(leafname,"mb-",3) == 0)
-	{
-		// check whether the mbrola speech data is present for this voice
-		memcpy(vname,&leafname[3],3);
-		vname[3] = 0;
-		sprintf(fname_buf,"%s/mbrola/%s",path_home,vname);
-
-		if(GetFileLength(fname_buf) <= 0)
-			return(0);
-	}
-#endif
-
 	vname[0] = 0;
 	vgender[0] = 0;
 	int age = 0;
@@ -388,11 +366,7 @@ void VoiceReset(int tone_only)
 	speed.fast_settings[1] = 800;
 	speed.fast_settings[2] = 175;
 
-#ifdef PLATFORM_RISCOS
-	voice->roughness = 1;
-#else
 	voice->roughness = 2;
-#endif
 
 	InitBreath();
 	for(int pk=0; pk<N_PEAKS; pk++)
@@ -1483,91 +1457,6 @@ static void GetVoices(const char *path)
 	FILE *f_voice;
 	char fname[sizeof(path_home)+100];
 
-#ifdef PLATFORM_RISCOS
-	char buf[80];
-	char directory2[sizeof(path_home)+100];
-
-	_kernel_swi_regs regs;
-	regs.r[0] = 10;
-	regs.r[1] = (int)path;
-	regs.r[2] = (int)buf;
-	regs.r[3] = 1;
-	regs.r[4] = 0;
-	regs.r[5] = sizeof(buf);
-	regs.r[6] = 0;
-
-	while(regs.r[3] > 0)
-	{
-		_kernel_oserror *error = _kernel_swi(0x0c+0x20000,&regs,&regs);      /* OS_GBPB 10, read directory entries */
-		if((error != NULL) || (regs.r[3] == 0))
-		{
-			break;
-		}
-		int *type = (int *)(&buf[16]);
-		int len = strlen(&buf[20]);
-		sprintf(fname,"%s.%s",path,&buf[20]);
-
-		if(*type == 2)
-		{
-			// a sub-directory
-			GetVoices(fname);
-		}
-		else
-		{
-			// a regular line, add it to the voices list	
-			if((f_voice = fopen(fname,"r")) == NULL)
-				continue;
-		
-			// pass voice file name within the voices directory
-			espeak_VOICE *voice_data = ReadVoiceFile(f_voice, fname+len_path_voices, &buf[20]);
-			fclose(f_voice);
-
-			if(voice_data != NULL)
-			{
-				voices_list[n_voices_list++] = voice_data;
-			}
-		}
-	}
-#else
-#ifdef PLATFORM_WINDOWS
-   WIN32_FIND_DATAA FindFileData;
-
-#undef UNICODE         // we need FindFirstFileA() which takes an 8-bit c-string
-	sprintf(fname,"%s\\*",path);
-	HANDLE hFind = FindFirstFileA(fname, &FindFileData);
-	if(hFind == INVALID_HANDLE_VALUE)
-		return;
-
-	do {
-		sprintf(fname,"%s%c%s",path,PATHSEP,FindFileData.cFileName);
-
-		int ftype = GetFileLength(fname);
-
-		if((ftype == -2) && (FindFileData.cFileName[0] != '.'))
-		{
-			// a sub-sirectory
-			GetVoices(fname);
-		}
-		else
-		if(ftype > 0)
-		{
-			// a regular line, add it to the voices list	
-			if((f_voice = fopen(fname,"r")) == NULL)
-				continue;
-		
-			// pass voice file name within the voices directory
-			espeak_VOICE *voice_data = ReadVoiceFile(f_voice, fname+len_path_voices, FindFileData.cFileName);
-			fclose(f_voice);
-
-			if(voice_data != NULL)
-			{
-				voices_list[n_voices_list++] = voice_data;
-			}
-		}
-	} while(FindNextFileA(hFind, &FindFileData) != 0);
-	FindClose(hFind);
-
-#else
 	DIR *dir;
 	struct dirent *ent;
 
@@ -1606,8 +1495,6 @@ static void GetVoices(const char *path)
 		}
 	}
 	closedir(dir);
-#endif
-#endif
 }   // end of GetVoices
 
 
@@ -1695,7 +1582,6 @@ void FreeVoiceList()
 #pragma GCC visibility push(default)
 ESPEAK_API const espeak_VOICE **espeak_ListVoices(espeak_VOICE *voice_spec)
 {//========================================================================
-#ifndef PLATFORM_RISCOS
 	espeak_VOICE *v;
 	static espeak_VOICE *voices[N_VOICES_LIST];
 	char path_voices[sizeof(path_home)+12];
@@ -1733,8 +1619,6 @@ ESPEAK_API const espeak_VOICE **espeak_ListVoices(espeak_VOICE *voice_spec)
 		voices[j] = NULL;
 	}
 	return((const espeak_VOICE **)voices);
-#endif
-	return((const espeak_VOICE **)voices_list);
 }  //  end of espeak_ListVoices
 #pragma GCC visibility pop
 

@@ -39,69 +39,7 @@ extern int Read4Bytes(FILE *f);
 extern void SetPitch2(voice_t *voice, int pitch1, int pitch2, int *pitch_base, int *pitch_range);
 extern unsigned char *outbuf;
 
-#ifndef PLATFORM_WINDOWS
-
 #include "mbrowrap.h"
-
-#else
-#include <windows.h>
-typedef void (WINAPI *PROCVV)(void);
-typedef void (WINAPI *PROCVI)(int);
-typedef void (WINAPI *PROCVF)(float);
-typedef int (WINAPI *PROCIV)();
-typedef int (WINAPI *PROCIC) (char *);
-typedef int (WINAPI *PROCISI)(short *,int);
-typedef char* (WINAPI *PROCVCI)(char *,int);
-
-PROCIC		init_MBR;
-PROCIC		write_MBR;
-PROCIV		flush_MBR;
-PROCISI		read_MBR;
-PROCVV		close_MBR;
-PROCVV		reset_MBR;
-PROCIV		lastError_MBR;
-PROCVCI		lastErrorStr_MBR;
-PROCVI		setNoError_MBR;
-PROCIV		getFreq_MBR;
-PROCVF		setVolumeRatio_MBR;
-
-
-
-HINSTANCE	hinstDllMBR = NULL;
-
-
-BOOL load_MBR()
-{
-	if(hinstDllMBR != NULL)
-		return TRUE;   // already loaded 
-
-	if ((hinstDllMBR=LoadLibraryA("mbrola.dll")) == 0)
-		return FALSE;
-	init_MBR			=(PROCIC) GetProcAddress(hinstDllMBR,"init_MBR");
-	write_MBR			=(PROCIC) GetProcAddress(hinstDllMBR,"write_MBR");
-	flush_MBR			=(PROCIV) GetProcAddress(hinstDllMBR,"flush_MBR");
-	read_MBR			=(PROCISI) GetProcAddress(hinstDllMBR,"read_MBR");
-	close_MBR			=(PROCVV) GetProcAddress(hinstDllMBR,"close_MBR");
-	reset_MBR			=(PROCVV) GetProcAddress(hinstDllMBR,"reset_MBR");
-	lastError_MBR		=(PROCIV) GetProcAddress(hinstDllMBR,"lastError_MBR");
-	lastErrorStr_MBR	=(PROCVCI) GetProcAddress(hinstDllMBR,"lastErrorStr_MBR");
-	setNoError_MBR		=(PROCVI) GetProcAddress(hinstDllMBR,"setNoError_MBR");
-	setVolumeRatio_MBR	=(PROCVF) GetProcAddress(hinstDllMBR,"setVolumeRatio_MBR");
-	return TRUE;
-}
-
-
-void unload_MBR()
-{
-	if (hinstDllMBR)
-	{
-		FreeLibrary (hinstDllMBR);
-		hinstDllMBR=NULL;
-	}
-}
-
-#endif   // windows
-
 
 static MBROLA_TAB *mbrola_tab = NULL;
 static int mbrola_control = 0;
@@ -125,7 +63,6 @@ espeak_ERROR LoadMbrolaTable(const char *mbrola_voice, const char *phtrans, int 
 	}
 
 	sprintf(path,"%s/mbrola/%s",path_home,mbrola_voice);
-#ifdef PLATFORM_POSIX
 	// if not found, then also look in
 	//   usr/share/mbrola/xx, /usr/share/mbrola/xx/xx, /usr/share/mbrola/voices/xx
 	if(GetFileLength(path) <= 0)
@@ -143,14 +80,6 @@ espeak_ERROR LoadMbrolaTable(const char *mbrola_voice, const char *phtrans, int 
 		}
 	}
 	close_MBR();	
-#endif
-#ifdef PLATFORM_WINDOWS
-	if(load_MBR() == FALSE)     // load mbrola.dll
-	{
-		fprintf(stderr, "Can't load mbrola.dll\n");
-		return(EE_INTERNAL_ERROR);
-	} 
-#endif
 
 	if(init_MBR(path) != 0)      // initialise the required mbrola voice
 		return(EE_NOT_FOUND);

@@ -29,13 +29,6 @@
 #define ARCH_BIG
 #endif
 
-#ifdef __QNX__
-#define NEED_GETOPT
-#define NO_VARIADIC_MACROS
-#endif
-
-
-#define PLATFORM_POSIX
 #define PATHSEP  '/'
 #define USE_NANOSLEEP
 #define __cdecl 
@@ -63,11 +56,7 @@ typedef struct {
 int LookupMnem(MNEM_TAB *table, const char *string);
 
 
-#ifdef PLATFORM_WINDOWS
-#define N_PATH_HOME  220
-#else
 #define N_PATH_HOME  150
-#endif
 
 extern char path_home[N_PATH_HOME];    // this is the espeak-data directory
 

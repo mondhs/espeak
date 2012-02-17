@@ -32,9 +32,7 @@
 #include "voice.h"
 #include "translate.h"
 
-#ifdef PLATFORM_POSIX
 #include <unistd.h>
-#endif
 
 #include <locale.h>
 #define N_XML_BUF   256
@@ -714,7 +712,6 @@ static int LoadSoundFile(const char *fname, int index)
 	}
 
 	FILE *f = NULL;
-#ifdef PLATFORM_POSIX
 	if((f = fopen(fname,"rb")) != NULL)
 	{
 		int fd_temp;
@@ -749,7 +746,6 @@ static int LoadSoundFile(const char *fname, int index)
 			}
 		}
 	}
-#endif
 
 	if(f == NULL)
 	{
