@@ -355,14 +355,17 @@ ESPEAK_API espeak_ERROR espeak_Char(wchar_t character)
 #pragma GCC visibility pop
 
 
-void sync_espeak_SetPunctuationList(const wchar_t *punctlist)
+#pragma GCC visibility push(default)
+ESPEAK_API espeak_ERROR espeak_SetPunctuationList(const wchar_t *punctlist)
 {//==========================================================
 	// Set the list of punctuation which are spoken for "some".
 	my_user_data = NULL;
 	
 	wcsncpy(option_punctlist, punctlist, N_PUNCTLIST);
 	option_punctlist[N_PUNCTLIST-1] = 0;
+	return(EE_OK);
 }  //  end of sync_espeak_SetPunctuationList
+#pragma GCC visibility pop
 
 
 
@@ -453,17 +456,6 @@ ESPEAK_API int espeak_GetParameter(espeak_PARAMETER parameter, int current)
 		return(param_defaults[parameter]);
 	}
 }  //  end of espeak_GetParameter
-#pragma GCC visibility pop
-
-
-#pragma GCC visibility push(default)
-ESPEAK_API espeak_ERROR espeak_SetPunctuationList(const wchar_t *punctlist)
-{//================================================================
-  // Set the list of punctuation which are spoken for "some".
-
-	sync_espeak_SetPunctuationList(punctlist);
-	return(EE_OK);
-}  //  end of espeak_SetPunctuationList
 #pragma GCC visibility pop
 
 
