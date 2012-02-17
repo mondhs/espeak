@@ -26,7 +26,8 @@
 #include "stdlib.h"
 #include "speech.h"
 
-#include "dirent.h"
+#include <byteswap.h>
+#include <dirent.h>
 
 #include "speak_lib.h"
 #include "phoneme.h"

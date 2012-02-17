@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <wctype.h>
 
+#include <byteswap.h>
+
 #include "speak_lib.h"
 #include "speech.h"
 #include "phoneme.h"

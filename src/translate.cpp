@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <byteswap.h>
+
 #include <wctype.h>
 #include <wchar.h>
 

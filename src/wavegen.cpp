@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-
+#include <byteswap.h>
 
 #include "speak_lib.h"
 #include "speech.h"

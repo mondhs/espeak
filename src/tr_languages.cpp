@@ -24,6 +24,8 @@
 #include <string.h>
 #include <locale.h>
 
+#include <byteswap.h>
+
 #include <wctype.h>
 
 #include "speak_lib.h"

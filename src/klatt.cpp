@@ -29,6 +29,8 @@
 #include <math.h>
 #include <string.h>
 
+#include <byteswap.h>
+
 #include "speak_lib.h"
 #include "speech.h"
 #include "klatt.h"

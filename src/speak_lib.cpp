@@ -30,6 +30,7 @@
 
 #include "speech.h"
 
+#include <byteswap.h>
 #include <sys/stat.h>
 #include <unistd.h>
 

@@ -146,9 +146,9 @@ static void InitGroups(Translator *tr)
 			pw = (unsigned int *)(tr->langopts.replace_chars);
 			while(*pw != 0)
 			{
-				*pw = byteswap_32(*pw);
+				*pw = Reverse4Bytes(*pw);
 				pw++;
-				*pw = byteswap_32(*pw);
+				*pw = Reverse4Bytes(*pw);
 				pw++;
 			}
 #endif
