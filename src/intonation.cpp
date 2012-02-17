@@ -744,68 +744,59 @@ static void SetPitchGradient(int start_ix, int end_ix, int start_pitch, int end_
 
 
 
-static int calc_pitches2(int start, int end,  int tune_number)
-//============================================================
-// Calculate pitch values for the vowels in this tone group
-{
-	TUNE *tune = &tunes[tune_number];
-	int ix = start;
-
-	/* vowels before the first primary stress */
-	/******************************************/
-
-	SetPitchGradient(ix, ix+number_pre, tune->prehead_start, tune->prehead_end);
-	ix += number_pre;
-
-	/* body of tonic segment */
-	/*************************/
-
-	if(option_tone_flags & OPTION_EMPHASIZE_PENULTIMATE)
-	{
-		tone_posn = tone_posn2;  // put tone on the penultimate stressed word 
-	}
-	ix = SetHeadIntonation(tune, ix, tone_posn, 0);
-
-	if(no_tonic)
-		return(0);
-
-	/* tonic syllable */
-	/******************/
-	
-	if(number_tail == 0)
-	{
-		tone_pitch_env = tune->nucleus0_env;
-		int drop = tune->nucleus0_max - tune->nucleus0_min;
-		set_pitch(&syllable_tab[ix++],tune->nucleus0_min, drop);
-	}
-	else
-	{
-		tone_pitch_env = tune->nucleus1_env;
-		int drop = tune->nucleus1_max - tune->nucleus1_min;
-		set_pitch(&syllable_tab[ix++],tune->nucleus1_min, drop);
-	}
-
-	syllable_tab[tone_posn].env = tone_pitch_env;
-	if(syllable_tab[tone_posn].stress == PRIMARY)
-		syllable_tab[tone_posn].stress = PRIMARY_STRESSED;
-
-	/* tail, after the tonic syllable */
-	/**********************************/
-	
-	SetPitchGradient(ix, end, tune->tail_start, tune->tail_end);
-
-	return(tone_pitch_env);
-}   /* end of calc_pitches2 */
-
-
-
 static int calc_pitches(int control, int start, int end,  int tune_number)
-//========================================================================
+//============================================================
 // Calculate pitch values for the vowels in this tone group
 {
 	if(control == 0)
 	{
-		return(calc_pitches2(start, end, tune_number));
+		TUNE *tune = &tunes[tune_number];
+		int ix = start;
+
+		/* vowels before the first primary stress */
+		/******************************************/
+
+		SetPitchGradient(ix, ix+number_pre, tune->prehead_start, tune->prehead_end);
+		ix += number_pre;
+
+		/* body of tonic segment */
+		/*************************/
+
+		if(option_tone_flags & OPTION_EMPHASIZE_PENULTIMATE)
+		{
+			tone_posn = tone_posn2;  // put tone on the penultimate stressed word 
+		}
+		ix = SetHeadIntonation(tune, ix, tone_posn, 0);
+
+		if(no_tonic)
+			return(0);
+
+		/* tonic syllable */
+		/******************/
+
+		if(number_tail == 0)
+		{
+			tone_pitch_env = tune->nucleus0_env;
+			int drop = tune->nucleus0_max - tune->nucleus0_min;
+			set_pitch(&syllable_tab[ix++],tune->nucleus0_min, drop);
+		}
+		else
+		{
+			tone_pitch_env = tune->nucleus1_env;
+			int drop = tune->nucleus1_max - tune->nucleus1_min;
+			set_pitch(&syllable_tab[ix++],tune->nucleus1_min, drop);
+		}
+
+		syllable_tab[tone_posn].env = tone_pitch_env;
+		if(syllable_tab[tone_posn].stress == PRIMARY)
+			syllable_tab[tone_posn].stress = PRIMARY_STRESSED;
+
+		/* tail, after the tonic syllable */
+		/**********************************/
+
+		SetPitchGradient(ix, end, tune->tail_start, tune->tail_end);
+
+		return(tone_pitch_env);
 	}
 
 	int continuing = 0;
