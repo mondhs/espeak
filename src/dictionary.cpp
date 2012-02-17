@@ -86,10 +86,10 @@ void strncpy0(char *to,const char *from, int size)
 }
 
 
+#ifdef ARCH_BIG
 int Reverse4Bytes(int word)
 {//========================
 	// reverse the order of bytes from little-endian to big-endian
-#ifdef ARCH_BIG
 	int word2 = 0;
 
 	for(int ix=0; ix<=24; ix+=8)
@@ -98,10 +98,8 @@ int Reverse4Bytes(int word)
 		word2 |= (word >> ix) & 0xff;
 	}
 	return(word2);
-#else
-	return(word);
-#endif
 }
+#endif
 
 
 int LookupMnem(MNEM_TAB *table, const char *string)
