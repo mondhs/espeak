@@ -1699,16 +1699,8 @@ int Generate(PHONEME_LIST *phoneme_list, int *n_ph, int resume)
 
 
 
-
 static int timer_on = 0;
 static int paused = 0;
-
-
-int SynthStatus()
-{//==============
-	return(timer_on | paused);
-}
-
 
 
 int SpeakNextClause(FILE *f_in, const void *text_in, int control)

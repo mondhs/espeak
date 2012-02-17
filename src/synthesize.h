@@ -472,7 +472,6 @@ void WcmdqStop();
 int  WcmdqUsed();
 void WcmdqInc();
 void WavegenInit(int rate, int wavemult_fact);
-float polint(float xa[],float ya[],int n,float x);
 int WavegenFill();
 void MarkerEvent(int type, unsigned int char_position, int value, int value2, unsigned char *out_ptr);
 
@@ -498,17 +497,13 @@ extern int mbrola_delay;
 extern char mbrola_name[20];
 
 // from synthdata file
-unsigned int LookupSound(PHONEME_TAB *ph1, PHONEME_TAB *ph2, int which, int *match_level, int control);
 frameref_t *LookupSpect(PHONEME_TAB *this_ph, int which, FMT_PARAMS *fmt_params,  int *n_frames, PHONEME_LIST *plist);
 
-unsigned char *LookupEnvelope(int ix);
 int LoadPhData();
 
 void SynthesizeInit(void);
 int  Generate(PHONEME_LIST *phoneme_list, int *n_ph, int resume);
-void MakeWave2(PHONEME_LIST *p, int n_ph);
 int  SpeakNextClause(FILE *f_text, const void *text_in, int control);
-int  SynthStatus(void);
 void SetSpeed(int control);
 void SetEmbedded(int control, int value);
 void SelectPhonemeTable(int number);

@@ -60,13 +60,6 @@ char path_home[N_PATH_HOME];   // this is the espeak-data directory
 extern int saved_parameters[N_SPEECH_PARAM]; //Parameters saved on synthesis start
 
 
-void WVoiceChanged(voice_t *wvoice)
-{//=================================
-// Voice change in wavegen
-	voice_samplerate = wvoice->samplerate;
-}
-
-
 int GetFileLength(const char *filename)
 {//====================================
 	struct stat statbuf;
