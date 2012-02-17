@@ -1705,15 +1705,7 @@ static int paused = 0;
 
 int SynthOnTimer()
 {//===============
-	if(!timer_on)
-	{
-		return(WavegenCloseSound());
-	}
-
 	do {
-		if(WcmdqUsed() > 0)
-			WavegenOpenSound();
-
 		if(Generate(phoneme_list,&n_phoneme_list,1)==0)
 		{
 			SpeakNextClause(NULL,NULL,1);
@@ -1784,7 +1776,6 @@ int SpeakNextClause(FILE *f_in, const void *text_in, int control)
 		}
 		else
 		{
-			WavegenOpenSound();
 			timer_on = 1;
 			paused = 0;
 			Generate(phoneme_list,&n_phoneme_list,0);   // re-start from beginning of clause
@@ -1866,7 +1857,6 @@ int SpeakNextClause(FILE *f_in, const void *text_in, int control)
 	}
 
 	Generate(phoneme_list,&n_phoneme_list,0);
-	WavegenOpenSound();
 
 	if(voice_change != NULL)
 	{
