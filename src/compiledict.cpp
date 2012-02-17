@@ -731,19 +731,6 @@ static void compile_dictlist_start(void)
 static void compile_dictlist_end(FILE *f_out)
 {//==========================================
 // Write out the compiled dictionary list
-	if(f_log != NULL)
-	{
-#ifdef OUTPUT_FORMAT
-		for(int hash=0; hash<N_HASH_DICT; hash++)
-		{
-			fprintf(f_log,"%8d",hash_counts[hash]);
-			if((hash & 7) == 7)
-				fputc('\n',f_log);
-		}
-		fflush(f_log);
-#endif
-	}
-	
 	for(int hash=0; hash<N_HASH_DICT; hash++)
 	{
 		char *p = hash_chains[hash];
@@ -1289,116 +1276,12 @@ static int __cdecl rgroup_sorter(RGROUP *a, RGROUP *b)
 }
 
 
-#ifdef OUTPUT_FORMAT
-static void print_rule_group(FILE *f_out, int n_rules, char **rules, char *name)
-{//=============================================================================
-	unsigned char c;
-	char buf[80];
-	char suffix[12];
-
-	static unsigned char symbols[] = {'@','&','%','+','#','$','D','Z','A','B','C','F'};
-
-	fprintf(f_out,"\n$group %s\n",name);
-
-	for(int rule=0; rule<n_rules; rule++)
-	{
-		char *p = rules[rule];
-		int len1 = strlen(p) + 1;
-		p = &p[len1];
-		int len2 = strlen(p);
-		
-		rule_match[0]=0;
-		rule_pre[0]=0;
-		rule_post[0]=0;
-		int condition = 0;
-
-		char *pout = rule_match;
-		for(int ix=0; ix<len2; ix++)
-		{
-			switch(c = p[ix])
-			{
-			case RULE_PRE:
-				*pout = 0;
-				pout = rule_pre;
-				break;
-			case RULE_POST:
-				*pout = 0;
-				pout = rule_post;
-				break;
-			case RULE_CONDITION:
-				condition = p[++ix];
-				break;
-			case RULE_ENDING:
-				sprintf(suffix,"$%d[%x]",(p[ix+2]),p[ix+1] & 0x7f);
-				ix += 2;
-				strcpy(pout,suffix);
-				pout += strlen(suffix);
-				break;
-			default:
-				if(c <= RULE_LETTER7)
-					c = symbols[c-RULE_SYLLABLE];
-				if(c == ' ')
-					c = '_';
-				*pout++ = c;
-				break;
-			}
-		}
-		*pout = 0;
-		
-		int spaces = 12;
-		if(condition > 0)
-		{
-			sprintf(buf,"?%d ",condition);
-			spaces -= strlen(buf);
-			fprintf(f_out,"%s",buf);
-		}
-
-		if(rule_pre[0] != 0)
-		{
-			p = buf;
-			for(int ix=strlen(rule_pre)-1;ix>=0;ix--)
-				*p++ = rule_pre[ix];
-			sprintf(p,") ");
-			spaces -= strlen(buf);
-			for(int ix=0; ix<spaces; ix++)
-			   fputc(' ',f_out);
-			fprintf(f_out,"%s",buf);
-			spaces = 0;
-		}
-		
-		for(int ix=0; ix<spaces; ix++)
-			fputc(' ',f_out);
-		
-		spaces = 14;
-		sprintf(buf," %s ",rule_match);
-		if(rule_post[0] != 0)
-		{
-			p = &buf[strlen(buf)];
-			sprintf(p,"(%s ",rule_post);
-		}
-		fprintf(f_out,"%s",buf);
-		spaces -= strlen(buf);
-
-		for(int ix=0; ix<spaces; ix++)
-			fputc(' ',f_out);
-		DecodePhonemes(rules[rule],buf);
-		fprintf(f_out,"%s\n",buf);   // phonemes
-	}
-}
-#endif
-
-
-//#define LIST_GROUP_INFO
 static void output_rule_group(FILE *f_out, int n_rules, char **rules, char *name)
 {//==============================================================================
 	short nextchar_count[256];
 	memset(nextchar_count,0,sizeof(nextchar_count));
 
 	int len_name = strlen(name);
-
-#ifdef OUTPUT_FORMAT
-	print_rule_group(f_log,n_rules,rules,name);
-#endif
 
 	// sort the rules in this group by their phoneme string
 	const char *common = "";
