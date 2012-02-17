@@ -33,8 +33,6 @@
 
 int option_mbrola_phonemes;
 
-#ifdef INCLUDE_MBROLA
-
 extern int Read4Bytes(FILE *f);
 extern void SetPitch2(voice_t *voice, int pitch1, int pitch2, int *pitch_base, int *pitch_range);
 extern unsigned char *outbuf;
@@ -596,29 +594,3 @@ void MbrolaReset(void)
 
 	reset_MBR();
 }
-
-#else   // INCLUDE_MBROLA
-
-// mbrola interface is not compiled, provide dummy functions.
-
-espeak_ERROR LoadMbrolaTable(const char *mbrola_voice, const char *phtrans, int srate)
-{
-	return(EE_INTERNAL_ERROR); 
-}
-
-int MbrolaGenerate(PHONEME_LIST *phoneme_list, int *n_ph, int resume)
-{
-	return(0);
-}
-
-int MbrolaFill(int length, int resume, int amplitude)
-{
-	return(0);
-}
-
-void MbrolaReset(void)
-{
-}
-
-
-#endif  // INCLUDE_MBROLA

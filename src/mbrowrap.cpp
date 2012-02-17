@@ -16,7 +16,6 @@
  */
 
 #include "speech.h"
-#ifdef INCLUDE_MBROLA
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -600,5 +599,3 @@ void resetError_MBR(void)
 {
 	mbr_errorbuf[0] = 0;
 }
-
-#endif  // INCLUDE_MBROLA
