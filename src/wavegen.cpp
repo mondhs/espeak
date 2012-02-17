@@ -34,17 +34,6 @@
 #include "voice.h"
 #include "sonic.h"
 
-#ifdef USE_PORTAUDIO
-#include "portaudio.h"
-#undef USE_PORTAUDIO
-// determine portaudio version by looking for a #define which is not in V18
-#ifdef paNeverDropInput
-#define USE_PORTAUDIO   19
-#else
-#define USE_PORTAUDIO   18
-#endif
-#endif
-
 #define N_SINTAB  2048
 #include "sintab.h"
 
@@ -138,13 +127,6 @@ static int embedded_max[N_EMBEDDED_VALUES]     = {0,0x7fff,750,300,99,99,99, 0,7
 int current_source_index=0;
 
 extern FILE *f_wave;
-
-#if (USE_PORTAUDIO == 18)
-static PortAudioStream *pa_stream=NULL;
-#endif
-#if (USE_PORTAUDIO == 19)
-static PaStream *pa_stream=NULL;
-#endif
 
 static sonicStream sonicSpeedupStream = NULL;
 double sonicSpeed = 1.0;
@@ -296,9 +278,6 @@ void WcmdqStop()
 		sonicDestroyStream(sonicSpeedupStream);
 		sonicSpeedupStream = NULL;
 	}
-#ifdef USE_PORTAUDIO
-	Pa_AbortStream(pa_stream);
-#endif
 	if(mbrola_name[0] != 0)
 		MbrolaReset();
 }
@@ -381,285 +360,6 @@ static unsigned char pk_shape2[PEAKSHAPEW+1] = {
 static unsigned char *pk_shape;
 
 
-#ifdef USE_PORTAUDIO
-// PortAudio interface
-
-static int userdata[4];
-static PaError pa_init_err=0;
-static int out_channels=1;
-
-unsigned char *outbuffer = NULL;
-int outbuffer_size = 0;
-
-
-#if USE_PORTAUDIO == 18
-static int WaveCallback(void *inputBuffer, void *outputBuffer,
-		unsigned long framesPerBuffer, PaTimestamp outTime, void *userData )
-#else
-static int WaveCallback(const void *inputBuffer, void *outputBuffer,
-		long unsigned int framesPerBuffer, const PaStreamCallbackTimeInfo *outTime,
-		PaStreamCallbackFlags flags, void *userData )
-#endif
-{
-	int pa_size = framesPerBuffer*2;
-
-	// make a buffer 3x size of the portaudio output
-	int ix = pa_size*3;
-	if(ix > outbuffer_size)
-	{
-		outbuffer = (unsigned char *)realloc(outbuffer, ix);
-		if(outbuffer == NULL)
-		{
-			fprintf(stderr, "espeak: out of memory\n");
-		}
-		outbuffer_size = ix;
-		out_ptr = NULL;
-	}
-	if(out_ptr == NULL)
-	{
-		out_ptr = out_start = outbuffer;
-		out_end = out_start + outbuffer_size;
-	}
-	unsigned char *out_end2 = &outbuffer[pa_size];  // top of data needed for the portaudio buffer
-
-#ifdef LIBRARY
-	event_list_ix = 0;
-#endif
-
-	int result = WavegenFill();
-
-	// copy from the outbut buffer into the portaudio buffer
-	if(result && (out_ptr > out_end2))
-	{
-		result = 0;   // don't end yet, there is more data in the buffer than can fit in portaudio
-	}
-
-	while(out_ptr < out_end2)
-		*out_ptr++ = 0;  // fill with zeros up to the size of the portaudio buffer
-
-	memcpy(outputBuffer, outbuffer, pa_size);
-
-	// move the remaining contents of the start of the output buffer
-	for(unsigned char *p = out_end2; p < out_end; p++)
-	{
-		p[-pa_size] = p[0];
-	}
-	out_ptr -= pa_size;
-
-#ifdef LIBRARY
-	count_samples += framesPerBuffer;
-	if(synth_callback)
-	{
-		// synchronous-playback mode, allow the calling process to abort the speech
-		event_list[event_list_ix].type = espeakEVENT_LIST_TERMINATED; // indicates end of event list
-		event_list[event_list_ix].user_data = 0;
-
-		if(synth_callback(NULL,0,event_list) == 1)
-		{
-			SpeakNextClause(NULL,NULL,2);  // stop speaking
-			result = 1;
-		}
-	}
-#endif
-
-#ifdef ARCH_BIG
-	{
-		// swap the order of bytes in each sound sample in the portaudio buffer
-		unsigned char *out_buf = (unsigned char *)outputBuffer;
-		unsigned char *buf_end = out_buf + framesPerBuffer*2;
-		while(out_buf < buf_end)
-		{
-			int c = out_buf[0];
-			out_buf[0] = out_buf[1];
-			out_buf[1] = c;
-			out_buf += 2;
-		}
-	}
-#endif
-
-	if(out_channels == 2)
-	{
-		// sound output can only do stereo, not mono.  Duplicate each sound sample to
-		// produce 2 channels.
-		unsigned char *out_buf = (unsigned char *)outputBuffer;
-		for(ix=framesPerBuffer-1; ix>=0; ix--)
-		{
-			unsigned char *p = &out_buf[ix*4];
-			p[3] = p[1] = out_buf[ix*2 + 1];
-			p[2] = p[0] = out_buf[ix*2];
-		}
-	}
-
-#if USE_PORTAUDIO == 18
-#ifdef PLATFORM_WINDOWS
-	return(result);
-#endif
-	if(result != 0)
-	{
-		static int end_timer = 0;
-		if(end_timer == 0)
-			end_timer = 4;
-		if(end_timer > 0)
-		{
-			end_timer--;
-			if(end_timer == 0)
-				return(1);
-		}
-	}
-	return(0);
-#else
-	return(result);
-#endif
-
-}  //  end of WaveCallBack
-
-
-#if USE_PORTAUDIO == 19
-/* This is a fixed version of Pa_OpenDefaultStream() for use if the version in portaudio V19
-   is broken */
-
-static PaError Pa_OpenDefaultStream2( PaStream** stream,
-                              int inputChannelCount,
-                              int outputChannelCount,
-                              PaSampleFormat sampleFormat,
-                              double sampleRate,
-                              unsigned long framesPerBuffer,
-                              PaStreamCallback *streamCallback,
-                              void *userData )
-{
-	PaStreamParameters hostApiOutputParameters;
-
-	if(option_device_number >= 0)
-		hostApiOutputParameters.device = option_device_number;
-	else
-		hostApiOutputParameters.device = Pa_GetDefaultOutputDevice();
-
-	if( hostApiOutputParameters.device == paNoDevice )
-		return paDeviceUnavailable; 
-
-	hostApiOutputParameters.channelCount = outputChannelCount;
-	hostApiOutputParameters.sampleFormat = sampleFormat;
-	/* defaultHighOutputLatency is used below instead of
-	   defaultLowOutputLatency because it is more important for the default
-	   stream to work reliably than it is for it to work with the lowest
-	   latency.
-	*/
-	hostApiOutputParameters.suggestedLatency =
-	      Pa_GetDeviceInfo( hostApiOutputParameters.device )->defaultHighOutputLatency;
-	hostApiOutputParameters.hostApiSpecificStreamInfo = NULL;
-
-	return Pa_OpenStream(
-		stream, NULL, &hostApiOutputParameters, sampleRate, framesPerBuffer, paNoFlag, streamCallback, userData );
-}
-#endif
-
-
-int WavegenOpenSound()
-{//===================
-	if(option_waveout || option_quiet)
-	{
-		// writing to WAV file, not to portaudio
-		return(0);
-	}
-
-#if USE_PORTAUDIO == 18
-	PaError active = Pa_StreamActive(pa_stream);
-#else
-	PaError active = Pa_IsStreamActive(pa_stream);
-#endif
-
-	if(active == 1)
-		return(0);
-	if(active < 0)
-	{
-		out_channels = 1;
-
-#if USE_PORTAUDIO == 18
-		PaError err2 = Pa_OpenDefaultStream(&pa_stream,0,1,paInt16,samplerate,512,N_WAV_BUF,WaveCallback,(void *)userdata);
-
-		if(err2 == paInvalidChannelCount)
-		{
-			// failed to open with mono, try stereo
-			out_channels=2;
-			err2 = Pa_OpenDefaultStream(&pa_stream,0,2,paInt16,samplerate,512,N_WAV_BUF,WaveCallback,(void *)userdata);
-		}
-#else
-		PaError err2 = Pa_OpenDefaultStream2(&pa_stream,0,1,paInt16,(double)samplerate,512,WaveCallback,(void *)userdata);
-
-		if(err2 == paInvalidChannelCount)
-		{
-			// failed to open with mono, try stereo
-			out_channels=2;
-			err2 = Pa_OpenDefaultStream(&pa_stream,0,2,paInt16,(double)samplerate,512,WaveCallback,(void *)userdata);
-		}
-#endif
-	}
-	PaError err = Pa_StartStream(pa_stream);
-
-#if USE_PORTAUDIO == 19
-	if(err == paStreamIsNotStopped)
-	{
-		// not sure why we need this, but PA v19 seems to need it
-		err = Pa_StopStream(pa_stream);
-		err = Pa_StartStream(pa_stream);
-	}
-#endif
-
-	if(err != paNoError)
-	{
-		// exit speak if we can't open the sound device - this is OK if speak is being run for each utterance
-		exit(2);
-	}
-
-	return(0);
-}
-
-
-
-int WavegenCloseSound()
-{//====================
-	// check whether speaking has finished, and close the stream
-	if(pa_stream != NULL)
-	{
-#if USE_PORTAUDIO == 18
-		PaError active = Pa_StreamActive(pa_stream);
-#else
-		PaError active = Pa_IsStreamActive(pa_stream);
-#endif
-		if(WcmdqUsed() == 0)   // also check that the queue is empty
-		{
-			if(active == 0)
-			{
-				Pa_CloseStream(pa_stream);
-				pa_stream = NULL;
-				return(1);
-			}
-		}
-		else
-		{
-			WavegenOpenSound();  // still items in the queue, shouldn't be closed
-		}
-	}
-	return(0);
-}
-
-
-int WavegenInitSound()
-{//===================
-	if(option_quiet)
-		return(0);
-
-	// PortAudio sound output library
-	PaError err = Pa_Initialize();
-	pa_init_err = err;
-	if(err != paNoError)
-	{
-		fprintf(stderr,"Failed to initialise the PortAudio sound\n");
-		return(1);
-	}
-	return(0);
-}
-#else
 int WavegenOpenSound()
 {//===================
 	return(0);
@@ -672,7 +372,6 @@ int WavegenInitSound()
 {//===================
 	return(0);
 }
-#endif
 
 
 void WavegenInit(int rate, int wavemult_fact)
