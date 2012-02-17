@@ -238,7 +238,6 @@ unsigned char pitch_adjust_tab[MAX_PITCH_VALUE+1] = {
    242,246,249,252, 254,255 };
 
 
-#ifdef LOG_FRAMES
 static void LogMarker(int type, int value, int value2)
 {//===================================================
 	char buf[20];
@@ -267,7 +266,6 @@ static void LogMarker(int type, int value, int value2)
 		}
 	}
 }
-#endif
 
 void WcmdqStop()
 {//=============
@@ -417,10 +415,8 @@ void WavegenInit(int rate, int wavemult_fact)
 
 	KlattInit();
 
-#ifdef LOG_FRAMES
 remove("log-espeakedit");
 remove("log-klatt");
-#endif
 }  // end of WavegenInit
 
 
@@ -1257,7 +1253,6 @@ void SetPitch(int length, unsigned char *env, int pitch1, int pitch2)
 {//==================================================================
 // length in samples
 
-#ifdef LOG_FRAMES
 if(option_log_frames)
 {
 	f_log=fopen("log-espeakedit","a");
@@ -1268,7 +1263,6 @@ if(option_log_frames)
 		f_log=NULL;
 	}
 }
-#endif
 	if((wdata.pitch_env = env)==NULL)
 		wdata.pitch_env = env_fall;  // default
 
@@ -1295,7 +1289,6 @@ void SetSynth(int length, int modn, frame_t *fr1, frame_t *fr2, voice_t *v)
 	static int glottal_reduce_tab1[4] = {0x30, 0x30, 0x40, 0x50};  // vowel before [?], amp * 1/256
 	static int glottal_reduce_tab2[4] = {0x90, 0xa0, 0xb0, 0xc0};  // vowel after [?], amp * 1/256
 
-#ifdef LOG_FRAMES
 if(option_log_frames)
 {
 	f_log=fopen("log-espeakedit","a");
@@ -1309,7 +1302,6 @@ if(option_log_frames)
 	f_log=NULL;
 	}
 }
-#endif
 
 	harm_sqrt_n = 0;
 	end_wave = 1;
@@ -1501,9 +1493,7 @@ int WavegenFill2()
 		case WCMD_MARKER:
 			marker_type = q[0] >> 8;
 			MarkerEvent(marker_type, q[1],q[2],q[3],out_ptr);
-#ifdef LOG_FRAMES
 			LogMarker(marker_type, q[2], q[3]);
-#endif
 			if(marker_type == 1)  // word marker
 			{
 				current_source_index = q[1] & 0xffffff;

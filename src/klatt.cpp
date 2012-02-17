@@ -206,7 +206,6 @@ static int parwave(klatt_frame_ptr frame)
 
 	flutter(frame);  /* add f0 flutter */
 
-#ifdef LOG_FRAMES
 if(option_log_frames)
 {
 	FILE *f;
@@ -215,7 +214,6 @@ if(option_log_frames)
 	frame->Fhz[1],frame->Bhz[1],frame->Fhz[2],frame->Bhz[2],frame->Fhz[3],frame->Bhz[3],frame->Fhz[4],frame->Bhz[4],frame->Fhz[5],frame->Bhz[5],frame->Fhz[0],frame->TLTdb);
 	fclose(f);
 }
-#endif
 
 	/* MAIN LOOP, for each output sample of current frame: */
 
@@ -1057,7 +1055,6 @@ void SetSynth_Klatt(int length, int modn, frame_t *fr1, frame_t *fr2, voice_t *v
 		}
 	}
 
-#ifdef LOG_FRAMES
 if(option_log_frames)
 {
 	FILE *f_log;
@@ -1079,7 +1076,6 @@ if(option_log_frames)
 		fclose(f_log);
 	}
 }
-#endif
 
 	if(control & 1)
 	{
