@@ -22,10 +22,6 @@
 
 #include <sys/types.h>
 
-#if defined(BYTE_ORDER) && BYTE_ORDER == BIG_ENDIAN
-#define ARCH_BIG
-#endif
-
 #define PATHSEP  '/'
 #define USE_NANOSLEEP
 #define __cdecl 

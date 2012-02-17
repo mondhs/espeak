@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <byteswap.h>
+
 #include <wctype.h>
 #include <wchar.h>
 
@@ -86,22 +88,6 @@ void strncpy0(char *to,const char *from, int size)
 }
 
 
-#ifdef ARCH_BIG
-int Reverse4Bytes(int word)
-{//========================
-	// reverse the order of bytes from little-endian to big-endian
-	int word2 = 0;
-
-	for(int ix=0; ix<=24; ix+=8)
-	{
-		word2 = word2 << 8;
-		word2 |= (word >> ix) & 0xff;
-	}
-	return(word2);
-}
-#endif
-
-
 int LookupMnem(MNEM_TAB *table, const char *string)
 {//================================================
 	while(table->mnem != NULL)
@@ -156,13 +142,13 @@ static void InitGroups(Translator *tr)
 			}
 			p = (char *)(pw+1);
 
-#ifdef ARCH_BIG
+#if defined(BYTE_ORDER) && BYTE_ORDER == BIG_ENDIAN
 			pw = (unsigned int *)(tr->langopts.replace_chars);
 			while(*pw != 0)
 			{
-				*pw = Reverse4Bytes(*pw);
+				*pw = byteswap_32(*pw);
 				pw++;
-				*pw = Reverse4Bytes(*pw);
+				*pw = byteswap_32(*pw);
 				pw++;
 			}
 #endif
