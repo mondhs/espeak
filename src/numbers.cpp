@@ -1528,11 +1528,17 @@ static int LookupNum3(Translator *tr, int value, char *ph_out, int suppress_null
 }  // end of LookupNum3
 
 
-static int TranslateNumber_1(Translator *tr, char *word, char *ph_out, unsigned int *flags, WORD_TAB *wtab, int control)
-{//=====================================================================================================================
+int TranslateNumber(Translator *tr, char *word, char *ph_out, unsigned int *flags, WORD_TAB *wtab, int control)
+{//=============================================================================================================
 //  Number translation with various options
 // the "word" may be up to 4 digits
 // "words" of 3 digits may be preceded by another number "word" for thousands or millions
+
+	if((option_sayas == SAYAS_DIGITS1) || (wtab[0].flags & FLAG_INDIVIDUAL_DIGITS))
+		return(0);  // speak digits individually
+
+	if(tr->langopts.numbers == 0)
+		return(0);
 
 	int ix;
 	unsigned char c;
@@ -1890,17 +1896,3 @@ static int TranslateNumber_1(Translator *tr, char *word, char *ph_out, unsigned 
 		dictionary_skipwords = skipwords;
 	return(1);
 }  // end of TranslateNumber_1
-
-
-
-int TranslateNumber(Translator *tr, char *word1, char *ph_out, unsigned int *flags, WORD_TAB *wtab, int control)
-{//=============================================================================================================
-	if((option_sayas == SAYAS_DIGITS1) || (wtab[0].flags & FLAG_INDIVIDUAL_DIGITS))
-		return(0);  // speak digits individually
-
-	if(tr->langopts.numbers != 0)
-		return(TranslateNumber_1(tr, word1, ph_out, flags, wtab, control));
-
-	return(0);
-}  // end of TranslateNumber
-
