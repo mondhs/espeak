@@ -752,23 +752,6 @@ int IsVowel(Translator *tr, int letter)
 }
 
 
-
-
-static int Unpronouncable2(Translator *tr, char *word)
-{//===================================================
-	char ph_buf[N_WORD_PHONEMES];
-
-	ph_buf[0] = 0;
-	int c = word[-1];
-	word[-1] = ' ';   // ensure there is a space before the "word"
-	int end_flags = TranslateRules(tr, word, ph_buf, sizeof(ph_buf), NULL, FLAG_UNPRON_TEST, NULL);
-	word[-1] = c;
-	if((end_flags == 0) || (end_flags & SUFX_UNPRON))
-		return(1);
-	return(0);
-}
-
-
 int Unpronouncable(Translator *tr, char *word, int posn)
 {//=====================================================
 /* Determines whether a word in 'unpronouncable', i.e. whether it should
@@ -822,7 +805,16 @@ int Unpronouncable(Translator *tr, char *word, int posn)
 	if((vowel_posn > 2) && (tr->langopts.param[LOPT_UNPRONOUNCABLE] == 2))
 	{
 		// Lookup unpronounable rules in *_rules
-		return(Unpronouncable2(tr, word));
+		char ph_buf[N_WORD_PHONEMES];
+
+		ph_buf[0] = 0;
+		int c = word[-1];
+		word[-1] = ' ';   // ensure there is a space before the "word"
+		int end_flags = TranslateRules(tr, word, ph_buf, sizeof(ph_buf), NULL, FLAG_UNPRON_TEST, NULL);
+		word[-1] = c;
+		if((end_flags == 0) || (end_flags & SUFX_UNPRON))
+			return(1);
+		return(0);
 	}
 
 	if(c1 == tr->langopts.param[LOPT_UNPRONOUNCABLE])
