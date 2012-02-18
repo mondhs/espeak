@@ -237,6 +237,7 @@ unsigned char pitch_adjust_tab[MAX_PITCH_VALUE+1] = {
    217,220,223,226,229,232,236,239,
    242,246,249,252, 254,255 };
 
+void SetSynth(int length, int modn, frame_t *fr1, frame_t *fr2, voice_t *v);
 
 static void LogMarker(int type, int value, int value2)
 {//===================================================
@@ -728,9 +729,11 @@ static int ApplyBreath(void)
 }
 
 
+static int Wavegen2(int length, int modulation, int resume, frame_t *fr1, frame_t *fr2)
+{//====================================================================================
+	if(resume==0)
+		SetSynth(length, modulation, fr1, fr2, wvoice);
 
-int Wavegen()
-{//==========
 	int h;
 	int ix;
 	static int maxh, maxh2;
@@ -1359,15 +1362,6 @@ if(option_log_frames)
 		}
 	}
 }  // end of SetSynth
-
-
-static int Wavegen2(int length, int modulation, int resume, frame_t *fr1, frame_t *fr2)
-{//====================================================================================
-	if(resume==0)
-		SetSynth(length, modulation, fr1, fr2, wvoice);
-
-	return(Wavegen());
-}
 
 void Write4Bytes(FILE *f, int value)
 {//=================================
