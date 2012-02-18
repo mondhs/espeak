@@ -59,8 +59,6 @@ static int ignore_text=0;   // set during <sub> ... </sub>  to ignore text which
 static int audio_text=0;    // set during <audio> ... </audio> 
 static int clear_skipping_text = 0;  // next clause should clear the skipping_text flag
 int count_characters = 0;
-static int sayas_mode;
-static int ssml_ignore_l_angle = 0;
 
 // ignore these characters
 static const unsigned short chars_ignore[] = {
@@ -710,11 +708,6 @@ static int AnnouncePunctuation(Translator *tr, int c1, int *c2_ptr, char *output
 		{
 			// end the clause now and pick up the punctuation next time
 			UngetC(c2);
-			if(option_ssml)
-			{
-				if((c1 == '<') || (c1 == '&'))
-					ssml_ignore_l_angle = c1;  // this was &lt; which was converted to <, don't pick it up again as <
-			}
 			ungot_char2 = c1;
 			buf[0] = ' ';
 			buf[1] = 0;
@@ -754,24 +747,6 @@ static int AnnouncePunctuation(Translator *tr, int c1, int *c2_ptr, char *output
 	return(short_pause);
 }  //  end of AnnouncePunctuation
 
-#define SSML_SPEAK     1
-#define SSML_VOICE     2
-#define SSML_PROSODY   3
-#define SSML_SAYAS     4
-#define SSML_MARK      5
-#define SSML_SENTENCE  6
-#define SSML_PARAGRAPH 7
-#define SSML_PHONEME   8
-#define SSML_SUB       9
-#define SSML_STYLE    10
-#define SSML_AUDIO    11
-#define SSML_EMPHASIS 12
-#define SSML_BREAK    13
-#define SSML_IGNORE_TEXT 14
-#define HTML_BREAK    15
-#define HTML_NOSPACE  16    // don't insert a space for this element, so it doesn't break a word
-#define SSML_CLOSE    0x20   // for a closing tag, OR this with the tag type
-
 
 void SetVoiceStack(espeak_VOICE *v, const char *variant_name)
 {//==========================================================
@@ -806,16 +781,6 @@ static void RemoveChar(char *p)
 }  // end of RemoveChar
 
 
-static MNEM_TAB xml_char_mnemonics[] = {
-	{"gt",'>'},
-	{"lt", 0xe000 + '<'},   // private usage area, to avoid confusion with XML tag
-	{"amp", '&'},
-	{"quot", '"'},
-	{"nbsp", ' '},
-	{"apos", '\''},
-	{NULL,-1}};
-
-
 int ReadClause(Translator *tr, FILE *f_in, char *buf, short *charix, int *charix_top, int n_buf, int *tone_type, char *voice_change)
 {//=================================================================================================================================
 /* Find the end of the current clause.
@@ -839,16 +804,13 @@ int ReadClause(Translator *tr, FILE *f_in, char *buf, short *charix, int *charix
 	int phoneme_mode = 0;
 	int terminator;
 	int punct;
-	int found;
 	int any_alnum = 0;
 	int is_end_clause;
 	int stressed_word = 0;
 	int end_clause_after_tag = 0;
 	int end_clause_index = 0;
-	wchar_t xml_buf[N_XML_BUF+1];
 
 #define N_XML_BUF2   20
-	char xml_buf2[N_XML_BUF2+2];           // for &<name> and &<number> sequences
 	static char ungot_string[N_XML_BUF2+4];
 	static int ungot_string_ix = -1;
 
@@ -932,61 +894,6 @@ f_input = f_in;  // for GetC etc
 			}
 		}
 		ungot_char2 = 0;
-
-		if((option_ssml) && (phoneme_mode==0))
-		{
-			if((ssml_ignore_l_angle != '&') && (c1 == '&') && ((c2=='#') || ((c2 >= 'a') && (c2 <= 'z'))))
-			{
-				int n_xml_buf = 0;
-				c1 = c2;
-				while(!Eof() && (iswalnum(c1) || (c1=='#')) && (n_xml_buf < N_XML_BUF2))
-				{
-					xml_buf2[n_xml_buf++] = c1;
-					c1 = GetC();
-				}
-				xml_buf2[n_xml_buf] = 0;
-				c2 = GetC();
-				sprintf(ungot_string,"%s%c%c",&xml_buf2[0],c1,c2);
-
-				if(c1 == ';')
-				{
-					if(xml_buf2[0] == '#')
-					{
-						// character code number
-						if(xml_buf2[1] == 'x')
-							found = sscanf(&xml_buf2[2],"%x",(unsigned int *)(&c1));
-						else
-							found = sscanf(&xml_buf2[1],"%d",&c1);
-					}
-					else
-					{
-						if((found = LookupMnem(xml_char_mnemonics,xml_buf2)) != -1)
-						{
-							c1 = found;
-							if(c2 == 0)
-								c2 = ' ';
-						}
-					}
-				}
-				else
-				{
-					found = -1;
-				}
-
-				if(found <= 0)
-				{
-					ungot_string_ix = 0;
-					c1 = '&';
-					c2 = ' ';
-				}
-
-				if((c1 <= 0x20) && ((sayas_mode == SAYAS_SINGLE_CHARS) || (sayas_mode == SAYAS_KEY)))
-				{
-					c1 += 0xe000;  // move into unicode private usage area
-				}
-			}
-		}
-		ssml_ignore_l_angle=0;
 
 		if(ignore_text)
 			continue;
@@ -1112,7 +1019,7 @@ f_input = f_in;  // for GetC etc
 		if(iswupper(c1))
 		{
 			tr->clause_upper_count++;
-			if((option_capitals == 2) && (sayas_mode == 0) && !iswupper(cprev))
+			if((option_capitals == 2) && !iswupper(cprev))
 			{
 				char text_buf[40];
 				char text_buf2[30];
@@ -1186,7 +1093,7 @@ if(option_ssml) parag=1;
 
 		int announced_punctuation = 0;
 
-		if((phoneme_mode==0) && (sayas_mode==0))
+		if(phoneme_mode==0)
 		{
 			is_end_clause = 0;
 
@@ -1472,7 +1379,6 @@ void InitText2(void)
 	audio_text = 0;
 	clear_skipping_text = 0;
 	count_characters = -1;
-	sayas_mode = 0;
 
 	xmlbase = NULL;
 }
