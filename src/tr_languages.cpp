@@ -291,7 +291,7 @@ static void SetCyrillicLetters(Translator *tr)
 }  // end of SetCyrillicLetters
 
 
-void SetIndicLetters(Translator *tr)
+static void SetIndicLetters(Translator *tr)
 {//=================================
 	// Set letter types for Indic scripts, Devanagari, Tamill, etc
 	static const char dev_consonants2[] = {0x02,0x03,0x58,0x59,0x5a,0x5b,0x5c,0x5d,0x5e,0x5f};
@@ -316,7 +316,7 @@ void SetIndicLetters(Translator *tr)
 }
 
 
-void SetupTranslator(Translator *tr, const short *lengths, const unsigned char *amps)
+static void SetupTranslator(Translator *tr, const short *lengths, const unsigned char *amps)
 {//==================================================================================
 	if(lengths != NULL)
 		memcpy(tr->stress_lengths,lengths,sizeof(tr->stress_lengths));
