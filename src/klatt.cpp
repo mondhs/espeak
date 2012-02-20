@@ -48,8 +48,9 @@ static int sample_count;
 
 #define getrandom(min,max) ((rand()%(long)(((max)+1)-(min)))+(min))
 
-
 /* function prototypes for functions private to this file */
+
+static void SetSynth_Klatt(int length, int modn, frame_t *fr1, frame_t *fr2, voice_t *v, int control);
 
 static void flutter(klatt_frame_ptr);
 static double sampled_source (void);
@@ -895,8 +896,7 @@ static double klattp_inc[N_KLATTP];
 static int scale_wav_tab[] = {45,38,45,45};   // scale output from different voicing sources
 
 
-
-int Wavegen_Klatt(int resume)
+int Wavegen_Klatt(int length, int modulation, int resume, frame_t *fr1, frame_t *fr2)
 {//==========================
 	int x;
 	int ix;
@@ -904,6 +904,7 @@ int Wavegen_Klatt(int resume)
 
 	if(resume==0)
 	{
+		SetSynth_Klatt(length, modulation, fr1, fr2, wvoice, 1);
 		sample_count = 0;
 	}
 
@@ -1003,7 +1004,7 @@ int Wavegen_Klatt(int resume)
 }
 
 
-void SetSynth_Klatt(int length, int modn, frame_t *fr1, frame_t *fr2, voice_t *v, int control)
+static void SetSynth_Klatt(int length, int modn, frame_t *fr1, frame_t *fr2, voice_t *v, int control)
 {//===========================================================================================
 	DOUBLEX next;
 	static frame_t prev_fr;
@@ -1160,15 +1161,6 @@ if(option_log_frames)
 		}
 	}
 }  // end of SetSynth_Klatt
-
-
-int Wavegen_Klatt2(int length, int modulation, int resume, frame_t *fr1, frame_t *fr2)
-{//===================================================================================
-	if(resume==0)
-		SetSynth_Klatt(length, modulation, fr1, fr2, wvoice, 1);
-
-	return(Wavegen_Klatt(resume));
-}
 
 
 

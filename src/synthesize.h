@@ -563,5 +563,5 @@ void InitBreath(void);
 
 void KlattInit();
 void KlattReset(int control);
-int Wavegen_Klatt2(int length, int modulation, int resume, frame_t *fr1, frame_t *fr2);
+int Wavegen_Klatt(int length, int modulation, int resume, frame_t *fr1, frame_t *fr2);
 
