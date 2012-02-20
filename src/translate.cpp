@@ -571,19 +571,6 @@ char *strchr_w(const char *s, int c)
 }
 
 
-int IsAllUpper(const char *word)
-{//=============================
-	int c;
-	while((*word != 0) && !isspace2(*word))
-	{
-		word += utf8_in(&c, word);
-		if(!iswupper(c))
-			return(0);
-	}
-	return(1);
-}
-
-
 static char *SpeakIndividualLetters(Translator *tr, char *word, char *phonemes, int spell_word)
 {//============================================================================================
 	int posn = 0;
