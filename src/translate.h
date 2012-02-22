@@ -625,7 +625,7 @@ extern void SetLengthMods(Translator *tr, int value);
 void LoadConfig(void);
 int TransposeAlphabet(Translator *tr, char *text);
 int utf8_in(int *c, const char *buf);
-int utf8_in2(int *c, const char *buf, int backwards);
+int utf8_in_prev(int *c, const char *buf);
 int utf8_out(unsigned int c, char *buf);
 int utf8_nbytes(const char *buf);
 int lookupwchar(const unsigned short *list,int c);

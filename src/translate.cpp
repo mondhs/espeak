@@ -511,25 +511,25 @@ int utf8_nbytes(const char *buf)
 	return(4);
 }
 
+static const char *utf8_prev_char(const char *buf)
+{
+	while((*buf & 0xc0) == 0x80)
+		--buf;
+	return buf;
+}
 
-int utf8_in2(int *c, const char *buf, int backwards)
-{//=================================================
-// Read a unicode characater from a UTF8 string 
-// Returns the number of UTF8 bytes used.
-// backwards: set if we are moving backwards through the UTF8 string
-	int c1;
+static const char *utf8_next_char(const char *buf)
+{
+	while((*buf & 0xc0) == 0x80)
+		++buf;
+	return buf;
+}
+
+static int utf8_read(int *c, const char *buf)
+{
 	static const unsigned char mask[4] = {0xff,0x1f,0x0f,0x07};
 
-	// find the start of the next/previous character
-	while((*buf & 0xc0) == 0x80)
-	{
-		// skip over non-initial bytes of a multi-byte utf8 character
-		if(backwards)
-			buf--;
-		else
-			buf++;
-	}
-
+	int c1;
 	int n_bytes = 0;
 
 	if((c1 = *buf++) & 0x80)
@@ -553,14 +553,15 @@ int utf8_in2(int *c, const char *buf, int backwards)
 	return(n_bytes+1);
 }
 
-
-int utf8_in(int *c, const char *buf)
-{//=================================
-// Read a unicode characater from a UTF8 string 
-// Returns the number of UTF8 bytes used.
-	return(utf8_in2(c,buf,0));
+int utf8_in_prev(int *c, const char *buf)
+{
+	return utf8_read(c, utf8_prev_char(buf));
 }
 
+int utf8_in(int *c, const char *buf)
+{
+	return utf8_read(c, utf8_next_char(buf));
+}
 
 char *strchr_w(const char *s, int c)
 {//=================================
@@ -2386,7 +2387,7 @@ p = source;
 	while(!finished && (ix < (int)sizeof(sbuf))&& (n_ph_list2 < N_PHONEME_LIST-4))
 	{
 		int prev_out2 = prev_out;
-		utf8_in2(&prev_out,&sbuf[ix-1],1);
+		utf8_in_prev(&prev_out,&sbuf[ix-1]);
 
 		if(tr->langopts.tone_numbers && IsDigit09(prev_out) && IsAlpha(prev_out2))
 		{
@@ -2402,7 +2403,7 @@ p = source;
 		else
 		if(source_index > 0)
 		{
-			utf8_in2(&prev_in,&source[source_index-1],1);
+			utf8_in_prev(&prev_in,&source[source_index-1]);
 		}
 
 		unsigned int prev_source_index = source_index;

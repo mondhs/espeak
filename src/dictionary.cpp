@@ -2079,7 +2079,7 @@ static void MatchRule(Translator *tr, char *word[], char *word_start, int group_
 
 				last_letter = *pre_ptr;
 				pre_ptr--;
-				letter_xbytes = utf8_in2(&letter_w,pre_ptr,1)-1;
+				letter_xbytes = utf8_in_prev(&letter_w,pre_ptr)-1;
 				letter = *pre_ptr;
 
 				switch(rb)
@@ -2177,7 +2177,7 @@ static void MatchRule(Translator *tr, char *word[], char *word_start, int group_
 								failed = 1;
 								break;
 							}
-							p -= utf8_in2(&letter_w,p,1);
+							p -= utf8_in_prev(&letter_w,p);
 						}
 						if(!failed)
 							add_points = 3;
