@@ -1,7 +1,2 @@
-This branch contains changes to the eSpeak code to clean it up.
-
-The intent here is to:
-   1/  remove unused code;
-   2/  use more C++-like code/syntax (e.g. declaring variables
-       only where they are needed and the bool type);
-   3/  simplifying the code where possible.
+This branch contains fixes and improvements to the mbrola voice support
+for eSpeak.
