@@ -32,7 +32,7 @@
 #include "voice.h"
 #include "translate.h"
 
-const char *version_string = "1.46.13~" COMMITID "  14.Jan.12";
+const char *version_string = "1.46.14~" COMMITID "  22.Feb.12";
 const int version_phdata  = 0x014600;
 
 int option_device_number = -1;
