@@ -1,5 +1,7 @@
 PREFIX=/usr
 BINDIR=$(PREFIX)/bin
+INCDIR=$(PREFIX)/include/espeak
+LIBDIR=$(PREFIX)/lib
 DATADIR=$(PREFIX)/share/espeak-data
 
 .PHONY: all clean distclean
@@ -9,7 +11,8 @@ DATADIR=$(PREFIX)/share/espeak-data
 all: src/libespeak.so src/libespeak.a docs/speak_lib.h
 
 install: all
-	cd src && make DESTDIR=$(DESTDIR) PREFIX=$(PREFIX) install && cd ..
+	cd src && make DESTDIR=$(DESTDIR) PREFIX=$(PREFIX) BINDIR=$(BINDIR) INCDIR=$(INCDIR) LIBDIR=$(LIBDIR) install && cd ..
+	install -m 755 src/espeakedit $(DESTDIR)$(BINDIR)
 
 clean:
 	cd src && rm -f *.o *~ && cd ..
