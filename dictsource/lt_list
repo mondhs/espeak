@@ -1,0 +1,83 @@
+
+// This file is UTF8 encoded 
+// Spelling-to-phoneme words for Lithuania
+
+
+// names of Lithuania letters
+a	a
+ą	a:
+b	be
+c	tse
+č	tSe
+d	de
+e	e
+ė	e:
+f	ef
+// g	ga  // defined in lt_rules
+ģ	Je
+h	ha
+i	i
+į	i:
+j	je
+k	ka
+l	l
+m	em
+n	en
+o	uo
+p	pe
+r	eRR2
+s	es
+š	eS
+t	te:
+u	u
+ų	u:
+ū	u:
+v	ve
+z	ze
+ž	Ze
+
+// numbers
+_0	nulis
+_1	vienas
+_2	du
+_3	tRi:s
+_4	keturi
+_5	penki
+_6	SeSi
+_7	s'eptini
+_8	'aStuon^i
+_9	d'evin^i
+_10	d'eSmit
+_11	vienuolika
+_12	dvi:lika
+_13	tri:kila
+_14	keturiolika
+_15	penkiolika
+_16	SeSiolika
+_17	septi:niolika
+_18	aStuoniolika
+_19	devi:niolika
+_2X	dvideSimt
+_3X	trisdeSimt
+_4X	keturesdeSimt
+_5X	penkiasdeSimt
+_6X	SeSesdeSimt
+_7X	septi:nesdeSimt
+_8X	aStuonesdeSimt
+_9X	devi:nesdeSimt
+_0C	Simtas
+_1C	Simtas
+
+lietuvos	$3
+užkarda	$1
+
+
+// conjunctions
+ir	$u $pause
+bet	$u $pause
+o	$u $pause
+
+
+
+
+

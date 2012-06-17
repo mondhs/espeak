@@ -1,0 +1,176 @@
+// translation rules for Latvian
+// This file is UTF-8 encoded
+
+// Default rules for o with succeeding consonants 
+.L01	f h w x    // o is pronounced as o with international consonants after o
+
+
+     
+
+// quiet vowels not only a but aeiou
+
+.group a
+        a        a
+        ai       ai
+        au       au
+        ap	 ap	// prefix
+
+.group ą
+        ą        a:
+
+.group b
+        b        b
+
+.group c
+         c              ts
+         ch             tS	// Appears mostly in English, not in old latvian writing where should be x
+     er) ch     (ercogs tsh
+ fridri) ch     (s      tsh
+        
+
+.group č
+        č        tS
+
+.group d
+        d        d
+
+.group e
+        e        e
+        ei       ei
+
+.group ė
+        ė        e:
+
+.group f
+        f        f
+
+.group g
+        g        g
+     _) g (_     ga
+  DD__) g (_     gada
+
+
+
+.group h
+        h        h
+
+
+.group i
+        i        i
+        ie       ie
+        iu       iu
+
+.group į
+        į        i:
+
+.group j
+        j        j
+
+.group k
+        k        k
+
+
+
+.group l
+        l        l
+
+
+
+
+.group m
+        m        m
+
+
+.group n
+        n        n-
+
+
+
+
+.group o
+// default policy rules
+                o               o:      // words with Lithuanian roots are more common
+                o       (L01	o       // usually o before international consonants 
+
+
+
+.group p
+        p       p
+       _)       pus     pus
+
+.group q
+        q        kv
+
+.group r
+        r        r
+
+
+
+.group s
+        s        s
+
+
+.group š
+        š        S
+
+.group t
+        t        t
+     s) t (s     t:
+    _)	to (_	tuo
+
+.group u
+        u        u
+        ui       ui
+        už       uZ
+
+.group ū
+        ū        u:
+
+.group ų
+        ų        u:
+
+.group v
+        v       v
+     _) vis	vis
+
+.group w
+        w        v
+
+
+.group x
+        x        ks
+
+
+.group y
+        y        j
+
+.group z
+        z        z
+
+.group ž
+        ž        Z
+
+.group
+            '
+            !           _:Sauktukas:
+            ! (\!
+            :            dvitaSkis
+        D_) : (_DD_             // omit colon in time, eg: 2:30
+            $            doleris
+            !=           nav||viena:ds
+            >=           l'iela:ks||,vai||v'iena:ds
+            <=           maza:ks||,vai||v'iena:ds
+
+
+        __) - (_D        mi:nus
+        A_) - (_D        _
+        C_) - (_D        _
+
+      \#\#) # (_        _::
+        A_) #           R2esti:te
+        C_) #           R2esti:te
+        \#) #
+
+            . (.        _:
+        \.) .
+
