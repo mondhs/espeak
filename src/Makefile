@@ -28,9 +28,9 @@ MKDIR = mkdir -p
 
 # 'runtime' uses pulseaudio if it is running, else uses portaudio
 #AUDIO = runtime
-AUDIO = portaudio
+#AUDIO = portaudio
 #AUDIO = portaudio0
-#AUDIO = portaudio2
+AUDIO = portaudio2
 #AUDIO = pulseaudio
 #AUDIO = sada
 
@@ -56,7 +56,7 @@ USE_AUDIO=-DUSE_PORTAUDIO
 else
 ifeq ($(AUDIO),portaudio2)
 WAVE=wave.cpp
-LIB_AUDIO=/usr/lib/libportaudio.so.2
+LIB_AUDIO=/usr/lib/x86_64-linux-gnu/libportaudio.so.2
 USE_AUDIO=-DUSE_PORTAUDIO
 else
 ifeq ($(AUDIO),sada)
