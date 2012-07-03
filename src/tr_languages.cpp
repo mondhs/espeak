@@ -967,16 +967,14 @@ SetLengthMods(tr,3);  // all equal
 
 	case L('l','t'):  // lithuanian
 		{
-			static const unsigned char stress_amps_lt[8] = {17,13, 20,20, 20,22, 22,21 };
-			static const short stress_lengths_lt[8] = {180,130, 210,210, 0,0, 210,210};
-
-			SetupTranslator(tr,stress_lengths_lt,stress_amps_lt);
-
-			tr->langopts.stress_rule = STRESSPOSN_1L;
-			tr->langopts.spelling_stress = 1;
-			tr->charset_a0 = charsets[4];   // ISO-8859-4
+			tr->charset_a0 = charsets[4];   // ISO-8859-4, includes a,e,i,o,u-macron
+			tr->langopts.stress_rule = STRESSPOSN_2R;
+			tr->langopts.stress_flags = 0x20;
+			tr->langopts.unstressed_wd1 = 0;
+			tr->langopts.unstressed_wd2 = 2;
+			tr->langopts.param[LOPT_DIERESES] = 1;
 			tr->langopts.numbers = NUM_DECIMAL_COMMA | NUM_OMIT_1_HUNDRED | NUM_DFRACTION_4 | NUM_ORDINAL_DOT;
-			tr->langopts.stress_flags = 0x16 + 0x40000;
+			tr->langopts.max_roman = 5000;
 		}
 		break;
 
