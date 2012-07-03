@@ -1,155 +1,193 @@
-// translation rules for Latvian
+// translation rules for Lithuanian
 // This file is UTF-8 encoded
 
-// Default rules for o with succeeding consonants 
-.L01	f h w x    // o is pronounced as o with international consonants after o
 
+// Dar ne visai sutvarkytas jot tarimas, 
+// reikia patikrinti minkštumo tarimus, 
+// ilgieji balsiai pažymėti su : (pvz., a:) vis tiek tariami gana trumpai
 
-     
-
-// quiet vowels not only a but aeiou
+.L01 b d g z ž h dz dž  // skardieji priebalsiai
+.L02 p t k s š ch c č f  // duslieji priebalsiai
+.L03 l m n r j v        // pusbalsiai
+.L04 ai au ei ui ie uo  // dvibalsiai
+.L05 al am an ar el em en er il im in ir ul um un ur // mišrieji dvigarsiai
+.L06 i į y e ę ė // priešakinės eilės balsiai; po jų priebalsiai visada minkšti
 
 .group a
-        a        a
-        ai       ai
-        au       au
-        ap	 ap	// prefix
+        a          a
 
 .group ą
-        ą        a:
+        ą          a:
 
 .group b
-        b        b
+        b          b
+        b (L02     p  // prieš dusliuosius priebalsius suduslėja: skalbti [skalpti]
 
 .group c
-         c              ts
-         ch             tS	// Appears mostly in English, not in old latvian writing where should be x
-     er) ch     (ercogs tsh
- fridri) ch     (s      tsh
-        
+        c          ts 
+        ch         x
 
 .group č
-        č        tS
+        č          tS
 
 .group d
-        d        d
+        d          d
+        d (L02     t  // prieš dusliuosius priebalsius suduslėja: medkirtys [metkirtys]
+        d (_       t  // skardieji [d], [g], [ž] žodžio gale tariami dusliai: kad – kat
+        dz         dz
+        dž         dZ
 
 .group e
-        e        e
-        ei       ei
+        e          E
+
+.group ę
+        ę          E:
 
 .group ė
-        ė        e:
+        ė          e:
 
 .group f
-        f        f
+        f          f
 
 .group g
-        g        g
-     _) g (_     ga
-  DD__) g (_     gada
-
-
+        g          g
+        g (L02     k  // prieš dusliuosius priebalsius suduslėja: segti [sekti]
+        g (_       k  // skardieji [d], [g], [ž] žodžio gale tariami dusliai: daug – dauk
+        gg         g  // du vienodi priebalsiai suliejami: burggrafas [burgrafas]
 
 .group h
-        h        h
-
+        h          h
 
 .group i
-        i        i
-        ie       ie
-        iu       iu
+        i          i
+        ia         E
+        ie         ie
+     _) ie (v      jie // Ieva [Jieva]
+        ie (šk     jie // paieška [pajieška]
+     _) ie (šm     jie // iešmas [jiešmas]
 
 .group į
-        į        i:
-
-.group j
-        j        j
-
-.group k
-        k        k
-
-
-
-.group l
-        l        l
-
-
-
-
-.group m
-        m        m
-
-
-.group n
-        n        n-
-
-
-
-
-.group o
-// default policy rules
-                o               o:      // words with Lithuanian roots are more common
-                o       (L01	o       // usually o before international consonants 
-
-
-
-.group p
-        p       p
-       _)       pus     pus
-
-.group q
-        q        kv
-
-.group r
-        r        r
-
-
-
-.group s
-        s        s
-
-
-.group š
-        š        S
-
-.group t
-        t        t
-     s) t (s     t:
-    _)	to (_	tuo
-
-.group u
-        u        u
-        ui       ui
-        už       uZ
-
-.group ū
-        ū        u:
-
-.group ų
-        ų        u:
-
-.group v
-        v       v
-     _) vis	vis
-
-.group w
-        w        v
-
-
-.group x
-        x        ks
-
+        į          i:
 
 .group y
-        y        j
+        y          i:
+
+.group j
+        j          j
+
+.group k
+        k          k
+        kk         k  // du vienodi priebalsiai suliejami: aplinkkelis [aplinkelis]
+        k (L01     g  // prieš skardžiuosius priebalsius suskardėja: sukdamas [sugdamas]
+
+.group l
+        l          l
+
+.group m
+        m          m
+        mm         m  // du vienodi priebalsiai suliejami: šėmmargis [šėmargis]
+
+.group n
+        n          n  
+        nn         n  // du vienodi priebalsiai suliejami: vandennešis [vandenešis]
+
+.group o
+        o          o:
+
+.group p
+        p          p
+        p (L01     b  // prieš skardžiuosius priebalsius suskardėja: apdaras [abdaras]
+        pp         p  // du vienodi priebalsiai suliejami: tarppirštis [tarpirštis]
+        
+.group q
+        q          kv
+
+.group r
+        r          r
+        rr         r  // du vienodi priebalsiai suliejami: švarraštis [švaraštis]
+
+.group s
+        s          s
+        s (L01     z  // prieš skardžiuosius priebalsius suskardėja: kasdamas [kazdamas]
+        ss         s  // du vienodi priebalsiai suliejami: pusseserė [puseserė]
+        sš         S  // susidūrus priebalsiams [s], [š], [z], [ž] tariamas paskutinysis: pusšimtis [pušimtis]
+
+.group š
+        š          S
+        š (L01     Z  // prieš skardžiuosius priebalsius suskardėja: išgirsti [ižgirsti]
+        šš         S  // du vienodi priebalsiai suliejami: iššovė [išovė]
+
+.group t
+        t          t
+        t (L01     d  // prieš skardžiuosius priebalsius suskardėja: atgarsis [adgarsis]
+        tt         t  // du vienodi priebalsiai suliejami: dešimttomis [dešimtomis]
+
+.group u
+        u          u
+
+.group ų
+        ų          u:
+
+.group ū
+        ū          u:
+
+.group v
+        v          v
+
+.group w
+        w          v
+
+.group x
+        x          ks
 
 .group z
-        z        z
+        z          z
+        z (L02     s  // prieš dusliuosius priebalsius suduslėja: zyzti [zysti]
+        z (č       S  // priebalsis z prieš č virsta š: mokesčiai [mokeščiai]
+        z (dž      Z  // priebalsis z prieš dž virsta ž: vabzdžiai [vabždžiai]
 
 .group ž
-        ž        Z
+        ž          Z
+        žž         Z  //  du vienodi priebalsiai suliejami: užžėlė [užėlė]
+        ž (L02     S  // prieš dusliuosius priebalsius suduslėja: vežti [vešti]
+        ž (_       S  // skardieji [d], [g], [ž] žodžio gale tariami dusliai: bemaž – bemaš
+        žs         s  // susidūrus priebalsiams [s], [š], [z], [ž] tariamas paskutinysis: užsienis [usienis]
+        žš         S  // susidūrus priebalsiams [s], [š], [z], [ž] tariamas paskutinysis: užšoko [ušoko]
 
+        
+.group 0xce   // Greek letters
+// 0xce is the first byte of the utf-8 code for these characters
+
+	α	'alfa_
+	β	b'Eta_
+	γ	g'a:ma_
+	δ	d'Elta_
+	ε	'Epsilon_
+	ζ	z'Eta_
+	η	Eta_
+	θ	tEta_
+	ι	jota_
+	κ	k'apa_
+	λ	l'amda_
+	μ	m'i_
+	ν	n'i_
+	ξ	ks'i_
+	ο	'omikron_
+
+.group 0xcf   // Greek letters
+
+	π	p'i:_
+	ρ	r'o_
+	σ	s'igma_
+	ς	s'igma_
+	τ	t'aU_
+	υ	'ipsilon_
+	φ	f'i_
+	χ	x'i_
+	ψ	ps'i_
+	ω	'omEga_
+        
+        
 .group
             '
             !           _:Sauktukas:
@@ -157,18 +195,17 @@
             :            dvitaSkis
         D_) : (_DD_             // omit colon in time, eg: 2:30
             $            doleris
-            !=           nav||viena:ds
-            >=           l'iela:ks||,vai||v'iena:ds
-            <=           maza:ks||,vai||v'iena:ds
+            =            li:gu
+            !=           neli:gu
+            >=           daug'Eu||arba||li:gu
+            <=           maZ'Eu||arba||li:gu
 
 
-        __) - (_D        mi:nus
+        __) - (_D        minus
         A_) - (_D        _
         C_) - (_D        _
 
       \#\#) # (_        _::
-        A_) #           R2esti:te
-        C_) #           R2esti:te
         \#) #
 
             . (.        _:

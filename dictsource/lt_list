@@ -1,40 +1,45 @@
 
 // This file is UTF8 encoded 
-// Spelling-to-phoneme words for Lithuania
+// Spelling-to-phoneme words for Lithuanian
 
 
-// names of Lithuania letters
-a	a
-ą	a:
-b	be
-c	tse
-č	tSe
-d	de
-e	e
-ė	e:
-f	ef
-// g	ga  // defined in lt_rules
-ģ	Je
-h	ha
-i	i
-į	i:
-j	je
-k	ka
-l	l
-m	em
-n	en
-o	uo
-p	pe
-r	eRR2
-s	es
-š	eS
-t	te:
-u	u
-ų	u:
-ū	u:
-v	ve
-z	ze
-ž	Ze
+// names of Lithuanian letters
+// translation rules for Lithuanian
+// This file is UTF-8 encoded
+
+a          a
+ą          a:_no:s'ine:
+b          be:
+c          tse:
+č          tSe:
+d          de:
+e          E
+ę          E:_no:s'ine:
+ė          e:
+f          ef
+g          ge:
+h          ha
+i          i
+į          i:_no:s'ine:
+y          i:_ilg'o:ji
+j          jot
+k          ka
+l          el
+m          em
+n          en
+o          o:
+p          pe:
+r          er
+s          es
+š          eS
+t          te:
+u          u
+ų          u:_no:s'ine:
+ū          u:_ilg'o:ji
+v          ve:
+z          ze:
+ž          Ze:
+
 
 // numbers
 _0	nulis
@@ -76,8 +81,5 @@ užkarda	$1
 ir	$u $pause
 bet	$u $pause
 o	$u $pause
-
-
-
 
 
