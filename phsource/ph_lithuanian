@@ -5,7 +5,27 @@ phoneme @
   FMT(vowel/8_7)
 endphoneme
 
-phoneme E
+
+phoneme a
+  vowel starttype #a endtype #a
+  length 120
+  FMT(vowel/a_3)
+endphoneme
+
+phoneme A
+  vowel starttype #a endtype #a
+  length 80
+  FMT(vowel/a_3)
+endphoneme
+
+phoneme a:
+  vowel starttype #a endtype #a
+  length 350
+  long
+  FMT(vowel/a_3)
+endphoneme
+
+phoneme e
   vowel starttype #e endtype #e
   length 180
   IF nextPh(isPause) THEN
@@ -14,14 +34,73 @@ phoneme E
   FMT(vowel/e_mid)
 endphoneme
 
+phoneme e:
+  vowel starttype #e endtype #e
+  length 300
+  FMT(vowel/e_mid)
+endphoneme
+
+phoneme ee
+  vowel starttype #e endtype #e
+  length 260
+  long
+  FMT(vwl_ru/ee)
+endphoneme
+
+
+phoneme eA
+  vowel starttype #e endtype #a
+  length 290
+  long
+  FMT(vdiph2/ea)
+endphoneme
 
 phoneme i
   vowel starttype #i endtype #i
   length 100
-  IfNextVowelAppend(;)
-  FMT(vowel/ii_3)
+//  IfNextVowelAppend(;)
+  FMT(vowel/i_3)
 endphoneme
- 
+
+phoneme I
+  vowel starttype #i endtype #i
+  length 70
+//  IfNextVowelAppend(;)
+  FMT(vowel/i_3)
+endphoneme
+
+phoneme i:
+  vowel starttype #i endtype #i
+  length 300
+  FMT(vowel/i_6)
+endphoneme
+
+
+phoneme o
+  vowel starttype #o endtype #o
+  length 120
+  FMT(vowel/oo_1)
+endphoneme
+
+phoneme o:
+  vowel starttype #o endtype #o
+  length 300
+  FMT(vowel/oo_1)
+endphoneme
+
+
+phoneme u
+  vowel starttype #u endtype #u
+  length 110
+  FMT(vowel/u)
+endphoneme
+
+phoneme u:
+  vowel starttype #u endtype #u
+  length 330
+  FMT(vowel/u)
+endphoneme
+
 
 phoneme ai
   vowel starttype #a endtype #i
@@ -72,14 +151,6 @@ phoneme ie
   FMT(vdiph2/ie_2)
 endphoneme
 
-phoneme iu
-  vowel starttype #i endtype #u
-  length 290
-  long
-  FMT(vdiph2/iu_2)
-endphoneme
-
-
 phoneme aU
   vowel starttype #a endtype #u
   length 270
@@ -110,19 +181,6 @@ phoneme eI
   vowel starttype #e endtype #i
   length 260
   FMT(vdiph/eei_3)
-endphoneme
-
-
-phoneme t // try disable this and try using English [t]
-  vls alv stop lengthenstop
-  lengthmod 2
-  voicingswitch d
-  Vowelin f1=0 f2=1700 -300 300 f3=-100 80
-  Vowelout f1=0 f2=1700 -300 250 f3=-100 80 rms=20
-  IF nextPh(isPause2) THEN
-    WAV(ustop/t_)
-  ENDIF
-  WAV(ustop/t_short, 115)
 endphoneme
 
 
@@ -169,7 +227,6 @@ phoneme tS;
 
   WAV(ustop/ts_pzd)
 endphoneme
-
 
 phoneme t
   vls dnt stop
@@ -238,6 +295,39 @@ phoneme d;
   FMT(d/d) addWav(x/d_pzd, 80)
 endphoneme
 
+
+phoneme n;
+  liquid palatal
+  NextVowelStarts
+	VowelStart(n^/n^@)
+	VowelStart(n^/n^a)
+	VowelStart(n^/n^e)
+	VowelStart(n^/n^i)
+	VowelStart(n^/n^o)
+	VowelStart(n^/n^u)
+  EndSwitch
+
+  IF prevPh(isPause) THEN
+	FMT(n^/_n^)
+  ELIF nextPh(isNotVowel) THEN
+	IF nextPhW(n^) THEN
+	  Length 75
+	ELIF prevPhW(n^) THEN
+	  Length 100
+	ENDIF
+	FMT(n^/n^_)
+  ENDIF
+endphoneme
+
+
+phoneme l;
+  liquid rfx palatal
+  ipa ɭ
+// lengthmod 7
+  length 80
+// FMT(l^/l^)
+  FMT(l^/l_rfx)
+endphoneme
 
 
 /////////////////////////////////////////
