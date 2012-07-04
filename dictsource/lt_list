@@ -8,70 +8,87 @@
 // This file is UTF-8 encoded
 
 a          a
-ą          a:_no:s'ine:
-b          be:
-c          tse:
-č          tSe:
-d          de:
-e          E
-ę          E:_no:s'ine:
-ė          e:
+ą          a:_no:s;'in;ee
+b          b;ee
+c          ts;ee
+č          tS;ee
+d          d;ee
+e          ea
+ę          ea_no:s;'in;ee
+ė          ee
 f          ef
-g          ge:
+g          gee
 h          ha
 i          i
-į          i:_no:s'ine:
-y          i:_ilg'o:ji
+į          i:         //  kaip prielinksnis, tad netinka [i:_no:s'ine:]
+y          i:gr;ek     //  dažniau matematikoje sutinkama, tad netinka [i:_ilg'o:ji]
 j          jot
 k          ka
 l          el
 m          em
 n          en
 o          o:
-p          pe:
+p          p;ee
 r          er
 s          es
 š          eS
-t          te:
+t          t;ee
 u          u
-ų          u:_no:s'ine:
+ų          u:_no:s;'in;ee
 ū          u:_ilg'o:ji
-v          ve:
-z          ze:
-ž          Ze:
+v          v;ee
+z          z;ee
+ž          Z;ee
 
+x          iks
+//z        z;et
+w          d;v;'iguba_ve:
 
 // numbers
-_0	nulis
-_1	vienas
+_0  n'ul;is
+_1	v;'ienas
 _2	du
-_3	tRi:s
-_4	keturi
-_5	penki
-_6	SeSi
-_7	s'eptini
-_8	'aStuon^i
-_9	d'evin^i
-_10	d'eSmit
-_11	vienuolika
-_12	dvi:lika
-_13	tri:lika
-_14	keturiolika
-_15	penkiolika
-_16	SeSiolika
-_17	septi:niolika
-_18	aStuoniolika
-_19	devi:niolika
-_2X	dvideSimt
-_3X	trisdeSimt
-_4X	keturesdeSimt
-_5X	penkiasdeSimt
-_6X	SeSesdeSimt
-_7X	septi:nesdeSimt
-_8X	aStuonesdeSimt
-_9X	devi:nesdeSimt
-_0C	Simtas
-_1C	Simtas
+_3	tri:s
+_4	k;etur'I
+_5	p;enk'I
+_6	S;eS'I
+_7	s;ept;i:n;'I
+_8	aStuon;'I
+_9	d;evi:n;'I
+_10	d;'eS;imt
+_11	v;ien'uol;ika
+_12	dv;'i:l;ika
+_13	tr;'i:l;ika
+_14	k;etur;'o:l;ika
+_15	p;enk;'o:l;ika
+_16	S;eS;'o:l;ika
+_17	s;ept;i:n;'o:l;ika
+_18	aStuon;'o:l;ika
+_19	dev;i:n;'o:l;ika
+_2X	dv;'Id;eS;imt
+_3X	tr;'Isd;eS;imt
+_4X	k;'etur;ez;d;eS;imt
+_5X	p;'enkez;d;eS;imt
+_6X	S;'eS;ez;d;eS;imt
+_7X	s;ep;t;'i:nez;d;eS;imt
+_8X	aSt'uon;ez;d;eS;imt
+_9X	d;ev;'i:n;ez;d;eS;imt
+_0C	S;imtai_
+_1C	S;imtas_           
+_0M1      t'u:kstantS;_     // Kadangi galūnė gali būti tiek [ei], tiek [u:], tai paliekame kol kas be galūnės
+//_0M1      t'u:kstantS;ei_     // 
+//_0M1     t'u:kstantS;u:_      // Kaip padaryti, kad skaitytų [10-19] tūkstanČIŲ?
+_1M1      t'u:kstant;is_     // no '1' before thousand
+_0M2      m;il;ij'o:nai_
+_1M2      m;il;ij'o:nas_
+_0M3      m;il;ij'a:rdai_
+_1M3      m;il;ij'a:rdas_
+_0M4      tr;il;ij'o:nai_
+_1M4      tr;il;ij'o:nas_
+
+_dpt      _kabl;'el;is        // comma
+// _dpt2     _d;eS;'Imtos;o:s // bet netinka, nes gali būti ir _t'u:kstantos;o:s ar pan...
+
 
 lietuvos	$3
 užkarda	$1
@@ -81,5 +98,3 @@ užkarda	$1
 ir	$u $pause
 bet	$u $pause
 o	$u $pause
-
-
