@@ -28,9 +28,9 @@ MKDIR = mkdir -p
 
 # 'runtime' uses pulseaudio if it is running, else uses portaudio
 #AUDIO = runtime
-#AUDIO = portaudio
+AUDIO = portaudio
 #AUDIO = portaudio0
-AUDIO = portaudio2
+#AUDIO = portaudio2
 #AUDIO = pulseaudio
 #AUDIO = sada
 
