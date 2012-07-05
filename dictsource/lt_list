@@ -1,4 +1,3 @@
-
 // This file is UTF8 encoded 
 // Spelling-to-phoneme words for Lithuanian
 
@@ -42,11 +41,11 @@ z          z;ee
 
 x          iks
 //z        z;et
-w          d;v;'iguba_ve:
+w          d;v;'iguba_vee
 
 // numbers
-_0  n'ul;is
-_1	v;'ienas
+_0        n'ul;is
+_1  v;'ienas
 _2	du
 _3	tri:s
 _4	k;etur'I
@@ -67,17 +66,17 @@ _18	aStuon;'o:l;ika
 _19	dev;i:n;'o:l;ika
 _2X	dv;'Id;eS;imt
 _3X	tr;'Isd;eS;imt
-_4X	k;'etur;ez;d;eS;imt
-_5X	p;'enkez;d;eS;imt
-_6X	S;'eS;ez;d;eS;imt
+_4X	k;'eAtur;ez;d;eS;imt
+_5X	p;'EN;k;ez;d;eS;imt
+_6X	S;'eAS;ez;d;eS;imt
 _7X	s;ep;t;'i:nez;d;eS;imt
-_8X	aSt'uon;ez;d;eS;imt
+_8X	aSt'Uon;ez;d;eS;imt
 _9X	d;ev;'i:n;ez;d;eS;imt
 _0C	S;imtai_
 _1C	S;imtas_           
 _0M1      t'u:kstantS;_     // Kadangi galūnė gali būti tiek [ei], tiek [u:], tai paliekame kol kas be galūnės
 //_0M1      t'u:kstantS;ei_     // 
-//_0M1     t'u:kstantS;u:_      // Kaip padaryti, kad skaitytų [10-19] tūkstanČIŲ?
+//_0M1      t'u:kstantS;u:_     // Kaip padaryti, kad skaitytų [10-19] tūkstanČIŲ?
 _1M1      t'u:kstant;is_     // no '1' before thousand
 _0M2      m;il;ij'o:nai_
 _1M2      m;il;ij'o:nas_
