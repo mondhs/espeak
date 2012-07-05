@@ -3,7 +3,7 @@
 
 
 // Dar ne visai sutvarkytas jot tarimas, 
-// reikia patikrinti minkštumo tarimus, 
+
 
 .L01 b d g z ž h dz dž  // skardieji priebalsiai
 .L02 p t k s š ch c č f  // duslieji priebalsiai
@@ -13,10 +13,13 @@
 .L06 i į y e ę ė // priešakinės eilės balsiai; po jų priebalsiai visada minkšti
 //.L07 ai au ei ui ie uo  // dvibalsiai
 //.L08 al am an ar el em en er il im in ir ul um un ur // mišrieji dvigarsiai
-.L10 is io iui į iu yje yj y iai ių iams ius iuose // vyr. g. galūnės, jei vardininko galūne -IS
-.L11 ias io iui ią iu yje yj y iai iams ių ius iuos // vyr. g. galūnės, jei vardininko galūne IAS
-.L12 as o ui ą u e ai ų ams us uose // vyr. g. galūnės, jei vardininko galūne -AS
-.L13 a os ai ą oje oj oms as ose // mot. g. galūnės, jei vardininko galėnė A
+.L10 is io iui į iu yje yj y iai ių iams ius iais iuose // vyr. g. galūnės, jei vardininko galūne -IS
+.L11 ias io iui ią iu yje yj y iai ių iams ius iais iuos // vyr. g. galūnės, jei vardininko galūne IAS
+.L12 as o ui ą u e ai ų ams us ais uose // vyr. g. galūnės, jei vardininko galūne -AS
+.L13 a os ai ą oje oj os ų oms as omis ose // mot. g. galūnės, jei vardininko galėnė A
+.L14 ė ės ei ę e ėje ėj ėms ių ėmis ėm ėse // mot. g. galūnės, jei vardininko galėnė Ė
+.L21 t č   // kaitant žodžius t kartais virsta č
+.L22 d dž  // kaitant žodžius d kartais virsta dž
 
 
 .group a
@@ -25,6 +28,14 @@
         a (izmL12_ a   // po to J tariamos nors nerašomas: archaizmas
         ai (L04    ai  // tik jei po to seka priebalsis; jei seka balsis, gali tai būti kitas dvibalsis kaip žodyje ilgauodegis
         ai (_      ai  // ...arba žodžio gale
+     @) ai (nL10_  A=i // I kirčiuotė; priesaga -aĩnis: riestaĩnis, saldaĩnis   
+     @) ai (nL14_  A=i // I kirčiuotė; priesaga -aĩnė: mišraĩnė
+     @) ai (L21L10_  a=I // I kirčiuotė; priesaga -áitis: gimináitis
+     @) ai (L21L14_  a=I // I kirčiuotė; priesaga -áitė: giráitė
+_aukšt) ai (L21L10_  A=i // išimtis: aukštaĩtis ; FIXME: tai II kirčiuotės žodis
+_aukšt) ai (L21L14_  A=i // išimtis: aukštaĩtė  ; FIXME: tai II kirčiuotės žodis
+  _žem) ai (L21L10_  A=i // išimtis: žemaĩtis   ; FIXME: tai II kirčiuotės žodis
+  _žem) ai (L21L14_  A=i // išimtis: žemaĩtė    ; FIXME: tai II kirčiuotės žodis
         au (L04    au  // tik jei po to seka priebalsis; jei seka balsis, gali tai būti kitas dvibalsis kaip žodyje ilgauodegis
         au (_      au  // ...arba žodžio gale
         
@@ -60,13 +71,20 @@
 .group e
         e          e
         ei         ;ei
+     @) ei (vL13   e=I  // I kirčiuotė; priesaga -éiva: rašéiva
 
 .group ę
         ę          eA
 
 .group ė
         ė          ee
-
+     @) ė (jL12_   ee=  // I kirčiuotė; priesaga -ėjas: siuvėjas
+     @) ė (jL13_   ee=  // I kirčiuotė; priesaga -ėja: šlavėja
+     @) ė (nL12_   ee=  // I kirčiuotė; priesaga -ėnas: brolėnas
+     @) ė (nL14_   ee=  // I kirčiuotė; priesaga -ėnas: kupiškėnė
+     @) ė (čiL13   ee=  // I kirčiuotė; priesaga -ėčia: pasakėčia
+  _kop) ė (čiL13   ee   // išimtis – kopėčios
+     
 .group f
         f          f
 //        f (L06     f;  // minštasis prieš priešakinės eilės balsius
@@ -101,6 +119,12 @@
 .group y
         y          i:
    _ap) y (@       i:= // I kirčiuotė; priešdėlis apý-: apýaušris, apýsaka, apývarta
+   @en) y (bL14_   i:= // I kirčiuotė; priesaga -enýbė: brangenýbė
+     @) y (bL13_   i:= // I kirčiuotė; priesaga -ýba:    daugýba
+     @) y (bL14_   i:= // I kirčiuotė; priesaga -ýbė:    gyvýbė
+   @um) y (nL12    i:= // I kirčiuotė; priesaga -umýnas: gardumýnas
+     @) y (L21L10_ i:= // I kirčiuotė; priesaga -ýtis:   brolýtis
+     @) y (L21L14_ i:= // I kirčiuotė; priesaga -ýtė:    mergýtė
 
 .group j
         j          j 
