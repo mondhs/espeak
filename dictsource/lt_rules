@@ -13,15 +13,16 @@
 .L06 i į y e ę ė // priešakinės eilės balsiai; po jų priebalsiai visada minkšti
 //.L07 ai au ei ui ie uo  // dvibalsiai
 //.L08 al am an ar el em en er il im in ir ul um un ur // mišrieji dvigarsiai
-//.L10 ias io iui ią iu yje yj y iai iams ius iuos // vyr. g. galūnės, jei vardininko galūne IAS
-.L11 as o ui ą u e ai ų ams us uose // vyr. g. galūnės, jei vardininko galūne AS
-.L12 a os ai ą oje oj oms as ose // mot. g. galūnės, jei vardininko galėnė A
+.L10 is io iui į iu yje yj y iai ių iams ius iuose // vyr. g. galūnės, jei vardininko galūne -IS
+.L11 ias io iui ią iu yje yj y iai iams ių ius iuos // vyr. g. galūnės, jei vardininko galūne IAS
+.L12 as o ui ą u e ai ų ams us uose // vyr. g. galūnės, jei vardininko galūne -AS
+.L13 a os ai ą oje oj oms as ose // mot. g. galūnės, jei vardininko galėnė A
 
 
 .group a
         a          a
-        a (ikL12_  a:  // po to J tariamos nors nerašomas: archaika
-        a (izmL11_ a   // po to J tariamos nors nerašomas: archaizmas
+        a (ikL13_  a:  // po to J tariamos nors nerašomas: archaika
+        a (izmL12_ a   // po to J tariamos nors nerašomas: archaizmas
         ai (L04    ai  // tik jei po to seka priebalsis; jei seka balsis, gali tai būti kitas dvibalsis kaip žodyje ilgauodegis
         ai (_      ai  // ...arba žodžio gale
         au (L04    au  // tik jei po to seka priebalsis; jei seka balsis, gali tai būti kitas dvibalsis kaip žodyje ilgauodegis
@@ -83,15 +84,15 @@
 .group i
         i          i
         ia         e
-     c) ia (cijL12_    ija // J tariamos nors nerašomas: diferenciacija
-     c) ia (lL11_      ija // J tariamos nors nerašomas: diferencialas
+     c) ia (cijL13_    ija // J tariamos nors nerašomas: diferenciacija
+     c) ia (lL12_      ija // J tariamos nors nerašomas: diferencialas
         ie         ;ie
      _) ie (v      jie // Ieva [Jieva]
         ie (šk     jie // ieškoti [jieškoti]
      _) ie (šm     jie // iešmas [jiešmas]
-     o) i (kL12_   ji // J tariamos nors nerašomas: heroika
-     a) i (kL12_   ji // J tariamos nors nerašomas: archaika
-     a) i (zmL11_  ji // J tariamos nors nerašomas: archaizmas
+     o) i (kL13_   ji // J tariamos nors nerašomas: heroika
+     a) i (kL13_   ji // J tariamos nors nerašomas: archaika
+     a) i (zmL12_  ji // J tariamos nors nerašomas: archaizmas
         i (A       ;  // jei po to eina balsis – interpretuoti kaip minkštumo ženklą
      
 .group į
@@ -99,6 +100,7 @@
 
 .group y
         y          i:
+   _ap) y (@       i:= // I kirčiuotė; priešdėlis apý-: apýaušris, apýsaka, apývarta
 
 .group j
         j          j 
@@ -134,12 +136,14 @@
 
 .group o
         o          o:
+//    _p) o          o:= // I kirčiuotė; kai kuriuose žodžiuose priešdėlis pó-: pódukra, póilsis, pókylis, pósėdis
+        o (kšnL10_ o:= // I kirčiuotė; priesaga -ókšnis: balókšnis, krūmókšnis, upókšnis
 
 .group p
         p          p
         p (L06     p; // minštasis prieš priešakinės eilės balsius
-        p (CL06     p; // minštasis prieš priešakinės eilės balsius
-        p (CCL06     p; // minštasis prieš priešakinės eilės balsius
+        p (CL06    p; // minštasis prieš priešakinės eilės balsius
+        p (CCL06   p; // minštasis prieš priešakinės eilės balsius
         p (L01     b  // prieš skardžiuosius priebalsius suskardėja: apdaras [abdaras]
         pp         p  // du vienodi priebalsiai suliejami: tarppirštis [tarpirštis]
         
