@@ -965,9 +965,9 @@ SetLengthMods(tr,3);  // all equal
 		}
 		break;
 
-	case L('l','t'):  // lithuanian
+	case L('l','t'):  // Lithuanian
 		{
-			tr->charset_a0 = charsets[4];   // ISO-8859-4, includes a,e,i,o,u-macron
+			tr->charset_a0 = charsets[4];   // ISO-8859-4
 			tr->langopts.stress_rule = STRESSPOSN_2R;
 			tr->langopts.stress_flags = 0x20;
 			tr->langopts.unstressed_wd1 = 0;
@@ -978,7 +978,7 @@ SetLengthMods(tr,3);  // all equal
 		}
 		break;
 
-	case L('l','v'):  // latvian
+	case L('l','v'):  // Latvian
 		{
 			static const unsigned char stress_amps_lv[8] = {17,13, 20,20, 20,22, 22,21 };
 			static const short stress_lengths_lv[8] = {180,130, 210,210, 0,0, 210,210};
