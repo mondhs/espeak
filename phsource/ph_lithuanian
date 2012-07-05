@@ -1,4 +1,3 @@
-
 phoneme @
   vowel starttype #@ endtype #@
   length 120
@@ -34,6 +33,15 @@ phoneme e
   FMT(vowel/e_mid)
 endphoneme
 
+phoneme E
+  vowel starttype #e endtype #e
+  length 80
+  IF nextPh(isPause) THEN
+    FMT(vowel/ee_1)
+  ENDIF
+  FMT(vowel/e_mid)
+endphoneme
+
 phoneme e:
   vowel starttype #e endtype #e
   length 300
@@ -46,7 +54,6 @@ phoneme ee
   long
   FMT(vwl_ru/ee)
 endphoneme
-
 
 phoneme eA
   vowel starttype #e endtype #a
@@ -75,10 +82,15 @@ phoneme i:
   FMT(vowel/i_6)
 endphoneme
 
-
 phoneme o
   vowel starttype #o endtype #o
   length 120
+  FMT(vowel/oo_1)
+endphoneme
+
+phoneme O
+  vowel starttype #o endtype #o
+  length 70
   FMT(vowel/oo_1)
 endphoneme
 
@@ -88,6 +100,11 @@ phoneme o:
   FMT(vowel/oo_1)
 endphoneme
 
+phoneme U
+  vowel starttype #u endtype #u
+  length 70
+  FMT(vowel/u)
+endphoneme
 
 phoneme u
   vowel starttype #u endtype #u
