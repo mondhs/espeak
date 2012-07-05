@@ -90,10 +90,51 @@ _dpt      _kabl;'el;is        // comma
 
 
 lietuvos	$3
-užkarda	$1
+užkarda  $1
 
+// pronouns - įvardžiai
+aš        AS_
+tu        tU_  
+jis       jIs_
+ji        jI_
 
-// conjunctions
+manęs     $2
+tavęs     $2
+savęs     $2
+
+man       mAan_
+tau       tAau_
+sau       sAau_
+mums      mUms_
+jums      jUms_
+
+mane      man;'E_
+tave      tav;'E_
+save      sav;'E_
+
+manimi    man;im;'I_
+tavimi    tav;im;'I_
+savimi    sav;im;'I_
+mumis     mum;'Is_
+jumis     jum;'Is_
+
+manyje    man;'i:j;E_
+tavyje    tav;'i:j;E_
+savyje    sav;'i:j;E_
+mumyse    mum;'i:s;E_
+jumyse    jum;'i:s;E_
+
+// conjunctions -jungtukai
 ir	$u $pause
 bet	$u $pause
 o	$u $pause
+
+// English Words
+cancel    _^_EN
+continue  _^_EN
+firefox   _^_EN
+magnifier _^_EN
+reader    _^_EN
+screen    _^_EN
+windows   _^_EN
+
