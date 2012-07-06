@@ -65,6 +65,7 @@ endphoneme
 phoneme i
   vowel starttype #i endtype #i
   length 100
+  ChangeIfStressed(I)
 //  IfNextVowelAppend(;)
   FMT(vowel/i_3)
 endphoneme
