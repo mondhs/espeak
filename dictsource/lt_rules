@@ -71,7 +71,7 @@ _aukšt) ai (L21L14_  A=i // išimtis: aukštaĩtė  ; FIXME: tai II kirčiuotė
 .group e
         e          e
         ei         ;ei
-     @) ei (vL13_  e=I  // I kirčiuotė; priesaga -éiva: rašéiva
+     @) ei (vL13   e=I  // I kirčiuotė; priesaga -éiva: rašéiva
 
 .group ę
         ę          eA
@@ -82,8 +82,8 @@ _aukšt) ai (L21L14_  A=i // išimtis: aukštaĩtė  ; FIXME: tai II kirčiuotė
      @) ė (jL13_   ee=  // I kirčiuotė; priesaga -ėja: šlavėja
      @) ė (nL12_   ee=  // I kirčiuotė; priesaga -ėnas: brolėnas
      @) ė (nL14_   ee=  // I kirčiuotė; priesaga -ėnas: kupiškėnė
-     @) ė (čiL13_  ee=  // I kirčiuotė; priesaga -ėčia: pasakėčia
-  _kop) ė (čiL13_  ee   // išimtis – kopėčios
+     @) ė (čiL13   ee=  // I kirčiuotė; priesaga -ėčia: pasakėčia
+  _kop) ė (čiL13   ee   // išimtis – kopėčios
      
 .group f
         f          f
@@ -104,10 +104,12 @@ _aukšt) ai (L21L14_  A=i // išimtis: aukštaĩtė  ; FIXME: tai II kirčiuotė
         ia         e
      c) ia (cijL13_    ija // J tariamos nors nerašomas: diferenciacija
      c) ia (lL12_      ija // J tariamos nors nerašomas: diferencialas
-        ie         ;ie
+        ie         ie
      _) ie (v      jie // Ieva [Jieva]
         ie (šk     jie // ieškoti [jieškoti]
      _) ie (šm     jie // iešmas [jiešmas]
+     @) ie (nL13_  I=e // I kirčiuotė; priesaga -iena: naujiena
+ _jaut) ie (nL13_  ie // išimtis: jautiena
      o) i (kL13_   ji // J tariamos nors nerašomas: heroika
      a) i (kL13_   ji // J tariamos nors nerašomas: archaika
      a) i (zmL12_  ji // J tariamos nors nerašomas: archaizmas
@@ -115,6 +117,7 @@ _aukšt) ai (L21L14_  A=i // išimtis: aukštaĩtė  ; FIXME: tai II kirčiuotė
      
 .group į
         į          i:
+//     _) į (@       i:= // I kirčiuotė; priešdėlis į-: įšalas ; bėt ne visada tinka: įžeminimas, įėjo
 
 .group y
         y          i:
@@ -122,7 +125,7 @@ _aukšt) ai (L21L14_  A=i // išimtis: aukštaĩtė  ; FIXME: tai II kirčiuotė
    @en) y (bL14_   i:= // I kirčiuotė; priesaga -enýbė: brangenýbė
      @) y (bL13_   i:= // I kirčiuotė; priesaga -ýba:    daugýba
      @) y (bL14_   i:= // I kirčiuotė; priesaga -ýbė:    gyvýbė
-   @um) y (nL12_   i:= // I kirčiuotė; priesaga -umýnas: gardumýnas
+   @um) y (nL12    i:= // I kirčiuotė; priesaga -umýnas: gardumýnas
      @) y (L21L10_ i:= // I kirčiuotė; priesaga -ýtis:   brolýtis
      @) y (L21L14_ i:= // I kirčiuotė; priesaga -ýtė:    mergýtė
 
@@ -160,6 +163,7 @@ _aukšt) ai (L21L14_  A=i // išimtis: aukštaĩtė  ; FIXME: tai II kirčiuotė
 
 .group o
         o          o:
+     f) o (nL12_   O=  // tarptautiniai žodžiai, besibaigiantys -fonas, pvz., telefonas
 //    _p) o          o:= // I kirčiuotė; kai kuriuose žodžiuose priešdėlis pó-: pódukra, póilsis, pókylis, pósėdis
         o (kšnL10_ o:= // I kirčiuotė; priesaga -ókšnis: balókšnis, krūmókšnis, upókšnis
 
@@ -209,15 +213,18 @@ _aukšt) ai (L21L14_  A=i // išimtis: aukštaĩtė  ; FIXME: tai II kirčiuotė
 
 .group u
         u          u
+     i) u          w
         ui         ui
         uo         uo
-     i) u          w
+     @) uo (menL14_  U=o     // I kirčiuotė; priesaga -úomenė: bendrúomenė
 
 .group ų
         ų          u:
 
 .group ū
         ū          u:
+     @) ū (kšL21L10_    U=u  // I kirčiuotė; priesaga -(i)ūkštis: berniūkštis
+     @) ū (kšL21L14_    U=u  // I kirčiuotė; priesaga -(i)ūkštė: mergiūkštė
 
 .group v
         v          v
@@ -286,16 +293,16 @@ _aukšt) ai (L21L14_  A=i // išimtis: aukštaĩtė  ; FIXME: tai II kirčiuotė
         
 .group
             '
-            !           _:Sauktukas:
+            !           _:Saukt'Ukas:
             ! (\!
-            :            dvitaSkis
+            :            d;v;'ItaS;k;is
         D_) : (_DD_             // omit colon in time, eg: 2:30
-            $            d'oleris
+            $            d'o:l;er;is
 //            &            _
-            =            li:gu
-            !=           neli:gu
-            >=           daug'eau_arba_li:gu
-            <=           maZ'eau_arba_li:gu
+            =            l;'i:gu
+            !=           n;el;'i:gu
+            >=           daug;'au_arb'A_l;i:gu
+            <=           maZ;'au_arb'A_li:gu
           
 
         __) - (_D        minus
