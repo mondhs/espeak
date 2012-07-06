@@ -71,7 +71,7 @@ _aukšt) ai (L21L14_  A=i // išimtis: aukštaĩtė  ; FIXME: tai II kirčiuotė
 .group e
         e          e
         ei         ;ei
-     @) ei (vL13   e=I  // I kirčiuotė; priesaga -éiva: rašéiva
+     @) ei (vL13_  e=I  // I kirčiuotė; priesaga -éiva: rašéiva
 
 .group ę
         ę          eA
@@ -82,8 +82,8 @@ _aukšt) ai (L21L14_  A=i // išimtis: aukštaĩtė  ; FIXME: tai II kirčiuotė
      @) ė (jL13_   ee=  // I kirčiuotė; priesaga -ėja: šlavėja
      @) ė (nL12_   ee=  // I kirčiuotė; priesaga -ėnas: brolėnas
      @) ė (nL14_   ee=  // I kirčiuotė; priesaga -ėnas: kupiškėnė
-     @) ė (čiL13   ee=  // I kirčiuotė; priesaga -ėčia: pasakėčia
-  _kop) ė (čiL13   ee   // išimtis – kopėčios
+     @) ė (čiL13_  ee=  // I kirčiuotė; priesaga -ėčia: pasakėčia
+  _kop) ė (čiL13_  ee   // išimtis – kopėčios
      
 .group f
         f          f
@@ -125,7 +125,7 @@ _aukšt) ai (L21L14_  A=i // išimtis: aukštaĩtė  ; FIXME: tai II kirčiuotė
    @en) y (bL14_   i:= // I kirčiuotė; priesaga -enýbė: brangenýbė
      @) y (bL13_   i:= // I kirčiuotė; priesaga -ýba:    daugýba
      @) y (bL14_   i:= // I kirčiuotė; priesaga -ýbė:    gyvýbė
-   @um) y (nL12    i:= // I kirčiuotė; priesaga -umýnas: gardumýnas
+   @um) y (nL12_   i:= // I kirčiuotė; priesaga -umýnas: gardumýnas
      @) y (L21L10_ i:= // I kirčiuotė; priesaga -ýtis:   brolýtis
      @) y (L21L14_ i:= // I kirčiuotė; priesaga -ýtė:    mergýtė
 
