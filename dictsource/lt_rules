@@ -292,7 +292,8 @@ _aukšt) ai (L21L14_  A=i // išimtis: aukštaĩtė  ; FIXME: tai II kirčiuotė
         
 .group
             '
-            !           _:Saukt'Ukas:
+            ,           _:kabl;'el;is
+            !           _:Saukt'Ukas
             ! (\!
             :            d;v;'ItaS;k;is
         D_) : (_DD_             // omit colon in time, eg: 2:30
@@ -312,5 +313,6 @@ _aukšt) ai (L21L14_  A=i // išimtis: aukštaĩtė  ; FIXME: tai II kirčiuotė
         \#) #
 
             . (.        _:
+            .           _:t'aSkas
         \.) .
 
