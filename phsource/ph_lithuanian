@@ -116,9 +116,20 @@ endphoneme
 phoneme u:
   vowel starttype #u endtype #u
   length 330
+  FMT(vowel/u_bck)
+endphoneme
+
+phoneme w
+  vowel starttype #u  endtype #u
+  length 180
   FMT(vowel/u)
 endphoneme
 
+phoneme W
+  vowel starttype #u  endtype #u
+  length 100
+  FMT(vowel/u)
+endphoneme
 
 phoneme ai
   vowel starttype #a endtype #i
