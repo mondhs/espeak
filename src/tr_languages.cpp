@@ -974,6 +974,7 @@ SetLengthMods(tr,3);  // all equal
 			tr->langopts.unstressed_wd2 = 2;
 			tr->langopts.param[LOPT_DIERESES] = 1;
 			tr->langopts.numbers = NUM_DECIMAL_COMMA | NUM_OMIT_1_HUNDRED | NUM_DFRACTION_4 | NUM_ORDINAL_DOT;
+			tr->langopts.numbers2 = 0x100;
 			tr->langopts.max_roman = 5000;
 		}
 		break;

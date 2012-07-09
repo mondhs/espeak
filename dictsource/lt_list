@@ -81,9 +81,8 @@ _8X	aSt'Uon;ez;d;eS;imt
 _9X	d;ev;'i:n;ez;d;eS;imt
 _0C	S;imtai_
 _1C	S;imtas_           
-_0M1      t'u:kstantS;_     // Kadangi galūnė gali būti tiek [ei], tiek [u:], tai paliekame kol kas be galūnės
-//_0M1      t'u:kstantS;ei_     // 
-//_0M1      t'u:kstantS;u:_     // Kaip padaryti, kad skaitytų [10-19] tūkstanČIŲ?
+_0M1      t'u:kstantS;u:_     // others, 5-9
+_0MA1      t'u:kstantS;ei_     // for 2, 3, 4 thousands
 _1M1      t'u:kstant;is_     // no '1' before thousand
 _0M2      m;il;ij'o:nai_
 _1M2      m;il;ij'o:nas_
