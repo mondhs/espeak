@@ -45,3 +45,6 @@ espeak-data/phondata
 espeak-data/phondata-manifest
 espeak-data/phonindex
 espeak-data/phontab
+/dictsource/lt_list~
+/dictsource/lt_listx~
+/dictsource/lt_rules~
