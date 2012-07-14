@@ -81,8 +81,11 @@ _8X	aSt'Uon;ez;d;eS;imt
 _9X	d;ev;'i:n;ez;d;eS;imt
 _0C	S;imtai_
 _1C	S;imtas_           
-_0M1      t'u:kstantS;u:_     // others, 5-9
-_0MA1      t'u:kstantS;ei_     // for 2, 3, 4 thousands
+//Lithuanian number name for thousand(t'u:kstantis) ends with 
+//rule #1 - is - last number 1(except 11): 21000, 31000, 41000 
+//rule #2 u: - last number 0: 20000, 30000, 40000 and for [11000-19000] 
+//rule #3 ei - All other cases
+-_0M1      t'u:kstantS;_  //Could not force espeak obey the rules. rollback quick fix for now. No ending at all.
 _1M1      t'u:kstant;is_     // no '1' before thousand
 _0M2      m;il;ij'o:nai_
 _1M2      m;il;ij'o:nas_
