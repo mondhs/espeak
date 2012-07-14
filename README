@@ -17,11 +17,8 @@ This branch also contains some bug fixes and improvements that get
 sent back upstream.
 
 
-Espeak by mondhs
+Espeak-lt
    1/  add lithuanian language based on latvian
    2/  changed to wx automatic library and cxx resolution 
-  
-For compilation on Ubunti 12.04 you will need libraries:
 
-sudo apt-get install wx2.8-headers libwxgtk2.8-0 libwxgtk2.8-dev
-
+More Info: https://github.com/mondhs/espeak/wiki
