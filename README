@@ -18,7 +18,7 @@ sent back upstream.
 
 
 Espeak-lt
-   1/  add lithuanian language based on latvian
+   1/  add lithuanian language
    2/  changed to wx automatic library and cxx resolution 
 
 More Info: https://github.com/mondhs/espeak/wiki
