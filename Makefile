@@ -87,7 +87,7 @@ src/espeak: src/libespeak.so src/espeak.cpp
 	cd src && make espeak PREFIX=$(PREFIX) && cd ..
 
 src/espeakedit: $(common_SOURCES) $(libespeak_SOURCES) $(espeakedit_SOURCES)
-	cd src && make espeakedit PREFIX=$(PREFIX) && cd ..
+	cd src && make -f Makefile.espeakedit PREFIX=$(PREFIX) && cd ..
 
 espeak-phoneme-data:
 	cd platforms/$(PLATFORM) && make PREFIX=$(PREFIX) && cd ../..

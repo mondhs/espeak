@@ -1711,6 +1711,7 @@ include ph_hungarian
 phonemetable lt base
 include ph_lithuanian
 
+
 phonemetable lv base
 include ph_latvian
 

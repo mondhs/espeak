@@ -111,6 +111,18 @@ static void SetLetterBitsRange(Translator *tr, int group, int first, int last)
 	}
 }
 
+// ignore these characters
+static const unsigned short chars_ignore_default[] = {
+	0x200c,  1, // zero width non-joiner
+	0x200d,  1, // zero width joiner
+	0, 0 };
+
+// alternatively, ignore characters but allow zero-width-non-joiner (lang-fa)
+static const unsigned short chars_ignore_fa[] = {
+	0x200c,  0x0605, // zero width non-joiner, replace with not-used Arabic character code
+	0x200d,  1, // zero width joiner
+	0, 0 };
+
 
 static Translator* NewTranslator(void)
 {//===================================
@@ -121,6 +133,7 @@ static Translator* NewTranslator(void)
 	static const wchar_t empty_wstring[1] = {0};
 	static const wchar_t punct_in_word[2] = {'\'', 0};  // allow hyphen within words
 	static const unsigned char default_tunes[6] = {0, 1, 2, 3, 0, 0};
+
 
 	tr = (Translator *)Alloc(sizeof(Translator));
 	if(tr == NULL)
@@ -155,6 +168,7 @@ static Translator* NewTranslator(void)
 
 	tr->char_plus_apostrophe = empty_wstring;
 	tr->punct_within_word = punct_in_word;
+	tr->chars_ignore = chars_ignore_default;
 
 	for(ix=0; ix<8; ix++)
 	{
@@ -308,22 +322,23 @@ static void SetCyrillicLetters(Translator *tr)
 void SetIndicLetters(Translator *tr)
 {//=================================
 	// Set letter types for Indic scripts, Devanagari, Tamill, etc
-	static const char dev_consonants2[] = {0x02,0x03,0x58,0x59,0x5a,0x5b,0x5c,0x5d,0x5e,0x5f};
+	static const char dev_consonants2[] = {0x02,0x03,0x58,0x59,0x5a,0x5b,0x5c,0x5d,0x5e,0x5f,0x7b,0x7c,0x7e,0x7f,0};
+	static const char dev_vowels2[] = {0x60,0x61, 0x55,0x56,0x57,0x62,0x63,0};  // non-consecutive vowels and vowel-signs
 
 	memset(tr->letter_bits,0,sizeof(tr->letter_bits));
 	SetLetterBitsRange(tr,LETTERGP_A,0x04,0x14);   // vowel letters
 	SetLetterBitsRange(tr,LETTERGP_A,0x3e,0x4d);   // + vowel signs, and virama
-	SetLetterBitsRange(tr,LETTERGP_A,0x55,0x57);   // + vowel signs
+	SetLetterBits(tr,LETTERGP_A, dev_vowels2);     // + extra vowels and vowel signs
 
 	SetLetterBitsRange(tr,LETTERGP_B,0x3e,0x4d);   // vowel signs, and virama
-	SetLetterBitsRange(tr,LETTERGP_B,0x55,0x57);   // + vowel signs
+	SetLetterBits(tr,LETTERGP_B, dev_vowels2);     // + extra vowels and vowel signs
 
 	SetLetterBitsRange(tr,LETTERGP_C,0x15,0x39);   // the main consonant range
 	SetLetterBits(tr,LETTERGP_C,dev_consonants2);  // + additional consonants
 
 	SetLetterBitsRange(tr,LETTERGP_Y,0x04,0x14);   // vowel letters
 	SetLetterBitsRange(tr,LETTERGP_Y,0x3e,0x4c);   // + vowel signs
-	SetLetterBitsRange(tr,LETTERGP_Y,0x55,0x57);   // + vowel signs
+	SetLetterBits(tr,LETTERGP_Y, dev_vowels2);     // + extra vowels and vowel signs
 
 	tr->langopts.param[LOPT_UNPRONOUNCABLE] = 1;   // disable check for unpronouncable words
 	tr->langopts.suffix_add_e = tr->letter_bits_offset + 0x4d;   //virama
@@ -646,9 +661,13 @@ Translator *SelectTranslator(const char *name)
 
 	case L('f','a'):   // Farsi
 		{
+			static const char fa_ZWNJ[] = {0x05, 0};  // use letter group G for ZWNJ U+200c
 			tr->letter_bits_offset = OFFSET_ARABIC;
 			tr->langopts.numbers = NUM_AND_UNITS | NUM_HUNDRED_AND;
 			tr->langopts.param[LOPT_UNPRONOUNCABLE] = 1;   // disable check for unpronouncable words
+
+			tr->chars_ignore = chars_ignore_fa;
+			SetLetterBits(tr,LETTERGP_G,(char *)fa_ZWNJ);
 		}
 		break;
 
@@ -710,6 +729,12 @@ Translator *SelectTranslator(const char *name)
 			if(name2 == L('p','a'))
 			{
 				tr->letter_bits_offset = OFFSET_GURMUKHI;
+			}
+			if(name2 == L('n','e'))
+			{
+				tr->langopts.break_numbers = 0x2aaaa8;
+				tr->langopts.max_digits = 22;
+				tr->langopts.numbers2 |= NUM2_ENGLISH_NUMERALS;
 			}
 			SetIndicLetters(tr);
 		}
@@ -965,9 +990,9 @@ SetLengthMods(tr,3);  // all equal
 		}
 		break;
 
-	case L('l','t'):  // Lithuanian
+	case L('l','t'): // Lithuanian
 		{
-			tr->charset_a0 = charsets[4];   // ISO-8859-4
+			tr->charset_a0 = charsets[4]; // ISO-8859-4
 			tr->langopts.stress_rule = STRESSPOSN_2R;
 			tr->langopts.stress_flags = 0x20;
 			tr->langopts.unstressed_wd1 = 0;
@@ -979,7 +1004,7 @@ SetLengthMods(tr,3);  // all equal
 		}
 		break;
 
-	case L('l','v'):  // Latvian
+	case L('l','v'):  // latvian
 		{
 			static const unsigned char stress_amps_lv[8] = {17,13, 20,20, 20,22, 22,21 };
 			static const short stress_lengths_lv[8] = {180,130, 210,210, 0,0, 210,210};

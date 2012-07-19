@@ -29,7 +29,7 @@
 #define N_RULE_GROUP2    120          // max num of two-letter rule chains
 #define N_HASH_DICT     1024
 #define N_CHARSETS        20
-#define N_LETTER_GROUPS   26
+#define N_LETTER_GROUPS   95          // maximum is 127-32 
 
 
 /* dictionary flags, word 1 */
@@ -110,6 +110,7 @@
 #define FLAG_MULTIPLE_SPACES 0x40000  // word is preceded by multiple spaces, newline, or tab
 #define FLAG_INDIVIDUAL_DIGITS 0x80000  // speak number as individual digits
 #define FLAG_DELETE_WORD     0x100000   // don't speak this word, it has been spoken as part of the previous word
+#define FLAG_CHAR_REPLACED   0x200000   // characters have been replaced by .replace in the *_rules 
 
 #define FLAG_SUFFIX_VOWEL  0x08000000   // remember an initial vowel from the suffix
 #define FLAG_NO_TRACE      0x10000000   // passed to TranslateRules() to suppress dictionary lookup printout
@@ -444,12 +445,14 @@ typedef struct {
 	int numbers;
 
 #define NUM2_MULTIPLE_ORDINAL   0x1000
+#define NUM2_ENGLISH_NUMERALS   0x2000
 	// bits 1-4  use variant form of numbers before thousands,millions,etc.
 	// bit6=(LANG=pl) two forms of plural, M or MA
 	// bit7=(LANG-ru) use MB for 1 thousand, million, etc
 	// bit8=(LANG=cs,sk) two forms of plural, M or MA
 	// bit9=(LANG=rw) say "thousand" and "million" before its number, not after
 	// bit12=(LANG=el,es) use ordinal form of hundreds and tens as well as units
+	// bit13=(LANG=ne)  speak (non-replaced) English numerals in English
 	int numbers2;
 
 #define BREAK_THOUSANDS   0x49249248
@@ -517,6 +520,7 @@ typedef struct
 	const unsigned short *charset_a0;   // unicodes for characters 0xa0 to oxff
 	const wchar_t *char_plus_apostrophe;  // single chars + apostrophe treated as words
 	const wchar_t *punct_within_word;   // allow these punctuation characters within words
+	const unsigned short *chars_ignore;
 
 // holds properties of characters: vowel, consonant, etc for pronunciation rules
 	unsigned char letter_bits[256];
@@ -629,6 +633,7 @@ int utf8_in2(int *c, const char *buf, int backwards);
 int utf8_out(unsigned int c, char *buf);
 int utf8_nbytes(const char *buf);
 int lookupwchar(const unsigned short *list,int c);
+int lookupwchar2(const unsigned short *list,int c);
 int Eof(void);
 char *strchr_w(const char *s, int c);
 int IsBracket(int c);

@@ -392,6 +392,9 @@ int IsAlpha(unsigned int c)
 		return(0);
 	}
 
+	if(c == 0x0605)
+		return(1);
+
 	if((c >= 0x64b)  && (c <= 0x65e))
 		return(1);   // arabic vowel marks
 
@@ -406,6 +409,9 @@ int IsAlpha(unsigned int c)
 
 	if((c >= 0x1100) && (c <= 0x11ff))
 		return(1);  //Korean jamo
+
+	if((c >= 0x2800) && (c <= 0x28ff))
+		return(1);  // braille
 
 	if((c > 0x3040) && (c <= 0xa700))
 		return(1); // Chinese/Japanese.  Should never get here, but Mac OS 10.4's iswalpha seems to be broken, so just make sure
@@ -463,6 +469,22 @@ int lookupwchar(const unsigned short *list,int c)
 	}
 	return(0);
 }
+
+
+int lookupwchar2(const unsigned short *list,int c)
+{//==============================================
+// Replace character c by another character.
+// Returns 0 = not found, 1 = delete character
+	int ix;
+
+	for(ix=0; list[ix] != 0; ix+=2)
+	{
+		if(list[ix] == c)
+			return(list[ix+1]);
+	}
+	return(0);
+}
+
 
 int IsBracket(int c)
 {//=================
@@ -980,6 +1002,13 @@ if((wmark > 0) && (wmark < 8))
 			Lookup(tr,"_0lang",word_phonemes);
 			if(word_phonemes[0] == phonSWITCH)
 				return(0);
+
+			if((tr->langopts.numbers2 & NUM2_ENGLISH_NUMERALS) && !(wtab->flags & FLAG_CHAR_REPLACED))
+			{
+				// for this language, speak English numerals (0-9) with the English voice
+				sprintf(word_phonemes,"%c",phonSWITCH);
+				return(0);
+			}
 
 			found = TranslateNumber(tr, word1, phonemes, dictionary_flags, wtab, 0);
 		}
@@ -2223,7 +2252,7 @@ static int EmbeddedCommand(unsigned int &source_index)
 
 
 
-static int SubstituteChar(Translator *tr, unsigned int c, unsigned int next_in, int *insert)
+static int SubstituteChar(Translator *tr, unsigned int c, unsigned int next_in, int *insert, int *wordflags)
 {//=========================================================================================
 	int ix;
 	unsigned int word;
@@ -2285,12 +2314,14 @@ static int SubstituteChar(Translator *tr, unsigned int c, unsigned int next_in, 
 
 	if(upper_case)
 		new_c = towupper(new_c);
+
+	*wordflags |= FLAG_CHAR_REPLACED;
 	return(new_c);
 
 }
 
 
-static int TranslateChar(Translator *tr, char *ptr, int prev_in, unsigned int c, unsigned int next_in, int *insert)
+static int TranslateChar(Translator *tr, char *ptr, int prev_in, unsigned int c, unsigned int next_in, int *insert, int *wordflags)
 {//================================================================================================================
 	// To allow language specific examination and replacement of characters
 
@@ -2368,7 +2399,7 @@ static int TranslateChar(Translator *tr, char *ptr, int prev_in, unsigned int c,
 		}
 		break;
 	}
-	return(SubstituteChar(tr,c,next_in,insert));
+	return(SubstituteChar(tr, c, next_in, insert, wordflags));
 }
 
 
@@ -2680,7 +2711,7 @@ if((c == '/') && (tr->langopts.testing & 2) && IsDigit09(next_in) && IsAlpha(pre
 				word_flags |= FLAG_COMMA_AFTER;
 			}
 
-			c = TranslateChar(tr, &source[source_index], prev_in,c, next_in, &char_inserted);  // optional language specific function
+			c = TranslateChar(tr, &source[source_index], prev_in,c, next_in, &char_inserted, &word_flags);  // optional language specific function
 			if(c == 8)
 				continue;  // ignore this character
 

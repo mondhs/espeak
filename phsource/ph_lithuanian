@@ -1,3 +1,4 @@
+ 
 phoneme @
   vowel starttype #@ endtype #@
   length 120
@@ -66,14 +67,14 @@ phoneme i
   vowel starttype #i endtype #i
   length 100
   ChangeIfStressed(I)
-//  IfNextVowelAppend(;)
+// IfNextVowelAppend(;)
   FMT(vowel/i_3)
 endphoneme
 
 phoneme I
   vowel starttype #i endtype #i
   length 70
-//  IfNextVowelAppend(;)
+// IfNextVowelAppend(;)
   FMT(vowel/i_3)
 endphoneme
 
@@ -120,13 +121,13 @@ phoneme u:
 endphoneme
 
 phoneme w
-  vowel starttype #u  endtype #u
+  vowel starttype #u endtype #u
   length 180
   FMT(vowel/u)
 endphoneme
 
 phoneme W
-  vowel starttype #u  endtype #u
+  vowel starttype #u endtype #u
   length 100
   FMT(vowel/u)
 endphoneme
@@ -236,14 +237,14 @@ phoneme dZ;
   vcd pal afr sibilant palatal
   voicingswitch tS;
   lengthmod 5
-  Vowelin f1=2  f2=2700 400 600  f3=300 80 rate len=70
+  Vowelin f1=2 f2=2700 400 600 f3=300 80 rate len=70
 
   IF PreVoicing THEN
-	FMT(dzh/xdzh)
+FMT(dzh/xdzh)
   ENDIF
 
   IF nextPh(isPause2) THEN
-	FMT(dzh/dzh_) addWav(x/dzh_)
+FMT(dzh/dzh_) addWav(x/dzh_)
   ENDIF
 endphoneme
 
@@ -252,7 +253,7 @@ phoneme tS;
   vls pal afr sibilant palatal
   voicingswitch dZ;
   lengthmod 2
-  Vowelin f1=0  f2=2700 400 600  f3=300 80 rate len=70
+  Vowelin f1=0 f2=2700 400 600 f3=300 80 rate len=70
 
   WAV(ustop/ts_pzd)
 endphoneme
@@ -261,8 +262,8 @@ phoneme t
   vls dnt stop
   lengthmod 2
   voicingswitch d
-  Vowelin f1=0  f2=1600 -300 300  f3=-100 80
-  Vowelout f1=0 f2=1600 -300 250  f3=-100 80  rms=20
+  Vowelin f1=0 f2=1600 -300 300 f3=-100 80
+  Vowelout f1=0 f2=1600 -300 250 f3=-100 80 rms=20
   IF nextPh(isPause2) THEN
     WAV(ustop/t_dnt, 35)
   ENDIF
@@ -274,8 +275,8 @@ phoneme t;
   vls pal stop palatal
   lengthmod 2
   voicingswitch d;
-  Vowelin f1=0  f2=2700 400 600  f3=300 80 rate len=70
-  Vowelout f1=1  f2=2700 400 600  f3=200 70 len=50 colr=1
+  Vowelin f1=0 f2=2700 400 600 f3=300 80 rate len=70
+  Vowelout f1=1 f2=2700 400 600 f3=200 70 len=50 colr=1
   IF nextPh(isPause2) THEN
     WAV(ustop/t_pzd, 30)
   ENDIF
@@ -287,8 +288,8 @@ phoneme d
   vcd dnt stop
   lengthmod 5
   voicingswitch t
-  Vowelin f1=2  f2=1500 -300 300  f3=-150 80
-  Vowelout f1=2 f2=1500 -300 300  f3=-150 80
+  Vowelin f1=2 f2=1500 -300 300 f3=-150 80
+  Vowelout f1=2 f2=1500 -300 300 f3=-150 80
 
   IF PreVoicing THEN
     FMT(d/xd)
@@ -308,8 +309,8 @@ phoneme d;
   vcd alv stop palatal
   lengthmod 5
   voicingswitch t;
-  Vowelin f1=2  f2=2700 400 600  f3=200 80 rate len=80
-  Vowelout f1=2 f2=2700 400 600  f3=200 80 rate len=100 colr=1
+  Vowelin f1=2 f2=2700 400 600 f3=200 80 rate len=80
+  Vowelout f1=2 f2=2700 400 600 f3=200 80 rate len=100 colr=1
 
   IF PreVoicing THEN
     FMT(d/xd_pzd)
@@ -328,23 +329,23 @@ endphoneme
 phoneme n;
   liquid palatal
   NextVowelStarts
-	VowelStart(n^/n^@)
-	VowelStart(n^/n^a)
-	VowelStart(n^/n^e)
-	VowelStart(n^/n^i)
-	VowelStart(n^/n^o)
-	VowelStart(n^/n^u)
+VowelStart(n^/n^@)
+VowelStart(n^/n^a)
+VowelStart(n^/n^e)
+VowelStart(n^/n^i)
+VowelStart(n^/n^o)
+VowelStart(n^/n^u)
   EndSwitch
 
   IF prevPh(isPause) THEN
-	FMT(n^/_n^)
+FMT(n^/_n^)
   ELIF nextPh(isNotVowel) THEN
-	IF nextPhW(n^) THEN
-	  Length 75
-	ELIF prevPhW(n^) THEN
-	  Length 100
-	ENDIF
-	FMT(n^/n^_)
+IF nextPhW(n^) THEN
+Length 75
+ELIF prevPhW(n^) THEN
+Length 100
+ENDIF
+FMT(n^/n^_)
   ENDIF
 endphoneme
 
@@ -369,3 +370,4 @@ phoneme l // syllabic l
   length 300
   FMT(vwl_hi/l-voc)
 endphoneme
+

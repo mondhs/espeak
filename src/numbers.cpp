@@ -590,12 +590,13 @@ int TranslateLetter(Translator *tr, char *word, char *phonemes, int control)
 	int n_bytes;
 	int letter;
 	int len;
+	int ix;
 	int save_option_phonemes;
 	char *p2;
 	char *pbuf;
 	char capital[20];
-	char ph_buf[60];
-	char ph_buf2[60];
+	char ph_buf[80];
+	char ph_buf2[80];
 	char hexbuf[6];
 
 	ph_buf[0] = 0;
@@ -646,22 +647,49 @@ int TranslateLetter(Translator *tr, char *word, char *phonemes, int control)
 	if(ph_buf[0] == 0)
 	{
 		// character name not found
-		if(iswalpha(letter))
-			Lookup(tr, "_?A", ph_buf);
-
-		if((ph_buf[0]==0) && !iswspace(letter))
-			Lookup(tr, "_??", ph_buf);
-
-		if(ph_buf[0] != 0)
+		if((letter >= 0x2800) && (letter <= 0x28ff))
 		{
-			// speak the hexadecimal number of the character code
-			sprintf(hexbuf,"%x",letter);
-			pbuf = ph_buf;
-			for(p2 = hexbuf; *p2 != 0; p2++)
+			// braille dots symbol
+			Lookup(tr, "_braille", ph_buf);
+			if(ph_buf[0] == 0)
 			{
-				pbuf += strlen(pbuf);
-				*pbuf++ = phonPAUSE_VSHORT;
-				LookupLetter(tr, *p2, 0, pbuf, 1);
+				EncodePhonemes("br'e:l", ph_buf, NULL);
+			}
+
+			if(ph_buf[0] != 0)
+			{
+				pbuf = ph_buf + strlen(ph_buf);
+				for(ix=0; ix<8; ix++)
+				{
+					if(letter & (1 << ix))
+					{
+						*pbuf++ = phonPAUSE_VSHORT;
+						LookupLetter(tr, '1'+ix, 0, pbuf, 1);
+						pbuf += strlen(pbuf);
+					}
+				}
+			}
+		}
+
+		if(ph_buf[0]== 0)
+		{
+			if(iswalpha(letter))
+				Lookup(tr, "_?A", ph_buf);
+
+			if((ph_buf[0]==0) && !iswspace(letter))
+				Lookup(tr, "_??", ph_buf);
+	
+			if(ph_buf[0] != 0)
+			{
+				// speak the hexadecimal number of the character code
+				sprintf(hexbuf,"%x",letter);
+				pbuf = ph_buf;
+				for(p2 = hexbuf; *p2 != 0; p2++)
+				{
+					pbuf += strlen(pbuf);
+					*pbuf++ = phonPAUSE_VSHORT;
+					LookupLetter(tr, *p2, 0, pbuf, 1);
+				}
 			}
 		}
 	}
@@ -958,6 +986,18 @@ static const char *M_Variant(int value)
 {//====================================
 	// returns M, or perhaps MA for some cases
 	
+	if(translator->translator_name == L('l','t'))
+	{
+		// Lithuanian
+		if((value % 10) == 1)
+			return("0MA");
+		if(((value % 10) == 0) || ((value % 100) > 10) && ((value % 100) < 20))
+		{
+			return("0MB");
+		}
+		return("0M");
+	}
+
 	if((translator->langopts.numbers2 & 0x100) && (value >= 2) && (value <= 4))
 		return("0MA");  // Czech, Slovak
 	else
@@ -1951,8 +1991,9 @@ int TranslateNumber(Translator *tr, char *word1, char *ph_out, unsigned int *fla
 		return(0);  // speak digits individually
 
 	if(tr->langopts.numbers != 0)
+	{
 		return(TranslateNumber_1(tr, word1, ph_out, flags, wtab, control));
-
+	}
 	return(0);
 }  // end of TranslateNumber
 
