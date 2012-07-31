@@ -239,17 +239,17 @@ _aukšt) ai (L21L14_ A=i // išimtis: aukštaĩtė ; FIXME: tai II kirčiuotės 
 
 .group z
         z z
-        z (L06 z; // minštasis prieš priešakinės eilės balsius
-        z (CL06 z; // minštasis prieš priešakinės eilės balsius, įsiterpia vienas priebalsis: dūzgesys
+//        z (L06 z; // minštasis prieš priešakinės eilės balsius
+//        z (CL06 z; // minštasis prieš priešakinės eilės balsius, įsiterpia vienas priebalsis: dūzgesys
         z (L02 s // prieš dusliuosius priebalsius suduslėja: zyzti [zysti]
         z (č S // priebalsis z prieš č virsta š: mokesčiai [mokeščiai]
         z (dž Z // priebalsis z prieš dž virsta ž: vabzdžiai [vabždžiai]
 
 .group ž
         ž Z
-        ž (L06 Z; // minštasis prieš priešakinės eilės balsius
-        ž (CL06 Z; // minštasis prieš priešakinės eilės balsius, įsiterpia priebalsis: žvelgti
-        ž (CCL06 Z; // minštasis prieš priešakinės eilės balsius, įsiterpia du priebalsiai: užkrešėti
+//        ž (L06 Z; // minštasis prieš priešakinės eilės balsius
+//        ž (CL06 Z; // minštasis prieš priešakinės eilės balsius, įsiterpia priebalsis: žvelgti
+//        ž (CCL06 Z; // minštasis prieš priešakinės eilės balsius, įsiterpia du priebalsiai: užkrešėti
         žž Z // du vienodi priebalsiai suliejami: užžėlė [užėlė]
         ž (L02 S // prieš dusliuosius priebalsius suduslėja: vežti [vešti]
         ž (_ S // skardieji [d], [g], [ž] žodžio gale tariami dusliai: bemaž – bemaš
