@@ -989,7 +989,7 @@ static const char *M_Variant(int value)
 	if(translator->translator_name == L('l','t'))
 	{
 		// Lithuanian
-		if((value % 10) == 1)
+		if((value % 10) == 1  && value!=11)
 			return("0MA");
 		if(((value % 10) == 0) || ((value % 100) > 10) && ((value % 100) < 20))
 		{
