@@ -109,6 +109,7 @@
                 <category android:name="android.intent.category.tts_lang.ita" />
                 <category android:name="android.intent.category.tts_lang.kur" />
                 <category android:name="android.intent.category.tts_lang.lat" />
+                <category android:name="android.intent.category.tts_lang.lit" />
                 <category android:name="android.intent.category.tts_lang.mkd" />
                 <category android:name="android.intent.category.tts_lang.nor" />
                 <category android:name="android.intent.category.tts_lang.pol" />
