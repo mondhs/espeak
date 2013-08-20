@@ -73,6 +73,7 @@ const char *eSpeakSupportedVoices[][3] = {
         {"kn",     "kan",        "Kannada"},
         {"ku",     "kur",        "Kurdish"},
         {"lv",     "lav",        "Latvian"},
+        {"lt",     "lit",        "Lithuanian"},
         {"nl",     "nld",        "Dutch"},
         {"pl",     "pol",        "Polish"},
         {"pt",     "por",        "Portuguese (Brazil)"},
