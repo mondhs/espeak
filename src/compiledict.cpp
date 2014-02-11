@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005 to 2010 by Jonathan Duddington                     *
+ *   Copyright (C) 2005 to 2014 by Jonathan Duddington                     *
  *   email: jonsd@users.sourceforge.net                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -51,13 +51,24 @@ static char letterGroupsDefined[N_LETTER_GROUPS];
 
 MNEM_TAB mnem_rules[] = {
 	{"unpr",   0x01},
+	{"noprefix", 0x02},  // rule fails if a prefix has been removed
+
+	{"w_alt1", 0x11},
 	{"w_alt2", 0x12},
 	{"w_alt3", 0x13},
+	{"w_alt4", 0x14},
+	{"w_alt5", 0x15},
+	{"w_alt6", 0x16},
 	{"w_alt", 0x11},   // note: put longer names before their sub-strings
+	{"p_alt1", 0x21},
 	{"p_alt2", 0x22},
 	{"p_alt3", 0x23},
+	{"p_alt4", 0x24},
+	{"p_alt5", 0x25},
+	{"p_alt6", 0x26},
 	{"p_alt", 0x21},
-	{NULL, -1} };
+	{NULL, -1}
+};
 
 MNEM_TAB mnem_flags[] = {
 	// these in the first group put a value in bits0-3 of dictionary_flags
@@ -79,24 +90,21 @@ MNEM_TAB mnem_flags[] = {
 
 
 	// these set the corresponding numbered bit if dictionary_flags
-	{"$pause",     8},    /* ensure pause before this word */
-	{"$only",      9},    /* only match on this word without suffix */
-	{"$onlys",     10},    /* only match with none, or with 's' suffix */
-	{"$strend",    11},    /* full stress if at end of clause */
-	{"$strend2",   12},    /* full stress if at end of clause, or only followed by unstressed */
-	{"$unstressend",13},   /* reduce stress at end of clause */
-	{"$atend",     14},    /* use this pronunciation if at end of clause */
-	{"$atstart",   15},   // use this pronunciation at start of clause
-
-	{"$abbrev",    17},    /* use this pronuciation rather than split into letters */
-	{"$stem",      18},   // must have a suffix
+	{"$pause",     8},    // ensure pause before this word
+	{"$strend",    9},   // full stress if at end of clause
+	{"$strend2",   10},   // full stress if at end of clause, or only followed by unstressed
+	{"$unstressend",11},  // reduce stress at end of clause
+	{"$abbrev",    13},   // use this pronuciation rather than split into letters
 
 // language specific
-	{"$double",    19},   // IT double the initial consonant of next word
-	{"$alt",       20},   // use alternative pronunciation
-	{"$alt1",      20},   // synonym for $alt
-	{"$alt2",      21},
-	{"$alt3",      22},
+	{"$double",    14},   // IT double the initial consonant of next word
+	{"$alt",       15},   // use alternative pronunciation
+	{"$alt1",      15},   // synonym for $alt
+	{"$alt2",      16},
+	{"$alt3",      17},
+	{"$alt4",      18},
+	{"$alt5",      19},
+	{"$alt6",      20},
 	{"$combine",   23},   // Combine with the next word
 
 	{"$dot",       24},   // ignore '.' after this word (abbreviation)
@@ -107,18 +115,24 @@ MNEM_TAB mnem_flags[] = {
 	{"$text",      29},   // word translates to replcement text, not phonemes
 
 // flags in dictionary word 2
-	{"$verbf",   0x20},    /* verb follows */
-	{"$verbsf",  0x21},    /* verb follows, allow -s suffix */
-	{"$nounf",   0x22},    /* noun follows */
-	{"$pastf",   0x23},   /* past tense follows */
-	{"$verb",    0x24},   /* use this pronunciation when its a verb */
-	{"$noun",    0x25},   /* use this pronunciation when its a noun */
-	{"$past",    0x26},   /* use this pronunciation when its past tense */
-	{"$verbextend",0x28},   /* extend influence of 'verb follows' */
-	{"$capital", 0x29},   /* use this pronunciation if initial letter is upper case */
-	{"$allcaps", 0x2a},   /* use this pronunciation if initial letter is upper case */
+	{"$verbf",   0x20},   // verb follows
+	{"$verbsf",  0x21},   // verb follows, allow -s suffix
+	{"$nounf",   0x22},   // noun follows
+	{"$pastf",   0x23},   // past tense follows
+	{"$verb",    0x24},   // use this pronunciation when its a verb
+	{"$noun",    0x25},   // use this pronunciation when its a noun
+	{"$past",    0x26},   // use this pronunciation when its past tense
+	{"$verbextend",0x28}, // extend influence of 'verb follows'
+	{"$capital", 0x29},   // use this pronunciation if initial letter is upper case
+	{"$allcaps", 0x2a},   // use this pronunciation if initial letter is upper case
 	{"$accent",  0x2b},   // character name is base-character name + accent name
 	{"$sentence",0x2d},   // only if this clause is a sentence (i.e. terminator is {. ? !} not {, ; :}
+	{"$only",    0x2e},   // only match on this word without suffix
+	{"$onlys",   0x2f},   // only match with none, or with 's' suffix
+	{"$stem",    0x30},   // must have a suffix
+	{"$atend",   0x31},   // use this pronunciation if at end of clause
+	{"$atstart", 0x32},   // use this pronunciation at start of clause
+	{"$native",  0x33},   // not if we've switched translators
 
 	// doesn't set dictionary_flags
 	{"$?",        100},   // conditional rule, followed by byte giving the condition number
@@ -179,12 +193,35 @@ const char *LookupMnemName(MNEM_TAB *table, const int value)
 }   /* end of LookupMnemValue */
 
 
-char *print_dictionary_flags(unsigned int *flags)
-{//==============================================
-	static char buf[20];
+void print_dictionary_flags(unsigned int *flags, char *buf, int buf_len)
+{//========================================================================
+	int stress;
+	int ix;
+	const char *name;
+	int len;
+	int total = 0;
 
-	sprintf(buf,"%s  0x%x/%x",LookupMnemName(mnem_flags,(flags[0] & 0xf)+0x40), flags[0], flags[1]);
-	return(buf);
+	buf[0] = 0;
+	if((stress = flags[0] & 0xf) != 0)
+	{
+		sprintf(buf, "%s", LookupMnemName(mnem_flags, stress + 0x40));
+		total = strlen(buf);
+		buf += total;
+	}
+
+	for(ix=8; ix<64; ix++)
+	{
+		if(((ix < 30) && (flags[0] & (1 << ix))) || ((ix >= 0x20) && (flags[1] & (1 << (ix-0x20)))))
+		{
+			name = LookupMnemName(mnem_flags, ix);
+			len = strlen(name) + 1;
+			total += len;
+			if(total >= buf_len)
+				continue;
+			sprintf(buf, " %s", name);
+			buf += len;
+		}
+	}
 }
 
 
@@ -197,6 +234,7 @@ char *DecodeRule(const char *group_chars, int group_length, char *rule, int cont
    unsigned char rb;
 	unsigned char c;
 	char *p;
+	char *p_end;
    int  ix;
 	int  match_type;
 	int  finished=0;
@@ -207,13 +245,15 @@ char *DecodeRule(const char *group_chars, int group_length, char *rule, int cont
 	int  condition_num=0;
 	int  at_start = 0;
 	const char *name;
-   char buf[60];
-   char buf_pre[60];
+	char buf[200];
+	char buf_pre[200];
 	char suffix[20];
-	static char output[60];
+	static char output[80];
 
-	static char symbols[] = {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',
-		'&','%','+','#','S','D','Z','A','L','!',' ','@','?','J','N','K','V','?','T','X','?','W'};
+	static char symbols[] =
+		{' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',
+		'&','%','+','#','S','D','Z','A','L','!',' ','@','?','J','N','K','V','?','T','X','?','W'
+		};
 
 	static char symbols_lg[] = {'A','B','C','H','F','G','Y'};
 
@@ -279,8 +319,7 @@ char *DecodeRule(const char *group_chars, int group_length, char *rule, int cont
 			}
 			c = ' ';
 		}
-		else
-		if(rb == RULE_ENDING)
+		else if(rb == RULE_ENDING)
 		{
 			static const char *flag_chars = "eipvdfq tba ";
 			flags = ((rule[0] & 0x7f)<< 8) + (rule[1] & 0x7f);
@@ -299,13 +338,11 @@ char *DecodeRule(const char *group_chars, int group_length, char *rule, int cont
 			p += strlen(suffix);
 			c = ' ';
 		}
-		else
-		if(rb == RULE_LETTERGP)
+		else if(rb == RULE_LETTERGP)
 		{
 			c = symbols_lg[*rule++ - 'A'];
 		}
-		else
-		if(rb == RULE_LETTERGP2)
+		else if(rb == RULE_LETTERGP2)
 		{
 			value = *rule++ - 'A';
 			p[0] = 'L';
@@ -319,11 +356,9 @@ char *DecodeRule(const char *group_chars, int group_length, char *rule, int cont
 			}
 			p+=2;
 		}
-		else
-		if(rb <= RULE_LAST_RULE)
+		else if(rb <= RULE_LAST_RULE)
 			c = symbols[rb];
-		else
-		if(rb == RULE_SPACE)
+		else if(rb == RULE_SPACE)
 			c = '_';
 		else
 			c = rb;
@@ -332,6 +367,7 @@ char *DecodeRule(const char *group_chars, int group_length, char *rule, int cont
 	*p = 0;
 
 	p = output;
+	p_end = p + sizeof(output) - 1;
 	if(linenum > 0)
 	{
 		sprintf(p,"%5d:\t",linenum);
@@ -346,12 +382,13 @@ char *DecodeRule(const char *group_chars, int group_length, char *rule, int cont
 	{
 		if(at_start)
 			*p++ = '_';
-		while(--ix >= 0)
+		while((--ix >= 0) && (p < p_end-3))
 			*p++ = buf_pre[ix];
 		*p++ = ')';
 		*p++ = ' ';
 	}
 	*p = 0;
+	buf[p_end - p] = 0;  // prevent overflow in output[]
 	strcat(p,buf);
 	ix = strlen(output);
 	while(ix < 8)
@@ -390,7 +427,8 @@ static int compile_line(char *linebuf, char *dict_line, int *hash)
 	char *mnemptr;
 	unsigned char flag_codes[100];
 	char encoded_ph[200];
-	unsigned char bad_phoneme[4];
+	char bad_phoneme_str[4];
+	int bad_phoneme;
 static char nullstring[] = {0};
 
 	text_not_phonemes = 0;
@@ -436,12 +474,12 @@ static char nullstring[] = {0};
 			}
 
 			ix = 0;
-			if(isdigit(*p))
+			if(IsDigit09(*p))
 			{
 				ix += (*p-'0');
 				p++;
 			}
-			if(isdigit(*p))
+			if(IsDigit09(*p))
 			{
 				ix = ix*10 + (*p-'0');
 				p++;
@@ -464,13 +502,11 @@ static char nullstring[] = {0};
 				{
 					text_mode = 1;
 				}
-				else
-				if(flagnum == 201)
+				else if(flagnum == 201)
 				{
 					text_mode = 0;
 				}
-				else
-				if(flagnum == BITNUM_FLAG_TEXTMODE)
+				else if(flagnum == BITNUM_FLAG_TEXTMODE)
 				{
 					text_not_phonemes = 1;
 				}
@@ -500,8 +536,7 @@ static char nullstring[] = {0};
 				word = p+1;
 				step = 1;
 			}
-			else
-			if(!isspace2(c))
+			else if(!isspace2(c))
 			{
 				word = p;
 				step = 1;
@@ -511,7 +546,7 @@ static char nullstring[] = {0};
 		case 1:
 			if((c == '-') && multiple_words)
 			{
-				if(isdigit(word[0]))
+				if(IsDigit09(word[0]))
 				{
 					multiple_numeric_hyphen = 1;
 				}
@@ -535,8 +570,7 @@ static char nullstring[] = {0};
 					step = 3;
 				}
 			}
-			else
-			if(c == ')')
+			else if(c == ')')
 			{
 				if(multiple_words)
 				{
@@ -544,8 +578,7 @@ static char nullstring[] = {0};
 					multiple_words = 0;
 					step = 3;
 				}
-				else
-				if(word[0] != '_')
+				else if(word[0] != '_')
 				{
 					fprintf(f_log, "%5d: Missing '('\n", linenum);
 					error_count++;
@@ -559,8 +592,7 @@ static char nullstring[] = {0};
 			{
 				multiple_words++;
 			}
-			else
-			if(c == ')')
+			else if(c == ')')
 			{
 				p[0] = ' ';   // terminate extra string
 				multiple_string_end = p+1;
@@ -607,7 +639,7 @@ static char nullstring[] = {0};
 
 	// PROBLEM  vowel reductions are not applied to the translated phonemes
 	// condition rules are not applied
-			TranslateWord(translator,phonetic,0,NULL);
+			TranslateWord(translator,phonetic,0,NULL,NULL);
 			text_not_phonemes = 0;
 			strncpy0(encoded_ph, word_phonemes, N_WORD_BYTES-4);
 
@@ -631,17 +663,18 @@ static char nullstring[] = {0};
 	}
 	else
 	{
-		EncodePhonemes(phonetic,encoded_ph,bad_phoneme);
+		EncodePhonemes(phonetic,encoded_ph,&bad_phoneme);
 		if(strchr(encoded_ph,phonSWITCH) != 0)
 		{
 			flag_codes[n_flag_codes++] = BITNUM_FLAG_ONLY_S;  // don't match on suffixes (except 's') when switching languages
 		}
 
 		// check for errors in the phonemes codes
-		if(bad_phoneme[0] != 0)
+		if(bad_phoneme != 0)
 		{
 			// unrecognised phoneme, report error
-			fprintf(f_log,"%5d: Bad phoneme [%c] (0x%x) in: %s  %s\n",linenum,bad_phoneme[0],bad_phoneme[0],word,phonetic);
+			bad_phoneme_str[utf8_out(bad_phoneme, bad_phoneme_str)] = 0;
+			fprintf(f_log,"%5d: Bad phoneme [%s] (U+%x) in: %s  %s\n",linenum,bad_phoneme_str,bad_phoneme,word,phonetic);
 			error_count++;
 		}
 	}
@@ -658,8 +691,7 @@ static char nullstring[] = {0};
 		ix = utf8_out(wc, word);
 		word[ix] = 0;
 	}
-	else
-	if(word[0] != '_')
+	else if(word[0] != '_')
 	{
 		// convert to lower case, and note if the word is all-capitals
 		int c2;
@@ -673,9 +705,9 @@ static char nullstring[] = {0};
 			ix = utf8_in(&c2,p);
 			if(c2 == 0)
 				break;
-			if(iswupper(c2))
+			if(iswupper2(c2))
 			{
-				utf8_out(towlower(c2),p);
+				utf8_out(towlower2(c2),p);
 			}
 			else
 			{
@@ -891,8 +923,8 @@ int isHexDigit(int c)
 }
 
 
-static void copy_rule_string(char *string, int &state)
-{//===================================================
+static void copy_rule_string(char *string, int *state_out)
+{//=======================================================
 // state 0: conditional, 1=pre, 2=match, 3=post, 4=phonemes
 	static char *outbuf[5] = {rule_cond, rule_pre, rule_match, rule_post, rule_phonemes};
 	static int next_state[5] = {2,2,4,4,4};
@@ -906,6 +938,7 @@ static void copy_rule_string(char *string, int &state)
 	int  value;
 	int  literal;
 	int  hexdigit_input = 0;
+	int state = *state_out;
 	MNEM_TAB *mr;
 
 	if(string[0] == 0) return;
@@ -1046,8 +1079,7 @@ static void copy_rule_string(char *string, int &state)
 						fprintf(f_log,"%5d: Expected 2 digits after 'L'\n",linenum);
 						error_count++;
 					}
-					else
-					if((c <= 0) || (c >= N_LETTER_GROUPS) || (letterGroupsDefined[(int)c] == 0))
+					else if((c <= 0) || (c >= N_LETTER_GROUPS) || (letterGroupsDefined[(int)c] == 0))
 					{
 						fprintf(f_log,"%5d: Letter group L%.2d not defined\n",linenum,c);
 						error_count++;
@@ -1126,8 +1158,11 @@ static void copy_rule_string(char *string, int &state)
 						case 'a':
 							sxflags |= SUFX_A;
 							break;
+						case 'm':
+							sxflags |= SUFX_M;
+							break;
 						default:
-							if(isdigit(c))
+							if(IsDigit09(c))
 								value = (value*10) + (c - '0');
 							break;
 						}
@@ -1144,7 +1179,7 @@ static void copy_rule_string(char *string, int &state)
 		if(c == 0) break;
 	}
 
-	state = next_state[state];
+	*state_out = next_state[state];
 }  //  end of copy_rule_string
 
 
@@ -1163,7 +1198,8 @@ static char *compile_rule(char *input)
 	int finish=0;
 	char buf[80];
 	char output[150];
-	unsigned char bad_phoneme[4];
+	int bad_phoneme;
+	char bad_phoneme_str[4];
 
 	buf[0]=0;
 	rule_cond[0]=0;
@@ -1183,14 +1219,14 @@ static char *compile_rule(char *input)
 		case ')':		// end of prefix section
 			*p = 0;
 			state = 1;
-			copy_rule_string(buf,state);
+			copy_rule_string(buf,&state);
 			p = buf;
 			break;
 			
 		case '(':		// start of suffix section
 			*p = 0;
 			state = 2;
-			copy_rule_string(buf,state);
+			copy_rule_string(buf,&state);
 			state = 3;
 			p = buf;
 			if(input[ix+1] == ' ')
@@ -1204,14 +1240,14 @@ static char *compile_rule(char *input)
 		case '\r':
 		case 0:			// end of line
 			*p = 0;
-			copy_rule_string(buf,state);
+			copy_rule_string(buf,&state);
 			finish=1;
 			break;
 			
 		case '\t':		// end of section section
 		case ' ':
 			*p = 0;
-			copy_rule_string(buf,state);
+			copy_rule_string(buf,&state);
 			p = buf;
 			break;
 			
@@ -1241,10 +1277,11 @@ static char *compile_rule(char *input)
 		return(NULL);
 	}
 
-	EncodePhonemes(rule_phonemes,buf,bad_phoneme);
-	if(bad_phoneme[0] != 0)
+	EncodePhonemes(rule_phonemes,buf,&bad_phoneme);
+	if(bad_phoneme != 0)
 	{
-		fprintf(f_log,"%5d: Bad phoneme [%c] in %s\n",linenum,bad_phoneme[0],input);
+		bad_phoneme_str[utf8_out(bad_phoneme, bad_phoneme_str)] = 0;
+		fprintf(f_log,"%5d: Bad phoneme [%s] (U+%x) in: %s\n",linenum,bad_phoneme_str,bad_phoneme,input);
 		error_count++;
 	}
 	strcpy(output,buf);
@@ -1546,7 +1583,7 @@ static int compile_lettergroup(char *input, FILE *f_out)
 	char item_length[N_LETTERGP_ITEMS];
 
 	p = input;
-	if(!isdigit(p[0]) || !isdigit(p[1]))
+	if(!IsDigit09(p[0]) || !IsDigit09(p[1]))
 	{
 		fprintf(f_log,"%5d: Expected 2 digits after '.L'\n",linenum);
 		error_count++;
@@ -1583,6 +1620,7 @@ static int compile_lettergroup(char *input, FILE *f_out)
 		items[n_items] = p_start = p;
 		while((*p & 0xff) > ' ')
 		{
+			if (*p == '_') *p = ' ';   // allow '_' for word break
 			p++;
 		}
 		*p++ = 0;
@@ -1891,7 +1929,7 @@ int CompileDictionary(const char *dsource, const char *dict_name, FILE *log, cha
 	if((f_out = fopen_log(fname_out,"wb+")) == NULL)
 	{
 		if(fname_err)
-			strcpy(fname_err,fname_in);
+			strcpy(fname_err,fname_out);
 		return(-1);
 	}
 	sprintf(fname_temp,"%s%ctemp",path_home,PATHSEP);
@@ -1927,6 +1965,7 @@ int CompileDictionary(const char *dsource, const char *dict_name, FILE *log, cha
 	fseek(f_out,4,SEEK_SET);
 	Write4Bytes(f_out,offset_rules);
 	fclose(f_out);
+	fflush(f_log);
 
 	LoadDictionary(translator, dict_name, 0);
 

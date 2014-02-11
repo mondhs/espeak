@@ -30,12 +30,14 @@
 #define __WIN32__
 #define NEED_WCSTOF
 #define NEED_GETOPT
+#define USE_MBROLA_LIB
 
 #define PATHSEP '\\'
 #define USE_PORTAUDIO
 #define NO_VARIADIC_MACROS
 #define INCLUDE_KLATT
 #define INCLUDE_MBROLA
+#define INCLUDE_SONIC
 
 // will look for espeak_data directory here, and also in user's home directory
 #define PATH_ESPEAK_DATA  "/usr/share/espeak-data"
@@ -60,7 +62,7 @@ int LookupMnem(MNEM_TAB *table, const char *string);
 
 
 
-#define N_PATH_HOME  220
+#define N_PATH_HOME  230
 extern char path_home[N_PATH_HOME];    // this is the espeak-data directory
 
 extern void strncpy0(char *to,const char *from, int size);

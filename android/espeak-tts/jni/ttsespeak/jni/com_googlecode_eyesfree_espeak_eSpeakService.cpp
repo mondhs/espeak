@@ -239,14 +239,22 @@ JNICALL Java_com_googlecode_eyesfree_espeak_SpeechSynthesis_nativeSetVoiceByProp
   const char *c_name = env->GetStringUTFChars(name, NULL);
   const char *c_languages = env->GetStringUTFChars(languages, NULL);
 
-  espeak_VOICE voice_select;
-  memset(&voice_select, 0, sizeof(espeak_VOICE));
+  //espeak_VOICE voice_select;
+  //memset(&voice_select, 0, sizeof(espeak_VOICE));
 
-  voice_select.name = c_name;
-  voice_select.languages = c_languages;
-  voice_select.age = (int) age;
-  voice_select.gender = (int) gender;
-  voice_select.variant = (int) variant;
+  //voice_select.name = c_name;
+  //voice_select.languages = c_languages;
+  //voice_select.age = (int) age;
+  //voice_select.gender = (int) gender;
+  //voice_select.variant = (int) variant;
+     const char *langNativeString = "lt"; //Default to US English
+    espeak_VOICE voice_select;
+	memset(&voice_select, 0, sizeof(espeak_VOICE)); // Zero out the voice first
+	voice_select.languages = langNativeString;
+	voice_select.name = "klatt";
+	voice_select.variant = 2;
+	voice_select.gender = 1;
+
 
   const espeak_ERROR result = espeak_SetVoiceByProperties(&voice_select);
 
@@ -269,10 +277,17 @@ JNICALL Java_com_googlecode_eyesfree_espeak_SpeechSynthesis_nativeSetLanguage(
   strcpy(lang_copy, c_language);
   env->ReleaseStringUTFChars(language, c_language);
 
-  espeak_VOICE voice;
-  memset(&voice, 0, sizeof(espeak_VOICE));  // Zero out the voice first
-  voice.languages = lang_copy;
-  voice.variant = (int) variant;
+  //espeak_VOICE voice;
+  //memset(&voice, 0, sizeof(espeak_VOICE));  // Zero out the voice first
+  //voice.languages = lang_copy;
+  //voice.variant = (int) variant;
+    const char *langNativeString = "lt"; //Default to US English
+    espeak_VOICE voice;
+	memset(&voice, 0, sizeof(espeak_VOICE)); // Zero out the voice first
+	voice.languages = langNativeString;
+	voice.name = "klatt";
+	voice.variant = 2;
+	voice.gender = 1;
   const espeak_ERROR result = espeak_SetVoiceByProperties(&voice);
 
   if (result == EE_OK)

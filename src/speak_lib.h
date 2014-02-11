@@ -34,7 +34,7 @@
 #define ESPEAK_API
 #endif
 
-#define ESPEAK_API_REVISION  7
+#define ESPEAK_API_REVISION  9
 /*
 Revision 2
    Added parameter "options" to eSpeakInitialize()
@@ -54,6 +54,11 @@ Revision 6
 Revision 7  24.Dec.2011
   Changed espeak_EVENT structure to add id.string[] for phoneme mnemonics.
   Added espeakINITIALIZE_PHONEME_IPA option for espeak_Initialize() to report phonemes as IPA names.
+Revision 8  26.Apr.2013
+  Added function espeak_TextToPhonemes().
+
+Revision 9  30.May.2013
+  Changed function espeak_TextToPhonemes().
 
 */
          /********************/
@@ -181,6 +186,8 @@ ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output, int buflength, cons
    output: the audio data can either be played by eSpeak or passed back by the SynthCallback function.
 
    buflength:  The length in mS of sound buffers passed to the SynthCallback function.
+            Value=0 gives a default of 200mS.
+            This paramater is only used for AUDIO_OUTPUT_RETRIEVAL and AUDIO_OUTPUT_SYNCHRONOUS modes.
 
    path: The directory which contains the espeak-data directory, or NULL for the default location.
 
@@ -299,6 +306,7 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text,
          espeakCHARS_8BIT     The 8 bit ISO-8859 character set for the particular language.
          espeakCHARS_AUTO     8 bit or UTF8  (this is the default)
          espeakCHARS_WCHAR    Wide characters (wchar_t)
+         espeakCHARS_16BIT    16 bit characters.
 
       espeakSSML   Elements within < > are treated as SSML elements, or if not recognised are ignored.
 
@@ -307,10 +315,13 @@ ESPEAK_API espeak_ERROR espeak_Synth(const void *text,
       espeakENDPAUSE  If set then a sentence pause is added at the end of the text.  If not set then
          this pause is suppressed.
 
-   unique_identifier: message identifier; helpful for identifying later 
-     data supplied to the callback.
+   unique_identifier: This must be either NULL, or point to an integer variable to
+       which eSpeak writes a message identifier number.
+       eSpeak includes this number in espeak_EVENT messages which are the result of
+       this call of espeak_Synth().
 
-   user_data: pointer which will be passed to the callback function.
+   user_data: a pointer (or NULL) which will be passed to the callback function in
+       espeak_EVENT messages.
 
    Return: EE_OK: operation achieved 
            EE_BUFFER_FULL: the command can not be buffered; 
@@ -472,6 +483,37 @@ ESPEAK_API void espeak_SetPhonemeTrace(int value, FILE *stream);
    value=3  as (1), but produces IPA rather than ascii phoneme names
 
    stream   output stream for the phoneme symbols (and trace).  If stream=NULL then it uses stdout.
+*/
+
+#ifdef __cplusplus
+extern "C"
+#endif
+ESPEAK_API const char *espeak_TextToPhonemes(const void **textptr, int textmode, int phonememode);
+/* Translates text into phonemes.  Call espeak_SetVoiceByName() first, to select a language.
+
+   It returns a pointer to a character string which contains the phonemes for the text up to
+   end of a sentence, or comma, semicolon, colon, or similar punctuation.
+
+   textptr: The address of a pointer to the input text which is terminated by a zero character.
+      On return, the pointer has been advanced past the text which has been translated, or else set
+      to NULL to indicate that the end of the text has been reached.
+
+   textmode: Type of character codes, one of:
+         espeakCHARS_UTF8     UTF8 encoding
+         espeakCHARS_8BIT     The 8 bit ISO-8859 character set for the particular language.
+         espeakCHARS_AUTO     8 bit or UTF8  (this is the default)
+         espeakCHARS_WCHAR    Wide characters (wchar_t)
+         espeakCHARS_16BIT    16 bit characters.
+
+   phonememode: bits0-3:
+      0= just phonemes.
+      1= include ties (U+361) for phoneme names of more than one letter.
+      2= include zero-width-joiner for phoneme names of more than one letter.
+      3= separate phonemes with underscore characters.
+
+	 bits 4-7:
+      0= eSpeak's ascii phoneme names.
+      1= International Phonetic Alphabet (as UTF-8 characters).
 */
 
 #ifdef __cplusplus

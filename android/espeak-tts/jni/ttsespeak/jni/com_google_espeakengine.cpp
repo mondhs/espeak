@@ -42,7 +42,7 @@ using namespace android;
 const char *ESPEAK_DIRECTORY = "espeak-data";
 
 const char *eSpeakBaseResources[] = {"intonations", "phondata", "phonindex", "phontab",
-    "en_dict", "voices/en/en-us" };
+    "lt_dict", "voices/lt" };
 
 const int NUM_BASE_RESOURCES = 6;
 
@@ -114,7 +114,7 @@ const int DEFAULT_SPEECH_RATE = 150;
 // Callback to the TTS API
 synthDoneCB_t *ttsSynthDoneCBPointer;
 
-char *currentLanguage = (char *) "en-us";
+char *currentLanguage = (char *) "lt";
 char *currentRate = (char *) "150";
 char *eSpeakDataPath = NULL;
 
@@ -201,11 +201,19 @@ tts_result attemptInit() {
   espeak_SetSynthCallback(eSpeakCallback);
   espeak_SetParameter(espeakRATE, DEFAULT_SPEECH_RATE, 0);
 
-  espeak_VOICE voice;
-  memset(&voice, 0, sizeof(espeak_VOICE)); // Zero out the voice first
-  const char *langNativeString = "en-us"; //Default to US English
-  voice.languages = langNativeString;
-  voice.variant = 0;
+  //espeak_VOICE voice;
+  //memset(&voice, 0, sizeof(espeak_VOICE)); // Zero out the voice first
+  //const char *langNativeString = "lt"; //Default to US English
+  //voice.languages = langNativeString;
+  //voice.name = "klatt";
+  //voice.variant = 2;
+    const char *langNativeString = "lt"; //Default to US English
+    espeak_VOICE voice;
+	memset(&voice, 0, sizeof(espeak_VOICE)); // Zero out the voice first
+	voice.languages = langNativeString;
+	voice.name = "klatt";
+	voice.variant = 2;
+	voice.gender = 1;
   espeak_SetVoiceByProperties(&voice);
 
   hasInitialized = true;
@@ -397,10 +405,18 @@ tts_result TtsEngine::setLanguage(const char *lang, const char *country, const c
   char espeakLangStr[7];
   strcpy(espeakLangStr, eSpeakSupportedVoices[index][0]);
 
-  espeak_VOICE voice;
-  memset(&voice, 0, sizeof(espeak_VOICE)); // Zero out the voice first
-  voice.variant = 0;
-  voice.languages = espeakLangStr;
+  //espeak_VOICE voice;
+  //memset(&voice, 0, sizeof(espeak_VOICE)); // Zero out the voice first
+  //voice.name = "klatt";
+  //voice.variant = 2;
+  //voice.languages = espeakLangStr;
+    const char *langNativeString = "lt"; //Default to US English
+    espeak_VOICE voice;
+	memset(&voice, 0, sizeof(espeak_VOICE)); // Zero out the voice first
+	voice.languages = langNativeString;
+	voice.name = "klatt";
+	voice.variant = 2;
+	voice.gender = 1;
   espeak_ERROR err = espeak_SetVoiceByProperties(&voice);
   currentLanguage = new char[strlen(lang)];
   strcpy(currentLanguage, lang);

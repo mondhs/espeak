@@ -18,7 +18,7 @@
     <string name="engine_settings" msgid="15960710549009350">"„eSpeak“ TĮK nustatymai"</string>
     <string name="loading" msgid="1624831854302260352">"Įkeliama, palaukite..."</string>
     <string name="loading_failed" msgid="8965859207758593651">"Apgailestaujame, bet nepavyko įkelti „eSpeak“."</string>
-    <string name="sample_text" msgid="7870499751575948178">"Tai teksto, sakomo <xliff:g id="ID_1">%s</xliff:g>, pavyzdys"</string>
+    <string name="sample_text" msgid="7870499751575948178">"Tai teksto, sakomo <xliff:g id="ID_1">%s</xliff:g>, pavyzdys 1"</string>
   <string-array name="default_pitch_entries">
     <item msgid="5761992954594669467">"Labai žemas"</item>
     <item msgid="9160252712018935449">"Žemas"</item>

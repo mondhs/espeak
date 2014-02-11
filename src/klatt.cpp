@@ -58,7 +58,7 @@ static int sample_count;
 /* function prototypes for functions private to this file */
 
 static void flutter(klatt_frame_ptr);
-static double sampled_source (void);
+static double sampled_source (int);
 static double impulsive_source (void);
 static double natural_source (void);
 static void pitch_synch_par_reset (klatt_frame_ptr); 
@@ -70,6 +70,55 @@ static void setzeroabc (long,long,resonator_ptr);
 
 static klatt_frame_t  kt_frame;
 static klatt_global_t kt_globals;
+#define NUMBER_OF_SAMPLES 100
+
+static int scale_wav_tab[] = {45,38,45,45,55};   // scale output from different voicing sources
+
+// For testing, this can be overwritten in KlattInit()
+	static short natural_samples2[256]= {
+  2583,  2516,  2450,  2384,  2319,  2254,  2191,  2127,
+  2067,  2005,  1946,  1890,  1832,  1779,  1726,  1675,
+  1626,  1579,  1533,  1491,  1449,  1409,  1372,  1336,
+  1302,  1271,  1239,  1211,  1184,  1158,  1134,  1111,
+  1089,  1069,  1049,  1031,  1013,   996,   980,   965,
+   950,   936,   921,   909,   895,   881,   869,   855,
+   843,   830,   818,   804,   792,   779,   766,   754,
+   740,   728,   715,   702,   689,   676,   663,   651,
+   637,   626,   612,   601,   588,   576,   564,   552,
+   540,   530,   517,   507,   496,   485,   475,   464,
+   454,   443,   434,   424,   414,   404,   394,   385,
+   375,   366,   355,   347,   336,   328,   317,   308,
+   299,   288,   280,   269,   260,   250,   240,   231,
+   220,   212,   200,   192,   181,   172,   161,   152,
+   142,   133,   123,   113,   105,    94,    86,    76,
+    67,    57,    49,    39,    30,    22,    11,     4,
+    -5,   -14,   -23,   -32,   -41,   -50,   -60,   -69,
+   -78,   -87,   -96,  -107,  -115,  -126,  -134,  -144,
+  -154,  -164,  -174,  -183,  -193,  -203,  -213,  -222,
+  -233,  -242,  -252,  -262,  -271,  -281,  -291,  -301,
+  -310,  -320,  -330,  -339,  -349,  -357,  -368,  -377,
+  -387,  -397,  -406,  -417,  -426,  -436,  -446,  -456,
+  -467,  -477,  -487,  -499,  -509,  -521,  -532,  -543,
+  -555,  -567,  -579,  -591,  -603,  -616,  -628,  -641,
+  -653,  -666,  -679,  -692,  -705,  -717,  -732,  -743,
+  -758,  -769,  -783,  -795,  -808,  -820,  -834,  -845,
+  -860,  -872,  -885,  -898,  -911,  -926,  -939,  -955,
+  -968,  -986,  -999, -1018, -1034, -1054, -1072, -1094,
+ -1115, -1138, -1162, -1188, -1215, -1244, -1274, -1307,
+ -1340, -1377, -1415, -1453, -1496, -1538, -1584, -1631,
+ -1680, -1732, -1783, -1839, -1894, -1952, -2010, -2072,
+ -2133, -2196, -2260, -2325, -2390, -2456, -2522, -2589,
+};
+	static short natural_samples[100]=
+	{
+		-310,-400,530,356,224,89,23,-10,-58,-16,461,599,536,701,770,
+		605,497,461,560,404,110,224,131,104,-97,155,278,-154,-1165,
+		-598,737,125,-592,41,11,-247,-10,65,92,80,-304,71,167,-1,122,
+		233,161,-43,278,479,485,407,266,650,134,80,236,68,260,269,179,
+		53,140,275,293,296,104,257,152,311,182,263,245,125,314,140,44,
+		203,230,-235,-286,23,107,92,-91,38,464,443,176,98,-784,-2449,
+		-1891,-1045,-1600,-1462,-1384,-1261,-949,-730
+	};
 
 /*
 function RESONATOR
@@ -178,7 +227,7 @@ Allows the use of a glottal excitation waveform sampled from a real
 voice.
 */
 
-static double sampled_source()
+static double sampled_source(int source_num)
 {
 	int itemp;
 	double ftemp;
@@ -187,6 +236,18 @@ static double sampled_source()
 	int current_value;
 	int next_value;
 	double temp_diff;
+	short *samples;
+
+	if(source_num == 0)
+	{
+		samples = natural_samples;
+		kt_globals.num_samples = 100;
+	}
+	else
+	{
+		samples = natural_samples2;
+		kt_globals.num_samples = 256;
+	}
 	
 	if(kt_globals.T0!=0)
 	{
@@ -197,13 +258,13 @@ static double sampled_source()
 	
 		temp_diff = ftemp - (double) itemp;
 	
-		current_value = kt_globals.natural_samples[itemp];
-		next_value = kt_globals.natural_samples[itemp+1];
+		current_value = samples[itemp];
+		next_value = samples[itemp+1];
 	
 		diff_value = (double) next_value - (double) current_value;
 		diff_value = diff_value * temp_diff;
 	
-		result = kt_globals.natural_samples[itemp] + diff_value;
+		result = samples[itemp] + diff_value;
 		result = result * kt_globals.sample_factor;
 	}
 	else
@@ -292,7 +353,10 @@ if(option_log_frames)
 				voice = natural_source();	
 				break;
 			case SAMPLED:
-				voice = sampled_source();
+				voice = sampled_source(0);
+				break;
+			case SAMPLED2:
+				voice = sampled_source(1);
 				break;
 			}
 	
@@ -993,7 +1057,6 @@ static int klattp[N_KLATTP];
 static double klattp1[N_KLATTP];
 static double klattp_inc[N_KLATTP];
 
-static int scale_wav_tab[] = {45,38,45,45};   // scale output from different voicing sources
 
 
 
@@ -1026,7 +1089,7 @@ int Wavegen_Klatt(int resume)
 		}
 		for(ix=1; ix < 7; ix++)
 		{
-			kt_frame.Ap[ix] = 0;
+			kt_frame.Ap[ix] = peaks[ix].ap;
 		}
 
 		kt_frame.AVdb = klattp[KLATT_AV];
@@ -1127,7 +1190,7 @@ void SetSynth_Klatt(int length, int modn, frame_t *fr1, frame_t *fr2, voice_t *v
 
 	if(wvoice != NULL)
 	{
-		if((wvoice->klattv[0] > 0) && (wvoice->klattv[0] <=3 ))
+		if((wvoice->klattv[0] > 0) && (wvoice->klattv[0] <=4 ))
 		{
 			kt_globals.glsource = wvoice->klattv[0];
 			kt_globals.scale_wav = scale_wav_tab[kt_globals.glsource];
@@ -1269,12 +1332,12 @@ if(option_log_frames)
 		{
 			peaks[ix].bp1 = fr1->klatt_bp[ix] * 4;  // parallel bandwidth
 			peaks[ix].bp = (int)peaks[ix].bp1;
-			next = fr2->klatt_bp[ix] * 2;
+			next = fr2->klatt_bp[ix] * 4;
 			peaks[ix].bp_inc =  ((next - peaks[ix].bp1) * STEPSIZE) / length;
 
 			peaks[ix].ap1 = fr1->klatt_ap[ix];   // parallal amplitude
 			peaks[ix].ap = (int)peaks[ix].ap1;
-			next = fr2->klatt_ap[ix] * 2;
+			next = fr2->klatt_ap[ix];
 			peaks[ix].ap_inc =  ((next - peaks[ix].ap1) * STEPSIZE) / length;
 		}
 	}
@@ -1293,18 +1356,7 @@ int Wavegen_Klatt2(int length, int modulation, int resume, frame_t *fr1, frame_t
 
 void KlattInit()
 {
-#define NUMBER_OF_SAMPLES 100
 
-	static short natural_samples[NUMBER_OF_SAMPLES]=
-	{
-		-310,-400,530,356,224,89,23,-10,-58,-16,461,599,536,701,770,
-		605,497,461,560,404,110,224,131,104,-97,155,278,-154,-1165,
-		-598,737,125,-592,41,11,-247,-10,65,92,80,-304,71,167,-1,122,
-		233,161,-43,278,479,485,407,266,650,134,80,236,68,260,269,179,
-		53,140,275,293,296,104,257,152,311,182,263,245,125,314,140,44,
-		203,230,-235,-286,23,107,92,-91,38,464,443,176,98,-784,-2449,
-		-1891,-1045,-1600,-1462,-1384,-1261,-949,-730
-	};
 	static short formant_hz[10] = {280,688,1064,2806,3260,3700,6500,7000,8000,280};
 	static short bandwidth[10] = {89,160,70,160,200,200,500,500,500,89};
 	static short parallel_amp[10] = { 0,59,59,59,59,59,59,0,0,0};
@@ -1312,6 +1364,12 @@ void KlattInit()
 
 	int ix;
 
+for(ix=0; ix<256; ix++)
+{
+	// TEST: Overwrite natural_samples2
+	// sawtooth wave
+//	natural_samples2[ix] = (128-ix) * 20;
+}
 	sample_count=0;
 
 	kt_globals.synthesis_model = CASCADE_PARALLEL;

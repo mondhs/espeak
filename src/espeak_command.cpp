@@ -47,7 +47,7 @@ t_espeak_command* create_espeak_text(const void *text, size_t size, unsigned int
       goto text_error;
     }
  
-  a_text = malloc( size );
+  a_text = malloc( size+1 );
   if (!a_text)
     {
       goto text_error;

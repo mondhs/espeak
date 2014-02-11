@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005 to 2007 by Jonathan Duddington                     *
+ *   Copyright (C) 2005 to 2013 by Jonathan Duddington                     *
  *   email: jonsd@users.sourceforge.net                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #ifndef PLATFORM_DOS
 #ifdef PLATFORM_WINDOWS
@@ -101,6 +102,7 @@ static const char *help_text =
 "\t   Compile pronunciation rules and dictionary from the current\n"
 "\t   directory. <voice name> specifies the language\n"
 "--ipa      Write phonemes to stdout using International Phonetic Alphabet\n"
+"\t         --ipa=1 Use ties, --ipa=2 Use ZWJ, --ipa=3 Separate with _\n" 
 "--path=\"<path>\"\n"
 "\t   Specifies the directory containing the espeak-data directory\n"
 "--pho      Write mbrola phoneme data (.pho) to stdout or to the file in --phonout\n"
@@ -112,6 +114,7 @@ static const char *help_text =
 "--split=\"<minutes>\"\n"
 "\t   Starts a new WAV file every <minutes>.  Used with -w\n"
 "--stdout   Write speech output to stdout\n"
+"--version  Shows version number and date, and location of espeak-data\n"
 "--voices=<language>\n"
 "\t   List the available voices for the specified language.\n"
 "\t   If <language> is omitted, then list all voices.\n";
@@ -159,13 +162,16 @@ void DisplayVoices(FILE *f_out, char *language)
 	const char *p;
 	int len;
 	int count;
+	int c;
+	int j;
 	const espeak_VOICE *v;
 	const char *lang_name;
 	char age_buf[12];
+	char buf[80];
 	const espeak_VOICE **voices;
 	espeak_VOICE voice_select;
 
-	static char genders[4] = {' ','M','F',' '};
+	static char genders[4] = {'-','M','F','-'};
 
 	if((language != NULL) && (language[0] != 0))
 	{
@@ -181,7 +187,7 @@ void DisplayVoices(FILE *f_out, char *language)
 		voices = espeak_ListVoices(NULL);
 	}
 
-	fprintf(f_out,"Pty Language Age/Gender VoiceName       File        Other Langs\n");
+	fprintf(f_out,"Pty Language Age/Gender VoiceName          File          Other Languages\n");
 
 	for(ix=0; (v = voices[ix]) != NULL; ix++)
 	{
@@ -199,8 +205,16 @@ void DisplayVoices(FILE *f_out, char *language)
 
 			if(count==0)
 			{
-				fprintf(f_out,"%2d  %-12s%s%c  %-17s %-11s ",
-               p[0],lang_name,age_buf,genders[v->gender],v->name,v->identifier);
+				for(j=0; j < sizeof(buf); j++)
+				{
+					// replace spaces in the name
+					if((c = v->name[j]) == ' ')
+						c = '_';
+					if((buf[j] = c) == 0)
+						break;
+				}
+				fprintf(f_out,"%2d  %-12s%s%c  %-20s %-13s ",
+               p[0],lang_name,age_buf,genders[v->gender],buf,v->identifier);
 			}
 			else
 			{
@@ -231,6 +245,11 @@ static int OpenWaveFile(const char *path, int rate)
 	if(path == NULL)
 		return(2);
 
+	while(isspace(*path)) path++;
+
+	f_wave = NULL;
+	if(path[0] != 0)
+	{
 	if(strcmp(path,"stdout")==0)
 	{
 #ifdef PLATFORM_WINDOWS
@@ -241,6 +260,7 @@ static int OpenWaveFile(const char *path, int rate)
 	}
 	else
 		f_wave = fopen(path,"wb");
+	}
 
 	if(f_wave != NULL)
 	{
@@ -397,6 +417,7 @@ static int initialise(void)
 {//========================
 	int param;
 	int result;
+	int srate = 22050;   // default sample rate
 
 	// It seems that the wctype functions don't work until the locale has been set
 	// to something other than the default "C".  Then, not only Latin1 but also the
@@ -412,8 +433,7 @@ static int initialise(void)
 #endif
 
 
-	WavegenInit(22050,0);   // 22050
-	if((result = LoadPhData()) != 1)
+	if((result = LoadPhData(&srate)) != 1)
 	{
 		if(result == -1)
 		{
@@ -423,6 +443,7 @@ static int initialise(void)
 		else
 			fprintf(stderr,"Wrong version of espeak-data 0x%x (expects 0x%x) at %s\n",result,version_phdata,path_home);
 	}
+	WavegenInit(srate,0);
 	LoadConfig();
 	SetVoiceStack(NULL, "");
 	SynthesizeInit();
@@ -484,7 +505,7 @@ int main (int argc, char **argv)
 		{"path",    required_argument, 0, 0x107},
 		{"phonout", required_argument, 0, 0x108},
 		{"pho",     no_argument,       0, 0x109},
-		{"ipa",     no_argument,       0, 0x10a},
+		{"ipa",     optional_argument, 0, 0x10a},
 		{"version", no_argument,       0, 0x10b},
 		{0, 0, 0, 0}
 		};
@@ -722,6 +743,17 @@ int main (int argc, char **argv)
 
 		case 0x10a:  // --ipa
 			option_phonemes = 3;
+			if(optarg2 != NULL)
+			{
+				value = -1;
+				sscanf(optarg2,"%d",&value);
+				if((value<0) || (value>3))
+				{
+					fprintf(stderr,"Bad value for -ipa=\n");
+					value = 0;
+				}
+				option_phonemes += value;
+			}
 			break;
 
 		case 0x10b:  // --version
@@ -737,11 +769,22 @@ int main (int argc, char **argv)
 	init_path(argv[0],data_path);
 	initialise();
 
+	if(voicename[0] == 0)
+		strcpy(voicename,"default");
+
+	if(SetVoiceByName(voicename) != EE_OK)
+	{
+		memset(&voice_select,0,sizeof(voice_select));
+		voice_select.languages = voicename;
+		if(SetVoiceByProperties(&voice_select) != EE_OK)
+		{
+			fprintf(stderr,"%svoice '%s'\n",err_load,voicename);
+			exit(2);
+		}
+	}
 
 	if(flag_compile)
 	{
-		LoadVoice(voicename,5);
-
 #ifdef PLATFORM_DOS
 		char path_dsource[sizeof(path_home)+20];
 		strcpy(path_dsource,path_home);
@@ -763,19 +806,6 @@ int main (int argc, char **argv)
 	}
 
 
-	if(voicename[0] == 0)
-		strcpy(voicename,"default");
-
-	if(SetVoiceByName(voicename) != EE_OK)
-	{
-		memset(&voice_select,0,sizeof(voice_select));
-		voice_select.languages = voicename;
-		if(SetVoiceByProperties(&voice_select) != EE_OK)
-		{
-			fprintf(stderr,"%svoice '%s'\n",err_load,voicename);
-			exit(2);
-		}
-	}
 
 	SetParameter(espeakRATE,speed,0);
 	SetParameter(espeakVOLUME,amp,0);

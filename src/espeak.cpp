@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2006 to 2007 by Jonathan Duddington                     *
+ *   Copyright (C) 2006 to 2013 by Jonathan Duddington                     *
  *   email: jonsd@users.sourceforge.net                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #ifndef NEED_GETOPT
 #include <getopt.h>
 #endif
@@ -67,6 +68,7 @@ static const char *help_text =
 "\t   Compile pronunciation rules and dictionary from the current\n"
 "\t   directory. <voice name> specifies the language\n"
 "--ipa      Write phonemes to stdout using International Phonetic Alphabet\n"
+"\t         --ipa=1 Use ties, --ipa=2 Use ZWJ, --ipa=3 Separate with _\n" 
 "--path=\"<path>\"\n"
 "\t   Specifies the directory containing the espeak-data directory\n"
 "--pho      Write mbrola phoneme data (.pho) to stdout or to the file in --phonout\n"
@@ -78,6 +80,7 @@ static const char *help_text =
 "--split=\"<minutes>\"\n"
 "\t   Starts a new WAV file every <minutes>.  Used with -w\n"
 "--stdout   Write speech output to stdout\n"
+"--version  Shows version number and date, and location of espeak-data\n"
 "--voices=<language>\n"
 "\t   List the available voices for the specified language.\n"
 "\t   If <language> is omitted, then list all voices.\n";
@@ -127,13 +130,16 @@ void DisplayVoices(FILE *f_out, char *language)
 	const char *p;
 	int len;
 	int count;
+	int c;
+	int j;
 	const espeak_VOICE *v;
 	const char *lang_name;
 	char age_buf[12];
+	char buf[80];
 	const espeak_VOICE **voices;
 	espeak_VOICE voice_select;
 
-	static char genders[4] = {' ','M','F',' '};
+	static char genders[4] = {'-','M','F','-'};
 
 	if((language != NULL) && (language[0] != 0))
 	{
@@ -149,7 +155,7 @@ void DisplayVoices(FILE *f_out, char *language)
 		voices = espeak_ListVoices(NULL);
 	}
 
-	fprintf(f_out,"Pty Language Age/Gender VoiceName       File        Other Langs\n");
+	fprintf(f_out,"Pty Language Age/Gender VoiceName          File          Other Languages\n");
 
 	for(ix=0; (v = voices[ix]) != NULL; ix++)
 	{
@@ -167,8 +173,16 @@ void DisplayVoices(FILE *f_out, char *language)
 
 			if(count==0)
 			{
-				fprintf(f_out,"%2d  %-12s%s%c  %-17s %-11s ",
-               p[0],lang_name,age_buf,genders[v->gender],v->name,v->identifier);
+				for(j=0; j < sizeof(buf); j++)
+				{
+					// replace spaces in the name
+					if((c = v->name[j]) == ' ')
+						c = '_';
+					if((buf[j] = c) == 0)
+						break;
+				}
+				fprintf(f_out,"%2d  %-12s%s%c  %-20s %-13s ",
+               p[0],lang_name,age_buf,genders[v->gender],buf,v->identifier);
 			}
 			else
 			{
@@ -209,13 +223,16 @@ int OpenWavFile(char *path, int rate)
 	if(path == NULL)
 		return(2);
 
-	if(path[0] == 0)
-		return(0);
+	while(isspace(*path)) path++;
 
+	f_wavfile = NULL;
+	if(path[0] != 0)
+	{
 	if(strcmp(path,"stdout")==0)
 		f_wavfile = stdout;
 	else
 		f_wavfile = fopen(path,"wb");
+	}
 
 	if(f_wavfile == NULL)
 	{
@@ -362,7 +379,7 @@ int main (int argc, char **argv)
 		{"path",    required_argument, 0, 0x107},
 		{"phonout", required_argument, 0, 0x108},
 		{"pho",     no_argument,       0, 0x109},
-		{"ipa",     no_argument,       0, 0x10a},
+		{"ipa",     optional_argument, 0, 0x10a},
 		{"version", no_argument,       0, 0x10b},
 		{0, 0, 0, 0}
 		};
@@ -604,6 +621,17 @@ int main (int argc, char **argv)
 
 		case 0x10a:  // --ipa
 			option_phonemes = 3;
+			if(optarg2 != NULL)
+			{
+				value = -1;
+				sscanf(optarg2,"%d",&value);
+				if((value<0) || (value>3))
+				{
+					fprintf(stderr,"Bad value for -ipa=\n");
+					value = 0;
+				}
+				option_phonemes += value;
+			}
 			break;
 
 		case 0x10b:  // -version
@@ -768,7 +796,11 @@ int main (int argc, char **argv)
 		fclose(f_text);
 	}
 
-	espeak_Synchronize();
+	if(espeak_Synchronize() != EE_OK)
+	{
+		fprintf(stderr, "espeak_Synchronize() failed, maybe error when opening output device\n");
+		exit(4);
+	}
 
 	if(f_phonemes_out != stdout)
 		fclose(f_phonemes_out);  // needed for WinCE

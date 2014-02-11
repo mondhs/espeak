@@ -24,7 +24,9 @@
 
 //<includes
 
+#ifndef PLATFORM_WINDOWS
 #include <unistd.h>
+#endif
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
@@ -126,7 +128,7 @@ espeak_ERROR fifo_add_command (t_espeak_command* the_command)
       SHOW_TIME("fifo_add_command > post my_sem_start_is_required\n");
       sem_post(&my_sem_start_is_required);
       int val=1;
-      while (val)
+      while (val > 0)
 	{
 	  usleep(50000); // TBD: event?
 	  sem_getvalue(&my_sem_start_is_required, &val);
@@ -177,7 +179,7 @@ espeak_ERROR fifo_add_commands (t_espeak_command* command1, t_espeak_command* co
       SHOW_TIME("fifo_add_command > post my_sem_start_is_required\n");
       sem_post(&my_sem_start_is_required);
       int val=1;
-      while (val)
+      while (val > 0)
 	{
 	  usleep(50000); // TBD: event?
 	  sem_getvalue(&my_sem_start_is_required, &val);

@@ -27,7 +27,7 @@ _0C	j'yz
 _0M1	m'in
 _0M2	milj'on
 _0M3	milj'aRd
-_dpt	_viRg,yl_|   // ??
+_dpt	_t,am_|   // ??
 
 
 // Function words
@@ -47,12 +47,39 @@ bizim	$u+
 sizin	$u+
 onların	$u+
 
+bu	$u+
 
+
+// conjunctions
+və	$u+
+isə	$u+
+də	$u+
+həm	$u+
+ya	$u+
+da	$u+
+
+// prepositions
+aid	$u+ // about
+ilə	$u+ // with, by, in
+dair	$u+ // about
+
+// postpositions
+ci	$u
+cı	$u
+cü	$u
+de	$u
+dir	$u
+li	$u
+in	$u
+nə	$u
+ya	$u
+yə	$u
 
 // Character names
 b	be
 c	dZe
 ç	tSe
+_ə	&
 d	de
 f	fe
 g	Je
@@ -75,6 +102,9 @@ v	ve
 w	dubElv'E
 y	je
 z	ze
+
+*	ulduz $text
+%	faiz $text
 
 
 
