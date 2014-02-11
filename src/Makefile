@@ -55,7 +55,7 @@ USE_AUDIO=-DUSE_PORTAUDIO
 else
 ifeq ($(AUDIO),portaudio2)
 WAVE=wave.cpp
-LIB_AUDIO=/usr/lib/x86_64-linux-gnu/libportaudio.so.2
+LIB_AUDIO=/usr/lib/libportaudio.so.2
 USE_AUDIO=-DUSE_PORTAUDIO
 else
 ifeq ($(AUDIO),sada)
