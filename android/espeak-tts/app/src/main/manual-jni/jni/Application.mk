@@ -1,5 +1,5 @@
 APP_OPTIM := release
-APP_PLATFORM := android-8
+APP_PLATFORM := android-17
 
 # For use with ndk-rXm (MIPS NDK)
 #APP_ABI := mips

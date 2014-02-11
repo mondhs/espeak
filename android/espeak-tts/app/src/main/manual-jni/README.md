@@ -1,0 +1,15 @@
+How to manualy build jdk
+
+More info:
+http://stackoverflow.com/questions/16667903/android-studio-gradle-and-ndk
+
+If you're on unix the latest version (0.8) adds ndk-build. But I haven't found any documentation to that feature.
+
+So it is easiest thing prebuilt *.so files in jniLibs.srcDirs.
+
+Instructions
+1. goto manual-jni/jni 
+2. run ndk-build
+3. see manual-jni/libs and manual-jni/obj generated
+4. run in manual-jni dir: mv libs ../ jniLibs
+

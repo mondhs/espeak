@@ -4,6 +4,10 @@
 *.so
 *.lo
 
+#android
+build/
+.gradle
+
 # libraries
 
 docs/speak_lib.h
