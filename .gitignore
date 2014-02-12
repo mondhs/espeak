@@ -6,7 +6,12 @@
 
 #android
 build/
+libs/
+obj/
 .gradle
+android/espeak-tts/app/app.iml
+android/espeak-tts/espeak-tts.iml
+.idea
 
 # libraries
 

@@ -136,6 +136,8 @@ JNICALL Java_com_googlecode_eyesfree_espeak_SpeechSynthesis_nativeCreate(
   if (DEBUG) LOGV("Initializing with path %s", c_path);
   nat->sampleRate = espeak_Initialize(AUDIO_OUTPUT_SYNCHRONOUS, nat->bufferSizeInMillis, c_path, 0);
 
+  if (DEBUG) LOGV("Initialized with sample rate %i", nat->sampleRate);
+
   env->ReleaseStringUTFChars(path, c_path);
 
   if (nat->sampleRate > 0) {

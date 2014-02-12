@@ -26,8 +26,8 @@ LN_SF = /bin/ln -sf
 MKDIR = mkdir -p
 
 # 'runtime' uses pulseaudio if it is running, else uses portaudio
-#AUDIO = runtime
-AUDIO = portaudio
+AUDIO = runtime
+#AUDIO = portaudio
 #AUDIO = portaudio0
 #AUDIO = portaudio2
 #AUDIO = pulseaudio
@@ -124,7 +124,7 @@ $(STATIC_LIB_NAME): $(OBJS2)
 	$(AR) cqs $(STATIC_LIB_NAME) $(OBJS2)
 
 clean:
-	rm -f *.o *.a *~
+	rm -f *.o *.a *~ 
 
 distclean: clean
 	rm -f $(BIN_NAME)

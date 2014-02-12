@@ -1,4 +1,4 @@
-APP_OPTIM := release
+APP_OPTIM := debug
 APP_PLATFORM := android-17
 
 # For use with ndk-rXm (MIPS NDK)

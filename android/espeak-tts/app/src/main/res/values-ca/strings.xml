@@ -19,7 +19,9 @@
     <string name="loading" msgid="1624831854302260352">"S\'està carregant; espera..."</string>
     <string name="loading_failed" msgid="8965859207758593651">"No s\'ha pogut carregar eSpeak."</string>
     <string name="sample_text" msgid="7870499751575948178">"Aquesta és una mostra de text dit en veu alta en <xliff:g id="ID_1">%s</xliff:g>"</string>
-  <string-array name="default_pitch_entries">
+    <string name="title_activity_speech_test_activity">Speech Test</string>
+    <string name="go_to_test_activiti">Test Activity</string>
+    <string-array name="default_pitch_entries">
     <item msgid="5761992954594669467">"Molt baix"</item>
     <item msgid="9160252712018935449">"Baix"</item>
     <item msgid="6600217296998445656">"Normal"</item>

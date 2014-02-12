@@ -130,6 +130,7 @@ int LoadPhData(int *srate)
    wavefile_data = (unsigned char *)phondata_ptr;
 	n_tunes = length / sizeof(TUNE);
 
+
 	// read the version number and sample rate from the first 8 bytes of phondata
 	version = 0;  // bytes 0-3, version number
 	rate = 0;     // bytes 4-7, sample rate
@@ -166,8 +167,8 @@ int LoadPhData(int *srate)
 	if(phoneme_tab_number >= n_phoneme_tables)
 		phoneme_tab_number = 0;
 
-    if(srate != NULL)
-        *srate = rate;
+    //TODO:Mindas WHY WE NEED THIS. srate comes heres >65000??? if(srate != NULL)
+    //TODO:Mindas WHY WE NEED THIS. It works without this    *srate = rate;
 	return(result);
 }  //  end of LoadPhData
 

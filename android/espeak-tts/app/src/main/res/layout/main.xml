@@ -60,6 +60,12 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="6dp"
             android:text="@string/tts_settings" />
+        <Button
+            android:id="@+id/goToTestSpeechBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="@string/go_to_test_activiti" />
     </LinearLayout>
 
     <LinearLayout
@@ -75,5 +81,6 @@
             android:layout_height="wrap_content"
             android:text="@string/loading_failed" />
     </LinearLayout>
+
 
 </LinearLayout>

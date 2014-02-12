@@ -96,6 +96,8 @@
         Description: Sample text spoken aloud when the user is trying out a language.
     -->
     <string name="sample_text">This is a sample of text spoken in <xliff:g>%s</xliff:g></string>
+    <string name="title_activity_speech_test_activity">Speech Test</string>
+    <string name="go_to_test_activiti">Test Activity</string>
     <!--
         Source: Pitch preference labels.
         Description: Labels for possible pitch values.
@@ -127,5 +129,6 @@
         <item>4x</item>
         <item>5x</item>
     </string-array>
+
 
 </resources>

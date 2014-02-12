@@ -30,6 +30,8 @@
 
 #include "speech.h"
 
+
+
 #include <sys/stat.h>
 #ifdef PLATFORM_WINDOWS
 #include <fcntl.h>
@@ -87,7 +89,7 @@ void WVoiceChanged(voice_t *wvoice)
 static int dispatch_audio(short* outbuf, int length, espeak_EVENT* event)
 {//======================================================================
 	ENTER("dispatch_audio");
-	
+
 	int a_wave_can_be_played = fifo_is_command_enabled();
 	
 #ifdef DEBUG_ENABLED
@@ -400,7 +402,6 @@ static int initialise(int control)
 			fprintf(stderr,"Wrong version of espeak-data 0x%x (expects 0x%x) at %s\n",result,version_phdata,path_home);
 	}
 	WavegenInit(srate,0);
-
 	memset(&current_voice_selected,0,sizeof(current_voice_selected));
 	SetVoiceStack(NULL, "");
 	SynthesizeInit();
@@ -784,7 +785,6 @@ ENTER("espeak_Initialize");
 			setlocale(LC_CTYPE,"");
 	}
 #endif
-	
 	init_path(path);
 	initialise(options);
 	select_output(output_type);
@@ -824,7 +824,7 @@ ENTER("espeak_Initialize");
 	SetParameter(espeakPUNCTUATION,option_punctuation,0);
 	SetParameter(espeakWORDGAP,0,0);
 //	DoVoiceChange(voice);
-	
+
 #ifdef USE_ASYNC
 	fifo_init();
 #endif

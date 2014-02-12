@@ -19,7 +19,9 @@
     <string name="loading" msgid="1624831854302260352">"Nalaganje, počakajte trenutek ..."</string>
     <string name="loading_failed" msgid="8965859207758593651">"Mehanizma eSpeak ni bilo mogoče naložiti."</string>
     <string name="sample_text" msgid="7870499751575948178">"To je vzorec besedila, izgovorjen v <xliff:g id="ID_1">%s</xliff:g>"</string>
-  <string-array name="default_pitch_entries">
+    <string name="title_activity_speech_test_activity">Speech Test</string>
+    <string name="go_to_test_activiti">Test Activity</string>
+    <string-array name="default_pitch_entries">
     <item msgid="5761992954594669467">"Zelo nizek"</item>
     <item msgid="9160252712018935449">"Nizek"</item>
     <item msgid="6600217296998445656">"Običajen"</item>
