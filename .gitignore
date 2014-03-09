@@ -46,11 +46,11 @@ phsource/compile_report
 phsource/error_intonation
 phsource/error_log
 
-espeak-data/dir.stamp
-espeak-data/config
-espeak-data/dictsource
-espeak-data/phsource
-espeak-data/*_dict
+#espeak-data/dir.stamp
+#espeak-data/config
+#espeak-data/dictsource
+#espeak-data/phsource
+#espeak-data/*_dict
 #espeak-data/intonations
 #espeak-data/phondata
 #espeak-data/phondata-manifest
