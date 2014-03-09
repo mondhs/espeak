@@ -51,7 +51,7 @@ espeak-data/config
 espeak-data/dictsource
 espeak-data/phsource
 espeak-data/*_dict
-espeak-data/intonations
+#espeak-data/intonations
 #espeak-data/phondata
 #espeak-data/phondata-manifest
 #espeak-data/phonindex
