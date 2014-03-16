@@ -22,3 +22,6 @@ Espeak-lt
    2/  changed to wx automatic library and cxx resolution 
 
 More Info: https://github.com/mondhs/espeak/wiki
+
+in ubuntu 14.04 espeak-data path is /usr/lib/x86_64-linux-gnu/espeak-data
+In order to mbrola work copy to /usr/share/mbrola/lt1/lt1 (directory with content most importat is lt1 file in the dir) 
