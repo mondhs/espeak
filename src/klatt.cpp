@@ -70,6 +70,7 @@ static void setzeroabc (long,long,resonator_ptr);
 
 static klatt_frame_t  kt_frame;
 static klatt_global_t kt_globals;
+
 #define NUMBER_OF_SAMPLES 100
 
 static int scale_wav_tab[] = {45,38,45,45,55};   // scale output from different voicing sources

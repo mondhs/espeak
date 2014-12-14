@@ -69,6 +69,8 @@
 #define OFFSET_GEORGIAN 0x10a0
 #define OFFSET_KOREAN   0x1100
 #define OFFSET_ETHIOPIC 0x1200
+
+
 // character ranges must be listed in ascending order
 ALPHABET alphabets [] = {
     {"_el",    OFFSET_GREEK,    0x380, 0x3ff,  L('e','l'), AL_DONT_NAME | AL_NOT_LETTERS},
@@ -135,6 +137,7 @@ ALPHABET *AlphabetFromChar(int c)
 }
 
 
+
 static void Translator_Russian(Translator *tr);
 
 
@@ -194,6 +197,7 @@ static const unsigned short chars_ignore_zwnj_hyphen[] = {
 	0x200c,  '-', // zero width non-joiner, replace with hyphen
 	0x200d,  1, // zero width joiner
 	0, 0 };
+
 const char string_ordinal[] = {0xc2,0xba,0};  // masculine ordinal character, UTF-8
 
 
@@ -293,7 +297,6 @@ static const char transpose_map_latin[] = {
 	tr->langopts.ascii_language[0] = 0;    // Non-Latin alphabet languages, use this language to speak Latin words, default is English
 	tr->langopts.alt_alphabet_lang = L('e','n');
 	tr->langopts.roman_suffix = "";
-
 
 	SetLengthMods(tr,201);
 //	tr->langopts.length_mods = length_mods_en;
@@ -460,6 +463,7 @@ Translator *SelectTranslator(const char *name)
 {//===========================================
 	int name2 = 0;
 	Translator *tr;
+
 	static const short stress_lengths_equal[8] = {230, 230,  230, 230,  0, 0,  230, 230};
 	static const unsigned char stress_amps_equal[8] = {19,19, 19,19, 19,19, 19,19 };
 
@@ -475,10 +479,10 @@ Translator *SelectTranslator(const char *name)
 
 	tr = NewTranslator();
 	strcpy(tr->dictionary_name, name);
+
 	// convert name string into a word of up to 4 characters, for the switch()
 	while(*name != 0)
 		name2 = (name2 << 8) + *name++;
-
 
 	switch(name2)
 	{
@@ -775,7 +779,7 @@ Translator *SelectTranslator(const char *name)
 			static const unsigned char stress_amps_eu[8] = {16,16, 18,18, 18,18, 18,18 };
 			SetupTranslator(tr,stress_lengths_eu,stress_amps_eu);
 			tr->langopts.stress_rule = STRESSPOSN_2L;  // ?? second syllable ??
-			tr->langopts.numbers = NUM_SINGLE_STRESS | NUM_DECIMAL_COMMA | NUM_AND_UNITS | NUM_HUNDRED_AND | NUM_OMIT_1_HUNDRED | NUM_VIGESIMAL;
+			tr->langopts.numbers = NUM_SINGLE_STRESS | NUM_DECIMAL_COMMA | NUM_HUNDRED_AND | NUM_OMIT_1_HUNDRED | NUM_OMIT_1_THOUSAND | NUM_VIGESIMAL;
 		}
 		break;
 
@@ -800,6 +804,7 @@ Translator *SelectTranslator(const char *name)
 			tr->transpose_max = 0x6cc;
 			tr->transpose_map = transpose_map_fa;
 			tr->letter_bits_offset = OFFSET_ARABIC;
+
 			tr->langopts.numbers = NUM_AND_UNITS | NUM_HUNDRED_AND;
 			tr->langopts.param[LOPT_UNPRONOUNCABLE] = 1;   // disable check for unpronouncable words
 
@@ -914,6 +919,7 @@ SetupTranslator(tr,stress_lengths_equal,stress_amps_equal);
 			static const short stress_lengths_sr[8] = {160,150, 200,200, 0,0, 250,260};
 
 			strcpy(tr->dictionary_name, "hbs");
+
 			if(name2 == L('s','r'))
 				SetupTranslator(tr,stress_lengths_sr,stress_amps_hr);
 			else
@@ -1339,7 +1345,6 @@ SetLengthMods(tr,3);  // all equal
 			tr->langopts.stress_rule = STRESSPOSN_2R;
 			tr->langopts.stress_flags = S_FINAL_DIM_ONLY | S_FINAL_NO_2;
 			tr->langopts.length_mods0 = tr->langopts.length_mods;  // don't lengthen vowels in the last syllable
-
 			tr->langopts.param[LOPT_UNPRONOUNCABLE] = 1;   // disable check for unpronouncable words.  Need to allow "bw'" prefix
 			tr->langopts.numbers = NUM_HUNDRED_AND | NUM_AND_UNITS | NUM_DFRACTION_2 | NUM_AND_HUNDRED;
 			tr->langopts.numbers2 = 0x200;  // say "thousands" before its number
@@ -1461,6 +1466,7 @@ SetLengthMods(tr,3);  // all equal
 			tr->langopts.stress_rule = STRESSPOSN_2R;
 			tr->langopts.stress_flags =  S_FINAL_DIM_ONLY | S_FINAL_NO_2;
  			tr->langopts.max_initial_consonants = 4; // for example: mwngi
+
 
 			tr->langopts.numbers = NUM_AND_UNITS | NUM_HUNDRED_AND | NUM_SINGLE_AND | NUM_OMIT_1_HUNDRED;
 			tr->langopts.break_numbers = 0x49249268;  // for languages which have numbers for 100,000 and 1,000,000
@@ -1678,10 +1684,7 @@ void ProcessLanguageOptions(LANGUAGE_OPTIONS *langopts)
 	{
 		langopts->thousands_sep = 0;   // don't allow thousands separator, except space
 	}
-
 }
-
-
 
 //**********************************************************************************************************
 

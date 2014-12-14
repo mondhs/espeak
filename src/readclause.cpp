@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005 to 2013 by Jonathan Duddington                     *
+ *   Copyright (C) 2005 to 2014 by Jonathan Duddington                     *
  *   email: jonsd@users.sourceforge.net                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -318,6 +318,7 @@ int towlower(int c)
 
 	if(c < 0x80)
 		return(tolower(c));
+
 	if((c > MAX_WALPHA) || ((x = walpha_tab[c-0x80]) >= 0xfe))
 		return(c);
 
@@ -425,6 +426,7 @@ float wcstod(const wchar_t *str, wchar_t **tailptr)
 }
 #endif
 
+
 // use internal data for iswalpha up to U+024F
 // iswalpha() on Windows is unreliable  (U+AA, U+BA).
 int iswalpha2(int c)
@@ -460,10 +462,12 @@ int iswupper2(int c)
 		return(1);
 	return(0);
 }
+
 int towlower2(unsigned int c)
 {
 	int x;
 	int ix;
+
 	// check for non-standard upper to lower case conversions
 	if(c == 'I')
 	{
@@ -472,11 +476,13 @@ int towlower2(unsigned int c)
 			c = 0x131;   // I -> ı
 		}
 	}
+
 	if(c < 0x80)
 		return(tolower(c));
 
 	if(c > MAX_WALPHA)
 	return(towlower(c));
+
 	if((x = walpha_tab[c-0x80]) >= 0xfe)
 		return(c);   // this is not an upper case letter
 
@@ -882,7 +888,6 @@ static int LoadSoundFile(const char *fname, int index)
 			fclose(f);
 			f = NULL;
 
-
 			strcpy(fname_temp,"/tmp/espeakXXXXXX");
 			if((fd_temp = mkstemp(fname_temp)) >= 0)
 			{
@@ -1018,6 +1023,7 @@ static int AnnouncePunctuation(Translator *tr, int c1, int *c2_ptr, char *output
 
 		if(punctname == NULL)
 			return(-1);
+
 		if((*bufix==0) || (end_clause ==0) || (tr->langopts.param[LOPT_ANNOUNCE_PUNCT] & 2))
 		{
 			punct_count=1;
@@ -1076,7 +1082,6 @@ static int AnnouncePunctuation(Translator *tr, int c1, int *c2_ptr, char *output
 			buf[1] = 0;
 		}
 	}
-
 
 	bufix1 = *bufix;
 	len = strlen(buf);
@@ -2087,7 +2092,13 @@ static int ProcessSsmlTag(wchar_t *xml_buf, char *outbuf, int *outix, int n_outb
 		}
 		if((attr2 = GetSsmlAttribute(px,"time")) != NULL)
 		{
-			value = (attrnumber(attr2,0,1) * 25) / speed.pause_factor; // compensate for speaking speed to keep constant pause length
+			value2 = attrnumber(attr2,0,1);   // pause in mS
+
+			// compensate for speaking speed to keep constant pause length, see function PauseLength()
+			// 'value' here is x 10mS
+			value = (value2 * 256) / (speed.clause_pause_factor * 10);
+			if(value < 200)
+				value = (value2 * 256) / (speed.pause_factor * 10);
 
 			if(terminator == 0)
 				terminator = CLAUSE_NONE;
@@ -2095,7 +2106,13 @@ static int ProcessSsmlTag(wchar_t *xml_buf, char *outbuf, int *outix, int n_outb
 		if(terminator)
 		{
 			if(value > 0xfff)
+			{
+				// scale down the value and set a scaling indicator bit
+				value = value / 32;
+			if(value > 0xfff)
 				value = 0xfff;
+				terminator |= CLAUSE_PAUSE_LONG;
+			}
 			return(terminator + value);
 		}
 		break;
@@ -2518,6 +2535,7 @@ f_input = f_in;  // for GetC etc
 		}
 
 		linelength++;
+
 		if((j = lookupwchar2(tr->chars_ignore,c1)) != 0)
 		{
 			if(j == 1)

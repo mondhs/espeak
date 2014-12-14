@@ -132,6 +132,7 @@ static void InitGroups(Translator *tr)
 // Called after dictionary 1 is loaded, to set up table of entry points for translation rule chains
 //	for single-letters and two-letter combinations
 
+
 	int  ix;
 	char *p;
 	char *p_name;
@@ -528,6 +529,7 @@ unsigned short ipa1[96] = {
 static char *phon_out_buf = NULL;   // passes the result of GetTranslatedPhonemeString()
 static int phon_out_size = 0;
 
+
 char *WritePhMnemonic(char *phon_out, PHONEME_TAB *ph, PHONEME_LIST *plist, int use_ipa, int *flags)
 {//===================================================================================================
 	int c;
@@ -581,6 +583,7 @@ char *WritePhMnemonic(char *phon_out, PHONEME_TAB *ph, PHONEME_LIST *plist, int 
 				*flags = *p;
 			p++;
 			}
+
 		len = strlen(p);
 		if(len > 0)
 			{
@@ -633,6 +636,7 @@ const char *GetTranslatedPhonemeString(int phoneme_mode)
 {//=======================================================
 	/* Called after a clause has been translated into phonemes, in order
    to display the clause in phoneme mnemonic form.
+
 	   phoneme_mode  bits 0-3: 0=only phoneme names, 1=ties, 2=ZWJ, 3=underscore separator
 	                 bit  4:   0=eSpeak phoneme names, 1=IPA
 */
@@ -675,11 +679,14 @@ const char *GetTranslatedPhonemeString(int phoneme_mode)
 		separate_phonemes = '_';
 		use_tie = 0;
 	}
+
+
 		for(ix=1; ix<(n_phoneme_list-2); ix++)
 		{
 			buf = phon_buf;
 
 			plist = &phoneme_list[ix];
+
 		WritePhMnemonic(phon_buf2, plist->ph, plist, use_ipa, &flags);
 			if(plist->newword)
 				*buf++ = ' ';
@@ -767,10 +774,10 @@ const char *GetTranslatedPhonemeString(int phoneme_mode)
 				return("");
 			}
 		}
+
 			phon_buf[len] = 0;
 		strcpy(&phon_out_buf[phon_out_ix], phon_buf);
 			phon_out_ix += len;
-
 			}
 	phon_out_buf[phon_out_ix] = 0;
 
@@ -912,6 +919,7 @@ int Unpronouncable(Translator *tr, char *word, int posn)
 		// Character is not in our alphabet
 		return(0);
 	}
+
 	if(tr->langopts.param[LOPT_UNPRONOUNCABLE] == 1)
 		return(0);
 
@@ -931,6 +939,7 @@ int Unpronouncable(Translator *tr, char *word, int posn)
 
 		if(count==0)
 			c1 = c;
+
 		if((c == '\'') && (tr->langopts.param[LOPT_UNPRONOUNCABLE] == 3))
 		{
 			// don't count apostrophe
@@ -1285,6 +1294,7 @@ void SetWordStress(Translator *tr, char *output, unsigned int *dictionary_flags,
 		}
 	}
 	
+
 	switch(tr->langopts.stress_rule)
 	{
 	case 8:
@@ -1914,6 +1924,7 @@ static void MatchRule(Translator *tr, char *word[], char *word_start, int group_
 	int add_points;
 	int command;
 	int check_atstart;
+	unsigned int *flags;
 
 	MatchRecord match;
 	static MatchRecord best;
@@ -2151,11 +2162,11 @@ static void MatchRule(Translator *tr, char *word[], char *word_start, int group_
 
 				case RULE_DOLLAR:
 					command = *rule++;
-					if(command == 0x01)
+					if(command == DOLLAR_UNPR)
 					{
 						match.end_type = SUFX_UNPRON;    // $unpron
 					}
-					else if(command == 0x02)   // $noprefix
+					else if(command == DOLLAR_NOPREFIX)   // $noprefix
 					{
 						if(word_flags & FLAG_PREFIX_REMOVED)
 							failed = 1;             // a prefix has been removed
@@ -2170,16 +2181,20 @@ static void MatchRule(Translator *tr, char *word[], char *word_start, int group_
 						else
 							failed = 1;
 					}
-					else if((command & 0xf0) == 0x20)
+					else if(((command & 0xf0) == 0x20) || (command == DOLLAR_LIST))
 					{
-						// $p_alt
+						// $list or $p_alt
 						// make a copy of the word up to the post-match characters
 						ix = *word - word_start + consumed + group_length + 1;
 						memcpy(word_buf, word_start-1, ix);
 						word_buf[ix] = ' ';
 						word_buf[ix+1] = 0;
+						LookupFlags(tr, &word_buf[1], &flags);
 
-						if(LookupFlags(tr, &word_buf[1]) & (1 << (BITNUM_FLAG_ALT + (command & 0xf))))
+						if((command == DOLLAR_LIST) && (flags[0] & FLAG_FOUND) && !(flags[1] & FLAG_ONLY))
+							add_points = 23;
+						else
+						if(flags[0] & (1 << (BITNUM_FLAG_ALT + (command & 0xf))))
 							add_points = 23;
 						else
 							failed = 1;
@@ -2391,6 +2406,28 @@ static void MatchRule(Translator *tr, char *word[], char *word_start, int group_
 					}
 					else
 						failed = 1;
+					break;
+
+				case RULE_DOLLAR:
+					command = *rule++;
+					if((command==DOLLAR_LIST) || ((command & 0xf0) == 0x20))
+					{
+						// $list or $p_alt
+						// make a copy of the word up to the current character
+						ix = *word - word_start + 1;
+						memcpy(word_buf, word_start-1, ix);
+						word_buf[ix] = ' ';
+						word_buf[ix+1] = 0;
+						LookupFlags(tr, &word_buf[1], &flags);
+
+						if((command==DOLLAR_LIST) && (flags[0] & FLAG_FOUND) && !(flags[1] & FLAG_ONLY))
+							add_points = 23;
+						else
+						if(flags[0] & (1 << (BITNUM_FLAG_ALT + (command & 0xf))))
+							add_points = 23;
+						else
+							failed = 1;
+					}
 					break;
 
 				case RULE_SYLLABLE:
@@ -2697,6 +2734,7 @@ int TranslateRules(Translator *tr, char *p_start, char *phonemes, int ph_size, c
 					if((match1.points == 0) && ((option_sayas & 0x10) == 0))
 					{
 						n = utf8_in(&letter,p-1)-1;
+
 						if(tr->letter_bits_offset > 0)
 						{
 							// not a Latin alphabet, switch to the default Latin alphabet language
@@ -2754,6 +2792,7 @@ int TranslateRules(Translator *tr, char *p_start, char *phonemes, int ph_size, c
 								continue;  // start again at the beginning of the word
 							}
 						}
+
 						if(((alphabet = AlphabetFromChar(letter)) != NULL)  && (alphabet->offset != tr->letter_bits_offset))
 						{
 							if(tr->langopts.alt_alphabet == alphabet->offset)
@@ -2813,6 +2852,7 @@ int TranslateRules(Translator *tr, char *p_start, char *phonemes, int ph_size, c
 		{
 			if(word_flags & FLAG_UNPRON_TEST)
 				return(match1.end_type | 1);
+
 #ifdef deleted
 // ?? allow $unpr while translating rules, not just on initial FLAG_UNPRON_TEST
 			if((match1.end_type & SUFX_UNPRON) && !(word_flags & FLAG_SUFFIX_REMOVED))
@@ -2898,7 +2938,6 @@ void ApplySpecialAttribute2(Translator *tr, char *phonemes, int dict_flags)
 
 
 
-
 //=============================================================================================
 //   Look up a word in the pronunciation dictionary list
 //   - exceptions which override the usual pronunciation rules, or which give a word
@@ -2926,6 +2965,7 @@ int TransposeAlphabet(Translator *tr, char *text)
 	const short *pairs_list;
 	int bufix;
 	char buf[N_WORD_BYTES+1];
+
 
 	offset = tr->transpose_min - 1;
 	min = tr->transpose_min;
@@ -3442,6 +3482,7 @@ int LookupDictList(Translator *tr, char **wordptr, char *ph_out, unsigned int *f
 
 	found = LookupDict2(tr, word, word1, ph_out, flags, end_flags, wtab);
 
+
 	if(flags[0] & FLAG_MAX3)
 	{
 		if(strcmp(ph_out, tr->phonemes_repeat) == 0)
@@ -3566,14 +3607,16 @@ int Lookup(Translator *tr, const char *word, char *ph_out)
 	return(found);
 }
 
-int LookupFlags(Translator *tr, const char *word)
-{//==============================================
+
+int LookupFlags(Translator *tr, const char *word, unsigned int **flags_out)
+{//===========================================================================
 	char buf[100];
 	static unsigned int flags[2];
 	char *word1 = (char *)word;
 
 	flags[0] = flags[1] = 0;
 	LookupDictList(tr, &word1, buf, flags, 0, NULL);
+	*flags_out = flags;
 	return(flags[0]);
 }
 
@@ -3615,6 +3658,7 @@ int RemoveEnding(Translator *tr, char *word, int end_type, char *word_copy)
 			*word_end = 'e';
 	}
 	i = word_end - word;
+
 	if(word_copy != NULL)
 	{
 	memcpy(word_copy,word,i);
@@ -3633,7 +3677,7 @@ int RemoveEnding(Translator *tr, char *word, int end_type, char *word_copy)
 	}
 	
 	// remove bytes from the end of the word and replace them by spaces
-	for(i=0; (i<len_ending) && (i < sizeof(ending)-1); i++)
+	for(i=0; (i<len_ending) && (i < (int)sizeof(ending)-1); i++)
 	{
 		ending[i] = word_end[i];
 		word_end[i] = ' ';
@@ -3725,5 +3769,6 @@ int RemoveEnding(Translator *tr, char *word, int end_type, char *word_copy)
 
 	return(end_flags);
 }   /* end of RemoveEnding */
+
 
 

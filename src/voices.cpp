@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005 to 2013 by Jonathan Duddington                     *
+ *   Copyright (C) 2005 to 2014 by Jonathan Duddington                     *
  *   email: jonsd@users.sourceforge.net                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -183,6 +183,7 @@ static MNEM_TAB dict_dialects[] = {
 	{NULL,   0}
 };
 
+
 #define N_VOICE_VARIANTS   12
 const char variants_either[N_VOICE_VARIANTS] = {1,2,12,3,13,4,14,5,11,0};
 const char variants_male[N_VOICE_VARIANTS] = {1,2,3,4,5,6,0};
@@ -201,6 +202,7 @@ static char *fgets_strip(char *buf, int size, FILE *f_in)
 
 	if(fgets(buf,size,f_in) == NULL)
 		return(NULL);
+
 	if(buf[0] == '#')
 	{
 		buf[0] = 0;
@@ -612,6 +614,7 @@ voice_t *LoadVoice(const char *vname, int control)
 	static const char *voices_europe =
 		"an bg bs ca cs cy da de el en en-us es et fi fr fr-be ga hr hu is it lt lv mk nl no pl pt-pt ro ru sk sq sr sv ";
 
+
 	strncpy0(voicename, vname, sizeof(voicename));
 	if(control & 0x10)
 	{
@@ -623,6 +626,7 @@ voice_t *LoadVoice(const char *vname, int control)
 	{
 		if(voicename[0]==0)
 			strcpy(voicename,"default");
+
 		sprintf(path_voices,"%s%cvoices%c",path_home,PATHSEP,PATHSEP);
 		sprintf(buf,"%s%s",path_voices,voicename);  // first, look in the main voices directory
 
@@ -906,7 +910,6 @@ voice_t *LoadVoice(const char *vname, int control)
 				new_translator->charset_a0 = charsets[value];
 			break;
 
-
 		case V_OPTION:
 			value2 = 0;
 			if(((sscanf(p,"%s %d %d",option_name,&value,&value2) >= 2) && ((ix = LookupMnem(options_tab, option_name)) >= 0)) ||
@@ -1117,6 +1120,7 @@ voice_t *LoadVoice(const char *vname, int control)
 	{
 		translator = new_translator;
 	}
+
 
 	// relative lengths of different stress syllables
 	for(ix=0; ix<stress_lengths_set; ix++)
@@ -1400,6 +1404,7 @@ static int SetVoiceScores(espeak_VOICE *voice_select, espeak_VOICE **voices, int
 				n_parts++;
 		}
 	}
+
 	if((n_parts == 1) && (control & 1))
 	{
 		if(strcmp(language, "mbrola") == 0)
@@ -1418,6 +1423,7 @@ static int SetVoiceScores(espeak_VOICE *voice_select, espeak_VOICE **voices, int
 		}
 
 	}
+
 	// select those voices which match the specified language
 	nv = 0;
 	for(ix=0; ix<n_voices_list; ix++)
@@ -1605,6 +1611,7 @@ char const *SelectVoice(espeak_VOICE *voice_select, int *found)
 		vp = voices[ix];
 		// is the main voice the required gender?
 		skip=0;
+
 		if((gender != 0) && (vp->gender != gender))
 		{
 			skip=1;
@@ -1613,6 +1620,7 @@ char const *SelectVoice(espeak_VOICE *voice_select, int *found)
 		{
 			skip=1;
 		}
+
 		if(skip==0)
 		{
 			voices2[ix2++] = vp; 
@@ -1774,6 +1782,7 @@ static void GetVoices(const char *path)
 
 		if(ent->d_name[0] == '.')
 			continue;
+
 		sprintf(fname,"%s%c%s",path,PATHSEP,ent->d_name);
 
 		ftype = GetFileLength(fname);
@@ -1815,6 +1824,7 @@ espeak_ERROR SetVoiceByName(const char *name)
 	static char buf[60];
 
 	strncpy0(buf,name,sizeof(buf));
+
 	variant_name = ExtractVoiceVariantName(buf, 0, 1);
 
 	for(ix=0; ; ix++)
@@ -1823,6 +1833,7 @@ espeak_ERROR SetVoiceByName(const char *name)
 		if((buf[ix] = tolower(buf[ix])) == 0)
 			break;
 	}
+
 	memset(&voice_selector,0,sizeof(voice_selector));
 	voice_selector.name = (char *)name;  // include variant name in voice stack ??
 

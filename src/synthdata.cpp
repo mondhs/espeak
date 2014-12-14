@@ -35,7 +35,7 @@
 #include "translate.h"
 #include "wave.h"
 
-const char *version_string = "1.48.02  02.Feb.14";
+const char *version_string = "1.48.03  04.Mar.14";
 const int version_phdata  = 0x014801;
 
 int option_device_number = -1;
@@ -130,7 +130,6 @@ int LoadPhData(int *srate)
    wavefile_data = (unsigned char *)phondata_ptr;
 	n_tunes = length / sizeof(TUNE);
 
-
 	// read the version number and sample rate from the first 8 bytes of phondata
 	version = 0;  // bytes 0-3, version number
 	rate = 0;     // bytes 4-7, sample rate
@@ -167,8 +166,8 @@ int LoadPhData(int *srate)
 	if(phoneme_tab_number >= n_phoneme_tables)
 		phoneme_tab_number = 0;
 
-    //TODO:Mindas WHY WE NEED THIS. srate comes heres >65000??? if(srate != NULL)
-    //TODO:Mindas WHY WE NEED THIS. It works without this    *srate = rate;
+    if(srate != NULL) //TODO:Mindas WHY WE NEED THIS. srate comes heres >65000??? if(srate != NULL)
+        *srate = rate; //TODO:Mindas WHY WE NEED THIS. It works without this    *srate = rate;
 	return(result);
 }  //  end of LoadPhData
 
@@ -632,7 +631,6 @@ static bool InterpretCondition(Translator *tr, int control, PHONEME_LIST *plist,
 
 	// bits 8-10 = 7,  other conditions
 
-
 	instn = (*p_prog) & 0xfff;
 	data = instn & 0xff;
 	instn2 = instn >> 8;
@@ -648,6 +646,7 @@ static bool InterpretCondition(Translator *tr, int control, PHONEME_LIST *plist,
 		    p_prog++;
 		    which = (*p_prog);
 		}
+
 		if(which==4)
 		{
 			// nextPhW not word boundary
@@ -986,6 +985,7 @@ void InterpretPhoneme(Translator *tr, int control, PHONEME_LIST *plist, PHONEME_
 	    // start of a word, reset word data
 	    worddata->prev_vowel.ph = NULL;
 	}
+
 	memset(phdata, 0, sizeof(PHONEME_DATA));
 	phdata->pd_param[i_SET_LENGTH] = ph->std_length;
 	phdata->pd_param[i_LENGTH_MOD] = ph->length_mod;
@@ -1103,6 +1103,7 @@ void InterpretPhoneme(Translator *tr, int control, PHONEME_LIST *plist, PHONEME_
 					truth2 = truth2 ^ 1;
 					prog++;
 				}
+
 				if(or_flag)
 					truth = truth || truth2;
 				else

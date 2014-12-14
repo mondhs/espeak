@@ -137,6 +137,7 @@ static int speed3 = 118;
 //#define TEST_SPEED
 
 #ifdef INCLUDE_SONIC
+
 void SetSpeed(int control)
 {//=======================
 	int x;
@@ -276,6 +277,7 @@ void SetSpeed(int control)
 
 // adjust for different sample rates
 speed.min_sample_len = (speed.min_sample_len * samplerate_native) / 22050;
+
 		speed.pause_factor = (256 * s1)/115;      // full speed adjustment, used for pause length
 		speed.clause_pause_factor = 0;
 
@@ -314,6 +316,7 @@ speed.min_sample_len = (speed.min_sample_len * samplerate_native) / 22050;
 printf("%3d: speedf %d %d %d   pause=%d %d   wav=%d  lenmod=%d %d\n",wpm,speed1,speed2,speed3, speed.pause_factor,speed.clause_pause_factor, speed.wav_factor,speed.lenmod_factor,speed.lenmod2_factor);
 #endif
 }  //  end of SetSpeed
+
 #else  // not using sonic speed-up
 
 void SetSpeed(int control)

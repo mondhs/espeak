@@ -30,8 +30,6 @@
 
 #include "speech.h"
 
-
-
 #include <sys/stat.h>
 #ifdef PLATFORM_WINDOWS
 #include <fcntl.h>
@@ -388,6 +386,7 @@ static int initialise(int control)
 
 	err = EE_OK;
 	LoadConfig();
+
 	if((result = LoadPhData(&srate)) != 1)  // reads sample rate from espeak-data/phontab
 	{
 		if(result == -1)
@@ -402,6 +401,7 @@ static int initialise(int control)
 			fprintf(stderr,"Wrong version of espeak-data 0x%x (expects 0x%x) at %s\n",result,version_phdata,path_home);
 	}
 	WavegenInit(srate,0);
+
 	memset(&current_voice_selected,0,sizeof(current_voice_selected));
 	SetVoiceStack(NULL, "");
 	SynthesizeInit();
@@ -785,6 +785,7 @@ ENTER("espeak_Initialize");
 			setlocale(LC_CTYPE,"");
 	}
 #endif
+
 	init_path(path);
 	initialise(options);
 	select_output(output_type);
@@ -797,6 +798,7 @@ ENTER("espeak_Initialize");
 	// buflength is in mS, allocate 2 bytes per sample
 	if((buf_length == 0) || (output_type == AUDIO_OUTPUT_PLAYBACK) || (output_type == AUDIO_OUTPUT_SYNCH_PLAYBACK))
 		buf_length = 200;
+
 	outbuf_size = (buf_length * samplerate)/500;
 	outbuf = (unsigned char*)realloc(outbuf,outbuf_size);
 	if((out_start = outbuf) == NULL)
@@ -1175,6 +1177,8 @@ ESPEAK_API void espeak_SetPhonemeTrace(int value, FILE *stream)
 		f_trans = stderr;
 	
 }   //  end of espeak_SetPhonemes
+
+
 ESPEAK_API const char *espeak_TextToPhonemes(const void **textptr, int textmode, int phonememode)
 {//=================================================================================================
 	/* phoneme_mode  bits 0-3: 0=only phoneme names, 1=ties, 2=ZWJ, 3=underscore separator

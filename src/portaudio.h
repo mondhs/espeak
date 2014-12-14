@@ -1,5 +1,6 @@
 // NOTE: Copy this file to  portaudio.h  in order to compile with V18 portaudio
 
+
 #ifndef PORT_AUDIO_H
 #define PORT_AUDIO_H
 
@@ -7,6 +8,7 @@
 extern "C"
 {
 #endif /* __cplusplus */
+
 /*
  * $Id: portaudio.h,v 1.5 2002/03/26 18:04:22 philburk Exp $
  * PortAudio Portable Real-Time Audio Library
@@ -67,7 +69,6 @@ typedef enum {
 
 */
 
-
 PaError Pa_Initialize( void );
 
 /*
@@ -75,12 +76,12 @@ PaError Pa_Initialize( void );
  using the library.
 
 */
+
 PaError Pa_Terminate( void );
 
 /*
  Pa_GetHostError() returns a host specific error code.
  This can be called after receiving a PortAudio error code of paHostError.
-
 
 */
 
@@ -128,7 +129,6 @@ typedef unsigned long PaSampleFormat;
 
  Devices may support input, output or both.
 
-
 */
 
 typedef int PaDeviceID;
@@ -158,10 +158,11 @@ PaDeviceInfo;
 
  On the PC, the user can specify a default device by
  setting an environment variable. For example, to use device #1.
+ 
  set PA_RECOMMENDED_OUTPUT_DEVICE=1
+ 
  The user should first determine the available device ids by using
  the supplied application "pa_devs".
-
 
 */
 
@@ -218,7 +219,6 @@ typedef double PaTimestamp;
  NOTE: None of the other stream functions may be called from within the
  callback function except for Pa_GetCPULoad().
 
-
 */
     
 typedef int (PortAudioCallback)(
@@ -234,8 +234,6 @@ typedef int (PortAudioCallback)(
  the Pa_OpenStream() function.
 
 */
-
-
 
 #define   paNoFlag      (0)
 #define   paClipOff     (1<<0)   /* disable default clipping of out of range samples */
@@ -326,6 +324,7 @@ typedef void PortAudioStream;
  PaError above) and the value of stream is invalid.
 
 */
+
 PaError Pa_OpenStream( PortAudioStream** stream,
                        PaDeviceID inputDevice,
                        int numInputChannels,
@@ -355,6 +354,7 @@ PaError Pa_OpenStream( PortAudioStream** stream,
  sampleFormat applies to both the input and output buffers.
 
 */
+
 PaError Pa_OpenDefaultStream( PortAudioStream** stream,
                               int numInputChannels,
                               int numOutputChannels,
@@ -378,7 +378,6 @@ PaError Pa_CloseStream( PortAudioStream* );
  Pa_AbortStream() stops playing immediately without waiting for pending
  buffers to complete.
 
-
 */
 
 PaError Pa_StartStream( PortAudioStream *stream );
@@ -395,8 +394,6 @@ PaError Pa_AbortStream( PortAudioStream *stream );
  but may also become inactive if the callback returns a non-zero value.
  In the latter case, the stream is considered inactive after the last
  buffer has finished playing.
-
-
 
 */
 
@@ -460,11 +457,7 @@ void Pa_Sleep( long msec );
 
 */
 
-
 PaError Pa_GetSampleSize( PaSampleFormat format );
-
-
-
 
 
 #ifdef __cplusplus

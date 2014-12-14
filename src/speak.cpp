@@ -806,7 +806,6 @@ int main (int argc, char **argv)
 	}
 
 
-
 	SetParameter(espeakRATE,speed,0);
 	SetParameter(espeakVOLUME,amp,0);
 	SetParameter(espeakCAPITALS,option_capitals,0);

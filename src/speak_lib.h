@@ -54,6 +54,7 @@ Revision 6
 Revision 7  24.Dec.2011
   Changed espeak_EVENT structure to add id.string[] for phoneme mnemonics.
   Added espeakINITIALIZE_PHONEME_IPA option for espeak_Initialize() to report phonemes as IPA names.
+
 Revision 8  26.Apr.2013
   Added function espeak_TextToPhonemes().
 

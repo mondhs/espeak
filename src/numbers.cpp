@@ -576,6 +576,8 @@ void LookupLetter(Translator *tr, unsigned int letter, int next_byte, char *ph_b
 	SetWordStress(tr, ph_buf1, dict_flags, -1, control & 1);
 
 }  // end of LookupLetter
+
+
 // unicode ranges for non-ascii digits 0-9
 static const int number_ranges[] = {
 	0x660, 0x6f0,  // arabic
@@ -781,6 +783,7 @@ int TranslateLetter(Translator *tr, char *word, char *phonemes, int control)
 		return(0);
 	}
 
+
 	if((ph_buf[0] == 0) && ((number = NonAsciiNumber(letter)) > 0))
 	{
 		// convert a non-ascii number to 0-9
@@ -794,6 +797,7 @@ int TranslateLetter(Translator *tr, char *word, char *phonemes, int control)
 		al_offset = alphabet->offset;
 		al_flags = alphabet->flags;
 		}
+
 	if(alphabet != current_alphabet)
 	{
 		// speak the name of the alphabet
@@ -955,6 +959,7 @@ int TranslateLetter(Translator *tr, char *word, char *phonemes, int control)
 				// speak the hexadecimal number of the character code
 				sprintf(hexbuf,"%x",letter);
 				}
+
 				pbuf = ph_buf;
 				for(p2 = hexbuf; *p2 != 0; p2++)
 				{
@@ -973,6 +978,7 @@ int TranslateLetter(Translator *tr, char *word, char *phonemes, int control)
 	}
 
 	len = strlen(phonemes);
+
 	if(tr->langopts.accents & 2)  // 'capital' before or after the word ?
 		sprintf(ph_buf2,"%c%s%s%s",0xff,ph_alphabet,ph_buf,capital);
 	else
@@ -1160,6 +1166,7 @@ int TranslateRoman(Translator *tr, char *word, char *ph_out, WORD_TAB *wtab)
 
 	if(((tr->langopts.numbers & NUM_ROMAN_CAPITALS) && !(wtab[0].flags & FLAG_ALL_UPPER)) || IsDigit09(word[-2]))
 		return(0);    // not '2xx'
+
 	if(word[1] == ' ')
 		return(0);  // only one letter, don't speak as a Roman Number
 
@@ -1303,9 +1310,7 @@ static const char *M_Variant(int value)
 			if(((value % 10) >= 2) && ((value % 10) <= 4))
 			return("0MA");
 		}
-
 		break;
-
 	}
 	return("0M");
 }
@@ -1461,6 +1466,7 @@ static int LookupNum2(Translator *tr, int value, int thousandplex, const int con
 	}
 
 	is_ordinal = control & 1;
+
 	if((control & 2) && (n_digit_lookup == 2))
 	{
 		// pronunciation of the final 2 digits has already been found
@@ -1966,6 +1972,8 @@ static int LookupNum3(Translator *tr, int value, char *ph_out, int suppress_null
 
 	return(0);
 }  // end of LookupNum3
+
+
 bool CheckThousandsGroup(char *word, int group_len)
 {//================================================
 // Is this a group of 3 digits which looks like a thousands group?
@@ -2030,6 +2038,7 @@ static int TranslateNumber_1(Translator *tr, char *word, char *ph_out, unsigned 
 	for(ix=0; IsDigit09(word[ix]); ix++) ;
 	n_digits = ix;
 	value = this_value = atoi(word);
+
 	group_len = 3;
 	if(tr->langopts.numbers2 & NUM2_MYRIADS)
 		group_len = 4;
@@ -2252,6 +2261,7 @@ static int TranslateNumber_1(Translator *tr, char *word, char *ph_out, unsigned 
 				n_digit_lookup = 1;
 			}
 		}
+
 		if(prev_thousands == 0)
 		{
 			if((decimal_point == 0) && (ordinal == 0))
@@ -2351,6 +2361,7 @@ static int TranslateNumber_1(Translator *tr, char *word, char *ph_out, unsigned 
 						n_digits += decimal_count;
 				}
 				break;
+
 			case NUM_DFRACTION_7:
 				// alternative form of decimal fraction digits, except the final digit
 				while(decimal_count-- > 1)

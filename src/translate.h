@@ -26,6 +26,9 @@
 #define N_WORD_PHONEMES  200          // max phonemes in a word
 #define N_WORD_BYTES     160          // max bytes for the UTF8 characters in a word
 #define N_CLAUSE_WORDS   300          // max words in a clause
+#define N_TR_SOURCE    800            // the source text of a single clause (UTF8 bytes)
+
+
 #define N_RULE_GROUP2    120          // max num of two-letter rule chains
 #define N_HASH_DICT     1024
 #define N_CHARSETS        20
@@ -53,7 +56,6 @@
 #define FLAG_ALT6_TRANS   0x100000  // language specific
 
 #define FLAG_COMBINE      0x800000  // combine with the next word
-
 #define FLAG_ALLOW_DOT  0x01000000  // ignore '.' after word (abbreviation)
 #define FLAG_NEEDS_DOT  0x02000000  // only if the word is followed by a dot
 #define FLAG_WAS_UNPRONOUNCABLE  0x04000000  // the unpronounceable routine was used
@@ -86,6 +88,7 @@
 #define FLAG_ATSTART       0x40000  // use this pronunciation if at start of clause
 #define FLAG_NATIVE        0x80000  // not if we've switched translators
 #define FLAG_LOOKUP_SYMBOL 0x40000000  // to indicate called from Lookup()
+
 #define BITNUM_FLAG_ALLCAPS   0x2a
 #define BITNUM_FLAG_HYPHENATED  0x2c
 #define BITNUM_FLAG_ONLY      0x2e
@@ -180,6 +183,11 @@
 #define RULE_SPELLING   31   // W while spelling letter-by-letter
 #define RULE_LAST_RULE   31
 
+#define DOLLAR_UNPR     0x01
+#define DOLLAR_NOPREFIX 0x02
+#define DOLLAR_LIST     0x03
+
+
 #define LETTERGP_A	0
 #define LETTERGP_B	1
 #define LETTERGP_C	2
@@ -191,7 +199,7 @@
 
 
 // Punctuation types  returned by ReadClause()
-// bits 0-7 pause x 10mS, bits 12-14 intonation type,
+// bits 0-11 pause x 10mS
 // bits12-14 intonation type
 // bit 15- don't need space after the punctuation
 // bit 19=sentence, bit 18=clause,  bits 17=voice change
@@ -199,6 +207,8 @@
 // bit 20= punctuation character can be inside a word (Armenian)
 // bit 21= speak the name of the punctuation character
 // bit 22= dot after the last word
+// bit 23= pause is x 320mS (not x 10mS)
+
 #define CLAUSE_BIT_SENTENCE  0x80000
 #define CLAUSE_BIT_CLAUSE    0x40000
 #define CLAUSE_BIT_VOICE     0x20000
@@ -206,6 +216,7 @@
 #define PUNCT_IN_WORD        0x100000
 #define PUNCT_SAY_NAME       0x200000
 #define CLAUSE_DOT           0x400000
+#define CLAUSE_PAUSE_LONG 0x800000
 
 #define CLAUSE_NONE        ( 0 + 0x04000)
 #define CLAUSE_PARAGRAPH   (70 + 0x80000)
@@ -352,6 +363,7 @@ extern ALPHABET *current_alphabet;
 
 	// bit 0:  Don't allow suffices if there is no previous syllable
 #define LOPT_SUFFIX  19
+
 	// bit 0  Apostrophe at start of word is part of the word
 	// bit 1  Apostrophe at end of word is part of the word
 #define LOPT_APOSTROPHE  20
@@ -379,37 +391,54 @@ typedef struct {
 #define S_FINAL_DIM_ONLY    0x06
 // bit1=don't set diminished stress,
 // bit2=mark unstressed final syllables as diminished
+
 // bit3=set consecutive unstressed syllables in unstressed words to diminished, but not in stressed words
+
 #define S_FINAL_NO_2        0x10
 // bit4=don't allow secondary stress on last syllable
+
 #define S_NO_AUTO_2         0x20
 // bit5-don't use automatic secondary stress
+
 #define S_2_TO_HEAVY        0x40
 // bit6=light syllable followed by heavy, move secondary stress to the heavy syllable. LANG=Finnish
+
 #define S_FIRST_PRIMARY     0x80
 // bit7=if more than one primary stress, make the subsequent primaries to secondary stress
+
 #define S_FINAL_STRESS_C    0x100
 // bit8=stress last syllable if it doesn't end in a vowel
+
 #define S_FINAL_SPANISH     0x200
 // bit9=stress last syllable if it doesn't end in vowel or "s" or "n"  LANG=Spanish
+
 #define S_2_SYL_2           0x1000
 // bit12= In a 2-syllable word, if one has primary stress then give the other secondary stress
+
 #define S_INITIAL_2         0x2000
 // bit13= If there is only one syllable before the primary stress, give it a secondary stress
+
 #define S_MID_DIM           0x10000
 // bit 16= Set (not first or last) syllables to diminished stress
 
 #define S_PRIORITY_STRESS   0x20000
 // bit17= "priority" stress reduces other primary stress to "unstressed" not "secondary"
+
 #define S_EO_CLAUSE1        0x40000
 // bit18= don't lengthen short vowels more than long vowels at end-of-clause
+
 #define S_FINAL_LONG         0x80000
 // bit19=stress on final syllable if it has a long vowel, but previous syllable has a short vowel
+
+
 #define S_HYPEN_UNSTRESS    0x100000
 // bit20= hyphenated words, 2nd part is unstressed
+
 #define S_NO_EOC_LENGTHEN   0x200000
 // bit21= don't lengthen vowels at end-of-clause
+
 // bit15= Give stress to the first unstressed syllable
+
 
 	int stress_flags; 
 	int unstressed_wd1; // stress for $u word of 1 syllable
@@ -542,6 +571,7 @@ typedef struct {
 	int max_lengthmod;
 	int lengthen_tonic;   // lengthen the tonic syllable
 	int suffix_add_e;      // replace a suffix (which has the SUFX_E flag) with this character
+
 #define DICTDIALECT_EN_US  1  // bit number
 #define DICTDIALECT_ES_LA  2
 	int dict_dialect;         // bitmap, use a dialect for foreign words
@@ -611,7 +641,6 @@ typedef struct
 	unsigned char groups2_count[256];    // number of 2 letter groups for this initial letter
 	unsigned char groups2_start[256];    // index into groups2
 	const short *frequent_pairs;   // list of frequent pairs of letters, for use in compressed *_list
-	
 	
 	int expect_verb;
 	int expect_past;    // expect past tense
@@ -723,7 +752,7 @@ int SetTranslator2(const char *name);
 void DeleteTranslator(Translator *tr);
 void ProcessLanguageOptions(LANGUAGE_OPTIONS *langopts);
 int Lookup(Translator *tr, const char *word, char *ph_out);
-int LookupFlags(Translator *tr, const char *word);
+int LookupFlags(Translator *tr, const char *word, unsigned int **flags_out);
 
 int TranslateNumber(Translator *tr, char *word1, char *ph_out, unsigned int *flags, WORD_TAB *wtab, int control);
 int TranslateRoman(Translator *tr, char *word, char *ph_out, WORD_TAB *wtab);

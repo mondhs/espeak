@@ -104,7 +104,6 @@ static int embedded_read;
 unsigned int embedded_list[N_EMBEDDED_LIST];
 
 // the source text of a single clause (UTF8 bytes)
-#define N_TR_SOURCE    800
 static char source[N_TR_SOURCE+40];     // extra space for embedded command & voice change info at end
 
 int n_replace_phonemes;
@@ -374,6 +373,7 @@ void SetLengthMods(Translator *tr, int value)
 }
 
 
+
 int IsAlpha(unsigned int c)
 {//========================
 // Replacement for iswalph() which also checks for some in-word symbols
@@ -385,6 +385,7 @@ int IsAlpha(unsigned int c)
 
 	if(iswalpha2(c))
 		return(1);
+
 	if(c < 0x300)
 		return(0);
 
@@ -400,6 +401,7 @@ int IsAlpha(unsigned int c)
 
 		return(0);
 	}
+
 	if((c >= 0x5b0) && (c <= 0x5c2))
 		return(1);  // Hebrew vowel marks
 
@@ -920,6 +922,7 @@ int TranslateWord(Translator *tr, char *word_start, int next_pause, WORD_TAB *wt
 		if(!IsAlpha(c_temp) || (AlphabetFromChar(last_char) != AlphabetFromChar(c_temp)))
 			spell_word = 1;
 	}
+
 	if(option_sayas == SAYAS_KEY)
 	{
 		if(word_length == 1)
@@ -955,6 +958,7 @@ int TranslateWord(Translator *tr, char *word_start, int next_pause, WORD_TAB *wt
 		{
 			if(word_out != NULL)
 				strcpy(word_out, word1);
+
 			first_char = word1[0];
 			stress_bits = dictionary_flags[0] & 0x7f;
 			found = LookupDictList(tr, &word1, phonemes, dictionary_flags2, 0, wtab);   // the text replacement
@@ -1159,6 +1163,7 @@ if((wmark > 0) && (wmark < 8))
 				strcpy(word_phonemes,phonemes);
 				return(0);
 			}
+
 #ifdef deleted
 // ?? allow $unpr while translating rules, not just on initial FLAG_UNPRON_TEST
 if(end_type & SUFX_UNPRON)
@@ -1174,7 +1179,6 @@ if(end_type & SUFX_UNPRON)
 			{
 				int wc;
 				// characters not recognised, speak them individually
-
 				// ?? should we say super/sub-script numbers and letters here?
 				utf8_in(&wc, wordx);
 				if((word_length == 1) && (IsAlpha(wc) || IsSuperscript(wc)))
@@ -1318,6 +1322,9 @@ if(end_type & SUFX_UNPRON)
 				}
 			}
 
+
+
+
 			if((end_type != 0) && !(end_type & SUFX_P))
 			{
 				end_type1 = end_type;
@@ -1384,7 +1391,6 @@ if(dictionary_flags2[0] & FLAG_ABBREV)
 					{
 						// don't retranslate, use the original lookup result
 						strcpy(phonemes,phonemes2);
-
 					}
 					else
 					{
@@ -1426,6 +1432,7 @@ if(dictionary_flags2[0] & FLAG_ABBREV)
 				}
 				}
 
+
 				if((end_type1 & SUFX_T) == 0)
 				{
 					// the default is to add the suffix and then determine the word's stress pattern
@@ -1434,6 +1441,10 @@ if(dictionary_flags2[0] & FLAG_ABBREV)
 				}
 				memcpy(wordx,word_copy,strlen(word_copy));
 			}
+
+
+
+
 			wordx[-1] = c_temp;
 		}
 	}
@@ -2015,6 +2026,7 @@ static int TranslateWord2(Translator *tr, char *word, WORD_TAB *wtab, int pre_pa
 					else
 						flags = TranslateWord(translator2, word, next_pause, wtab, &word_replaced[2]);
 			}
+
 				if(p[0] != phonSWITCH)
 					break;
 			}
@@ -2023,6 +2035,7 @@ static int TranslateWord2(Translator *tr, char *word, WORD_TAB *wtab, int pre_pa
 
 			if(p[0] == phonSWITCH)
 				return(FLAG_SPELLWORD);
+
 			if(switch_phonemes < 0)
 			{
 				// language code is not recognised or 2nd translator won't translate it
@@ -2641,6 +2654,9 @@ p = source;
 	charix[charix_top+3] = 0;
 
 	clause_pause = (terminator & 0xfff) * 10;  // mS
+	if(terminator & CLAUSE_PAUSE_LONG)
+	  clause_pause = clause_pause * 32 ;  // pause value is *320mS not *10mS
+
 	tone = (terminator >> 12) & 0x7;
 	if(tone2 != 0)
 	{
@@ -3008,6 +3024,7 @@ if((c == '/') && (tr->langopts.testing & 2) && IsDigit09(next_in) && IsAlpha(pre
 						{
 							int next2_in;
 							utf8_in(&next2_in,&source[source_index + next_in_nbytes]);
+
 							if((tr->translator_name == L('n','l')) && (letter_count==2) && (c == 'j') && (prev_in == 'I'))
 							{
 								// Dutch words may capitalise initial IJ, don't split
@@ -3388,6 +3405,7 @@ if((c == '/') && (tr->langopts.testing & 2) && IsDigit09(next_in) && IsAlpha(pre
 						*pn++ = tr->langopts.thousands_sep;
 					}
 					*pn++ = ' ';
+
 					if((words[ix].flags & FLAG_INDIVIDUAL_DIGITS) == 0)
 					{
 					if(tr->langopts.break_numbers & (1 << (nx-1)))

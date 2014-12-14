@@ -98,6 +98,7 @@ void event_init(void)
   assert(-1 != sem_init(&my_sem_stop_is_acknowledged, 0, 0));
 
   pthread_attr_t a_attrib;    
+
   if (pthread_attr_init (&a_attrib) == 0
       && pthread_attr_setdetachstate(&a_attrib, PTHREAD_CREATE_JOINABLE) == 0)
   {
@@ -106,7 +107,6 @@ void event_init(void)
 			 polling_thread, 
       (void*)NULL));
     }
-
   assert(thread_inited);
   pthread_attr_destroy(&a_attrib);
 }

@@ -54,7 +54,6 @@ static int SubstitutePhonemes(Translator *tr, PHONEME_LIST *plist_out)
 	{
 		plist2 = &ph_list2[ix];
 
-
 		// don't do any substitution if the language has been temporarily changed
 		if(!(plist2->synthflags & SFLAG_SWITCHED_LANG))
 		{
@@ -77,6 +76,7 @@ static int SubstitutePhonemes(Translator *tr, PHONEME_LIST *plist_out)
 	
 					if((replace_flags & 2) && ((plist2->stresslevel & 0x7) > 3))
 						continue;     // this replacement doesn't occur in stressed syllables
+
 					if((replace_flags & 4) && (plist2->sourceix == 0))
 						continue;     // this replacement only occurs at the start of a word
 	
@@ -168,6 +168,7 @@ void MakePhonemeList(Translator *tr, int post_pause, int start_sentence)
 			}
 		}
 	}
+
 	// look for switch of phoneme tables
 	delete_count = 0;
 	current_phoneme_tab = tr->phoneme_tab_ix;
@@ -336,7 +337,6 @@ void MakePhonemeList(Translator *tr, int post_pause, int start_sentence)
 	// transfer all the phonemes of the clause into phoneme_list
 	ph = phoneme_tab[phonPAUSE];
 	ph_list3[0].ph = ph;
-
 	word_start = 1;
 
 	for(j=0; insert_ph || ((j < n_ph_list3) && (ix < N_PHONEME_LIST-3)); j++)
@@ -382,6 +382,7 @@ void MakePhonemeList(Translator *tr, int post_pause, int start_sentence)
 			// otherwise get the next phoneme from the list
 			if(plist3->sourceix != 0)
 				word_start = j;
+
 			ph = phoneme_tab[plist3->phcode];
 			plist3[0].ph = ph;
 
@@ -397,6 +398,14 @@ void MakePhonemeList(Translator *tr, int post_pause, int start_sentence)
 		if(ph == NULL) continue;
 
 		InterpretPhoneme(tr, 0x100, plist3, &phdata, &worddata);
+
+		if((alternative = phdata.pd_param[pd_CHANGE_NEXTPHONEME]) > 0)
+		{
+			ph_list3[j+1].ph = phoneme_tab[alternative];
+			ph_list3[j+1].phcode = alternative;
+			ph_list3[j+1].type = phoneme_tab[alternative]->type;
+			next = phoneme_tab[alternative];
+		}
 
 		if(((alternative = phdata.pd_param[pd_INSERTPHONEME]) > 0) && (inserted == 0))
 		{
@@ -437,7 +446,6 @@ void MakePhonemeList(Translator *tr, int post_pause, int start_sentence)
 			}
 			else
 			{
-
 			if(ph->type == phVOWEL)
 			{
 				plist3->synthflags |= SFLAG_SYLLABLE;

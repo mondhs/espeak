@@ -41,6 +41,7 @@
 #include "debug.h"
 
 //<Definitions
+
 #ifdef NEED_STRUCT_TIMESPEC
 #define HAVE_STRUCT_TIMESPEC 1
 struct timespec {
@@ -48,6 +49,7 @@ struct timespec {
         long tv_nsec;
 };
 #endif /* HAVE_STRUCT_TIMESPEC */
+
 
 enum {ONE_BILLION=1000000000};
 

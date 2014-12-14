@@ -34,9 +34,9 @@
 #include "phoneme.h"
 #include "synthesize.h"
 #include "voice.h"
+
 #ifdef INCLUDE_SONIC
 #include "sonic.h"
-
 #endif
 
 #ifdef USE_PORTAUDIO
@@ -298,6 +298,7 @@ void WcmdqStop()
 {//=============
 	wcmdq_head = 0;
 	wcmdq_tail = 0;
+
 #ifdef INCLUDE_SONIC
 	if(sonicSpeedupStream != NULL)
 	{
@@ -305,6 +306,7 @@ void WcmdqStop()
 		sonicSpeedupStream = NULL;
 	}
 #endif
+
 #ifdef USE_PORTAUDIO
 	Pa_AbortStream(pa_stream);
 #endif
@@ -1560,10 +1562,12 @@ static void SetPitchFormants()
 		// only adjust if the pitch is higher than normal
 		factor = 256 + (25 * (pitch_value - 50))/50;
 	}
+
 		for(ix=0; ix<=5; ix++)
 		{
 			wvoice->freq[ix] = (wvoice->freq2[ix] * factor)/256;
 		}
+
 	factor = embedded_value[EMBED_T]*3;
 	wvoice->height[0] = (wvoice->height2[0] * (256 - factor*2))/256;
 	wvoice->height[1] = (wvoice->height2[1] * (256 - factor))/256;
@@ -2057,6 +2061,7 @@ int WavegenFill(int fill_zeros)
 	{
 		int length;
 		int max_length;
+
 		max_length = (out_end - p_start);
 		length =  2*SpeedUp((short *)p_start, (out_ptr-p_start)/2, max_length/2, finished);
 		out_ptr = p_start + length;
