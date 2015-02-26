@@ -1,5 +1,6 @@
 # remove -fno-exceptions  if it causes problems with stdio library on some platforms (ARM)
 
+#DATADIR=/usr/share/espeak-data# Mindas Wrong path
 DATADIR=/usr/lib/x86_64-linux-gnu/espeak-data
 
 PREFIX=/usr

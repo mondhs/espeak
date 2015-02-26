@@ -110,7 +110,7 @@ t_espeak_command* create_espeak_terminated_msg(unsigned int unique_identifier, v
   data->user_data = user_data;
   a_error=0;
 
-  SHOW("ET_TERMINATED_MSG command=%x (uid=%d, user_data=0x%x)\n", a_command, unique_identifier, (int)user_data);
+  SHOW("ET_TERMINATED_MSG command=%x (uid=%d, user_data=0x%x)\n", a_command, unique_identifier, user_data);
 
  msg_error:
   if (a_error)
@@ -632,14 +632,14 @@ void display_espeak_command( t_espeak_command* the_command)
     case ET_TEXT:
       {
 	t_espeak_text* data = &(the_command->u.my_text);
-	SHOW("display_espeak_command > (0x%x) uid=%d, TEXT=%s, user_data=0x%x\n", the_command, data->unique_identifier, (char*)data->text, (int)(data->user_data));
+	SHOW("display_espeak_command > (0x%x) uid=%d, TEXT=%s, user_data=0x%x\n", the_command, data->unique_identifier, (char*)data->text, data->user_data);
       }
       break;
 
     case ET_MARK:
       {
 	t_espeak_mark* data = &(the_command->u.my_mark);
-	SHOW("display_espeak_command > (0x%x) uid=%d, MARK=%s, user_data=0x%x\n", the_command, data->unique_identifier, (char*)data->text, (int)(data->user_data));
+	SHOW("display_espeak_command > (0x%x) uid=%d, MARK=%s, user_data=0x%x\n", the_command, data->unique_identifier, (char*)data->text, data->user_data);
       }
       break;
 

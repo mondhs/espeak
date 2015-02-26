@@ -11,5 +11,5 @@ Instructions
 1. goto manual-jni/jni 
 2. run ndk-build
 3. see manual-jni/libs and manual-jni/obj generated
-4. run in manual-jni dir: mv libs ../ jniLibs
+4. run in manual-jni dir: mv libs ../jniLibs
 

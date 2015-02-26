@@ -166,8 +166,8 @@ int LoadPhData(int *srate)
 	if(phoneme_tab_number >= n_phoneme_tables)
 		phoneme_tab_number = 0;
 
-    if(srate != NULL) //TODO:Mindas WHY WE NEED THIS. srate comes heres >65000??? if(srate != NULL)
-        *srate = rate; //TODO:Mindas WHY WE NEED THIS. It works without this    *srate = rate;
+    if(srate != NULL)
+        *srate = rate;
 	return(result);
 }  //  end of LoadPhData
 

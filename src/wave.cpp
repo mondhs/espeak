@@ -251,7 +251,7 @@ static void init_buffer()
   myRead = myBuffer;
   memset(myBuffer,0,BUFFER_LENGTH);
   myReadPosition = myWritePosition = 0;
-  SHOW("init_buffer > myRead=0x%x, myWrite=0x%x, BUFFER_LENGTH=0x%x, myReadPosition = myWritePosition = 0\n", (int)myRead, (int)myWrite, BUFFER_LENGTH);
+  SHOW("init_buffer > myRead=0x%x, myWrite=0x%x, BUFFER_LENGTH=0x%x, myReadPosition = myWritePosition = 0\n", myRead, myWrite, BUFFER_LENGTH);
 }
 
 static unsigned int get_used_mem()
@@ -365,13 +365,13 @@ static int pa_callback(void *inputBuffer, void *outputBuffer,
 			int aTopMem = myBuffer + BUFFER_LENGTH - myRead;
 			if (aTopMem)
 			{
-				SHOW("pa_callback > myRead=0x%x, aTopMem=0x%x\n",(int)myRead, (int)aTopMem);
+				SHOW("pa_callback > myRead=0x%x, aTopMem=0x%x\n",myRead, (int)aTopMem);
 				memcpy(outputBuffer, myRead, aTopMem);
 			}
 			int aRest = n - aTopMem;
 			if (aRest)
 			{
-				SHOW("pa_callback > myRead=0x%x, aRest=0x%x\n",(int)myRead, (int)aRest);
+				SHOW("pa_callback > myRead=0x%x, aRest=0x%x\n",myRead, (int)aRest);
 				char* p = (char*)outputBuffer + aTopMem;
 				memcpy(p, myBuffer, aRest);
 			}
@@ -385,13 +385,13 @@ static int pa_callback(void *inputBuffer, void *outputBuffer,
 			int aTopMem = myBuffer + BUFFER_LENGTH - myRead;
 			if (aTopMem)
 			{
-				SHOW("pa_callback > myRead=0x%x, aTopMem=0x%x\n",(int)myRead, (int)aTopMem);
+				SHOW("pa_callback > myRead=0x%x, aTopMem=0x%x\n",myRead, (int)aTopMem);
 				memcpy(outputBuffer, myRead, aTopMem);
 			}
 			int aRest = aWrite - myBuffer;
 			if (aRest)
 			{
-				SHOW("pa_callback > myRead=0x%x, aRest=0x%x\n",(int)myRead, (int)aRest);
+				SHOW("pa_callback > myRead=0x%x, aRest=0x%x\n",myRead, (int)aRest);
 				char* p = (char*)outputBuffer + aTopMem;
 				memcpy(p, myBuffer, aRest);
 			}
@@ -404,7 +404,7 @@ static int pa_callback(void *inputBuffer, void *outputBuffer,
 		}
 	}
 
-	SHOW("pa_callback > myRead=%x\n",(int)myRead);
+	SHOW("pa_callback > myRead=%x\n",myRead);
 
 
   // #if USE_PORTAUDIO == 18
@@ -821,13 +821,13 @@ static size_t copyBuffer(char* dest, char* src, const size_t theSizeInBytes)
 		// copy for one channel (mono)?
 		if(out_channels==1)
 		{ 
-			SHOW("copyBuffer > 1 channel > memcpy %x (%d bytes)\n", (int)myWrite, theSizeInBytes);
+			SHOW("copyBuffer > 1 channel > memcpy %x (%d bytes)\n", myWrite, theSizeInBytes);
 			memcpy(dest, src, theSizeInBytes);
 			bytes_written = theSizeInBytes;
 		}
 		else // copy for 2 channels (stereo)
 		{
-			SHOW("copyBuffer > 2 channels > memcpy %x (%d bytes)\n", (int)myWrite, theSizeInBytes);
+			SHOW("copyBuffer > 2 channels > memcpy %x (%d bytes)\n", myWrite, theSizeInBytes);
 			i = 0;
 			a_dest = (uint16_t* )dest;
 			a_src = (uint16_t* )src;
@@ -878,7 +878,7 @@ size_t wave_write(void* theHandler, char* theMono16BitsWaveBuffer, size_t theSiz
  
 	size_t aTotalFreeMem=0;
 	char* aRead = myRead;
-	SHOW("wave_write > aRead=%x, myWrite=%x\n", (int)aRead, (int)myWrite);
+	SHOW("wave_write > aRead=%x, myWrite=%x\n", aRead, myWrite);
  
 	while (1)
 	{
@@ -914,7 +914,7 @@ size_t wave_write(void* theHandler, char* theMono16BitsWaveBuffer, size_t theSiz
 		
 		//SHOW_TIME("wave_write > wait");
 		SHOW("wave_write > wait: aTotalFreeMem=%d\n", aTotalFreeMem);
-		SHOW("wave_write > aRead=%x, myWrite=%x\n", (int)aRead, (int)myWrite);
+		SHOW("wave_write > aRead=%x, myWrite=%x\n", aRead, myWrite);
 		usleep(10000);
 	} // end while (1)
  

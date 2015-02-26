@@ -1,7 +1,7 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-//#define DEBUG_ENABLED
+#define DEBUG_ENABLED
 
 #ifdef DEBUG_ENABLED
 #define ENTER(text) debug_enter(text)
